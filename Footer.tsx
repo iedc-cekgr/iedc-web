@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
       </div>
       
       <div className="max-w-7xl mx-auto mt-20 pt-10 border-t-[4px] border-black flex flex-col md:flex-row justify-between gap-6 font-black uppercase tracking-tight">
-        <p>© 2024 IEDC CE KIDANGOOR.</p>
+        <p>© 2025 IEDC CE KIDANGOOR.</p>
         <p>BUILD BY AMIL METHER CTO.</p>
       </div>
     </footer>

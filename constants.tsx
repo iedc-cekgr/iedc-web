@@ -230,7 +230,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   },
   {
     id: 6,
-    title: "Startup Expo 2024",
+    title: "Startup Expo 2025",
     category: "Exhibition",
     image: "https://images.unsplash.com/photo-1475721027187-4024733924f7?q=80&w=1200"
   },
@@ -242,7 +242,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   },
   {
     id: 8,
-    title: "IV 2024 - Tech Park",
+    title: "IV 2025 - Tech Park",
     category: "Industrial Visit",
     image: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1200"
   }
@@ -306,7 +306,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { 
     id: 3, 
     title: "Hackathon Champions", 
-    year: "2024", 
+    year: "2025", 
     description: "First place at the State-level Clean-Tech Hackathon.", 
     icon: "Zap",
     image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800"

@@ -9,7 +9,7 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   const moments = [
     {
-      title: "Industrial Visit 2024",
+      title: "Industrial Visit 2025",
       description: "Exploring the tech giants at Bangalore.",
       image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop",
       color: "bg-[#00FF00]",
