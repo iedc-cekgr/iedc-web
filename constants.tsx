@@ -1,4 +1,4 @@
-import { ExecomMember, Event, Project } from './types';
+import { ExecomMember, Event, GalleryItem, Project, TimelineEvent, Achievement, PastLeader } from './types';
 
 /**
  * Utility to convert Google Drive sharing links to direct image links
@@ -16,10 +16,10 @@ export const formatImageUrl = (url: string) => {
 
 export const NAV_LINKS = [
   { label: 'Home', path: '/' },
-  { label: 'About', path: '/about' },
   { label: 'Execom', path: '/execom' },
-  { label: 'Projects', path: '/projects' },
   { label: 'Events', path: '/events' },
+  { label: 'Gallery', path: '/gallery' },
+  { label: 'Legacy', path: '/legacy' },
 ];
 
 export const EXECOM_MEMBERS: ExecomMember[] = [
@@ -197,33 +197,149 @@ export const EVENTS: Event[] = [
   }
 ];
 
-// Added PROJECTS array to fix import error in Projects.tsx
-export const PROJECTS: Project[] = [
+export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 1,
-    title: "M-Box",
-    category: "Hardware",
-    status: "Completed",
-    description: "An automated medicine dispenser designed for elderly patients, featuring IoT integration and mobile alerts.",
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800&auto=format&fit=crop",
-    team: ["Amil Mether", "Sebin Binoy", "Agnivesh S"]
+    title: "Industrial Visit - Bangalore",
+    category: "Industrial Visit",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200"
   },
   {
     id: 2,
-    title: "EcoDrive",
-    category: "Startup",
-    status: "Ongoing",
-    description: "A student-led startup focusing on affordable electric vehicle conversion kits for local transport.",
-    image: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=800&auto=format&fit=crop",
-    team: ["Jayalakshmi M", "Alen Jose", "Navya S Nair"]
+    title: "AI Workshop Session",
+    category: "Workshop",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200"
   },
   {
     id: 3,
-    title: "Campus Connect",
+    title: "Idea Pitch Competition",
+    category: "Competition",
+    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200"
+  },
+  {
+    id: 4,
+    title: "Team Hackathon",
+    category: "Hackathon",
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1200"
+  },
+  {
+    id: 5,
+    title: "Community Meetup",
+    category: "Networking",
+    image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=1200"
+  },
+  {
+    id: 6,
+    title: "Startup Expo 2024",
+    category: "Exhibition",
+    image: "https://images.unsplash.com/photo-1475721027187-4024733924f7?q=80&w=1200"
+  },
+  {
+    id: 7,
+    title: "Panel Discussion",
+    category: "Workshop",
+    image: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?q=80&w=1200"
+  },
+  {
+    id: 8,
+    title: "IV 2024 - Tech Park",
+    category: "Industrial Visit",
+    image: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1200"
+  }
+];
+
+export const PROJECTS: Project[] = [
+  {
+    id: 1,
+    title: "Smart Campus App",
+    description: "An all-in-one mobile application for students to access campus news, academic results, and event registrations.",
+    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1200",
     category: "Software",
+    status: "Completed",
+    team: ["Amil", "Jeswin", "Nandana"]
+  },
+  {
+    id: 2,
+    title: "Bio-Waste Converter",
+    description: "A hardware project focused on converting organic waste from the college canteen into usable bio-gas for cooking.",
+    image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?q=80&w=1200",
+    category: "Hardware",
     status: "Ongoing",
-    description: "A centralized platform for student collaboration, event management, and resource sharing within the college ecosystem.",
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
-    team: ["Deepak Suresh", "S Sreenandan", "Nandana Ashok"]
+    team: ["Sebin", "Deepak", "Agnivesh"]
+  },
+  {
+    id: 3,
+    title: "EduLink VR",
+    description: "Virtual Reality platform for immersive engineering laboratory simulations, allowing students to practice experiments safely.",
+    image: "https://images.unsplash.com/photo-1478416272538-5f7e51dc5400?q=80&w=1200",
+    category: "Software",
+    status: "Upcoming",
+    team: ["Jayalakshmi", "Madhav", "Alen"]
+  }
+];
+
+export const TIMELINE_EVENTS: TimelineEvent[] = [
+  { year: "2015", title: "Inception", description: "IEDC was formally established at CE Kidangoor to foster innovation." },
+  { year: "2017", title: "First Grant", description: "Received major funding from Kerala Startup Mission for project development." },
+  { year: "2019", title: "Maker Space", description: "Inaugurated the first dedicated fabrication lab for student hardware prototypes." },
+  { year: "2021", title: "Startup Boom", description: "Facilitated the registration of three student-led startups in a single year." },
+  { year: "2023", title: "Regional Hub", description: "Recognized as a leading innovation hub in the Central Travancore region." }
+];
+
+export const ACHIEVEMENTS: Achievement[] = [
+  { 
+    id: 1, 
+    title: "KSUM Best Performer", 
+    year: "2022", 
+    description: "Ranked among the top IEDCs in Kerala for excellence in innovation.", 
+    icon: "Trophy",
+    image: "https://images.unsplash.com/photo-1578574577315-3fbeb0cecdc2?q=80&w=800"
+  },
+  { 
+    id: 2, 
+    title: "Idea Fest Winners", 
+    year: "2023", 
+    description: "Student team secured 2 Lakhs grant for 'Smart Agriculture' prototype.", 
+    icon: "Lightbulb",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800"
+  },
+  { 
+    id: 3, 
+    title: "Hackathon Champions", 
+    year: "2024", 
+    description: "First place at the State-level Clean-Tech Hackathon.", 
+    icon: "Zap",
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800"
+  }
+];
+
+export const PAST_LEADERS: PastLeader[] = [
+  { 
+    year: "2023-24", 
+    nodalOfficer: "Chinchu M", 
+    nodalOfficerImage: "https://res.cloudinary.com/dli8bbort/image/upload/v1768152331/WhatsApp_Image_2026-01-11_at_22.55.07_jqfpym.jpg",
+    ceo: "Jayalakshmi M",
+    ceoImage: "https://res.cloudinary.com/dli8bbort/image/upload/v1768150968/WhatsApp_Image_2026-01-11_at_22.18.07_jb2ngr.jpg"
+  },
+  { 
+    year: "2022-23", 
+    nodalOfficer: "Dr. Oommen Alexander", 
+    nodalOfficerImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400",
+    ceo: "Abhijit P",
+    ceoImage: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400"
+  },
+  { 
+    year: "2021-22", 
+    nodalOfficer: "Dr. Oommen Alexander", 
+    nodalOfficerImage: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400",
+    ceo: "Midhun R",
+    ceoImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400"
+  },
+  { 
+    year: "2020-21", 
+    nodalOfficer: "Prof. Sreejith S", 
+    nodalOfficerImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400",
+    ceo: "Suhail K",
+    ceoImage: "https://images.unsplash.com/photo-1519085184581-2850b0638575?q=80&w=400"
   }
 ];

@@ -26,13 +26,42 @@ export interface Event {
   type: string; 
 }
 
-// Added Project interface
-export interface Project {
+export interface GalleryItem {
   id: number;
   title: string;
   category: string;
-  status: string;
+  image: string;
+}
+
+export interface Project {
+  id: number;
+  title: string;
   description: string;
   image: string;
+  category: string;
+  status: 'Completed' | 'Ongoing' | 'Upcoming';
   team: string[];
+}
+
+export interface TimelineEvent {
+  year: string;
+  title: string;
+  description: string;
+}
+
+export interface Achievement {
+  id: number;
+  title: string;
+  description: string;
+  icon: string;
+  year: string;
+  image?: string;
+}
+
+export interface PastLeader {
+  year: string;
+  nodalOfficer: string;
+  nodalOfficerImage: string;
+  ceo: string;
+  ceoImage: string;
 }

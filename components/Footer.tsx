@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mail, MapPin, Instagram, Linkedin, Rocket } from 'lucide-react';
+import { NAV_LINKS } from '../constants';
 
 const Footer: React.FC = () => {
   const socialLinks = [
@@ -39,13 +40,13 @@ const Footer: React.FC = () => {
         <div className="space-y-8">
           <h4 className="text-2xl font-black uppercase border-b-[4px] border-black inline-block">LINKS</h4>
           <ul className="space-y-4 font-black uppercase text-lg">
-            {['Home', 'About', 'Execom', 'Projects', 'Events'].map((item) => (
-              <li key={item}>
+            {NAV_LINKS.map((item) => (
+              <li key={item.path}>
                 <a 
-                  href={item === 'Home' ? '#' : `#/${item.toLowerCase()}`} 
+                  href={item.path === '/' ? '#' : `#${item.path}`} 
                   className="hover:bg-black hover:text-white px-2 py-1 transition-colors"
                 >
-                  {item}
+                  {item.label}
                 </a>
               </li>
             ))}

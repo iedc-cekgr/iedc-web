@@ -4,8 +4,9 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import About from './pages/About';
 import Execom from './pages/Execom';
-import Projects from './pages/Projects';
 import Events from './pages/Events';
+import Gallery from './pages/Gallery';
+import Projects from './pages/Projects';
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState('/');
@@ -29,10 +30,11 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (currentPath) {
       case '/': return <Home onNavigate={navigate} />;
-      case '/about': return <About />;
       case '/execom': return <Execom />;
-      case '/projects': return <Projects />;
       case '/events': return <Events />;
+      case '/gallery': return <Gallery />;
+      case '/legacy': return <Projects />;
+      case '/about': return <About />;
       default: return <Home onNavigate={navigate} />;
     }
   };

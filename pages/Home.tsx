@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { ArrowRight, Lightbulb, Zap, Users, Trophy } from 'lucide-react';
+import { ArrowRight, Lightbulb, Zap, Users, Trophy, Camera } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 
 interface HomeProps {
@@ -8,6 +7,37 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ onNavigate }) => {
+  const moments = [
+    {
+      title: "Industrial Visit 2024",
+      description: "Exploring the tech giants at Bangalore.",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop",
+      color: "bg-[#00FF00]",
+      rotate: "hover:-rotate-2"
+    },
+    {
+      title: "Startup Workshop",
+      description: "Hands-on session with industry veterans.",
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
+      color: "bg-[#FF00FF]",
+      rotate: "hover:rotate-2"
+    },
+    {
+      title: "Hackathon Night",
+      description: "48 hours of pure creation and caffeine.",
+      image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800&auto=format&fit=crop",
+      color: "bg-[#00FFFF]",
+      rotate: "hover:-rotate-1"
+    },
+    {
+      title: "Community Meet",
+      description: "The engine room of the entrepreneur cell.",
+      image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800&auto=format&fit=crop",
+      color: "bg-[#FFDE03]",
+      rotate: "hover:rotate-1"
+    }
+  ];
+
   return (
     <div className="pt-32 space-y-24">
       {/* Hero Section */}
@@ -81,6 +111,41 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
               </div>
               <h4 className="text-2xl font-black mb-2">{item.title}</h4>
               <p className="font-bold text-sm leading-tight">Elite guidance and resources for the next generation of CEOs.</p>
+            </GlassCard>
+          ))}
+        </div>
+      </section>
+
+      {/* Moments / Gallery Section */}
+      <section className="px-6 max-w-7xl mx-auto">
+        <div className="flex items-center gap-6 mb-16">
+          <div className="p-4 bg-[#FF00FF] border-[4px] border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <Camera size={32} className="text-white" />
+          </div>
+          <h2 className="text-4xl md:text-6xl font-black">FIELD TRIPS & VIBES.</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {moments.map((moment, i) => (
+            <GlassCard 
+              key={i} 
+              className={`p-0 overflow-hidden border-black flex flex-col md:flex-row transition-transform duration-300 ${moment.rotate}`}
+            >
+              <div className="md:w-1/2 h-64 md:h-auto border-b-[4px] md:border-b-0 md:border-r-[4px] border-black">
+                <img 
+                  src={moment.image} 
+                  alt={moment.title} 
+                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                />
+              </div>
+              <div className={`md:w-1/2 p-8 ${moment.color} flex flex-col justify-center`}>
+                <h3 className="text-3xl font-black mb-4 uppercase leading-none">{moment.title}</h3>
+                <p className="font-black text-sm uppercase leading-tight opacity-80">{moment.description}</p>
+                <div className="mt-8 pt-6 border-t-[3px] border-black/20 flex items-center gap-3">
+                   <div className="w-8 h-8 rounded-full bg-black border-[2px] border-black"></div>
+                   <span className="text-xs font-black uppercase">IEDC CEK SQUAD</span>
+                </div>
+              </div>
             </GlassCard>
           ))}
         </div>
