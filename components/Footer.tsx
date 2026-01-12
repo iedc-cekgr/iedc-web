@@ -10,19 +10,19 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-[#FFDE03] border-t-[8px] border-black py-20 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
-        <div className="col-span-1 md:col-span-2 space-y-8">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-black border-[3px] border-black">
-              <Rocket className="w-8 h-8 text-white" />
+    <footer className="bg-slate-900 text-slate-400 py-16 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="col-span-1 md:col-span-2 space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-600 rounded-lg">
+              <Rocket className="w-6 h-6 text-white" />
             </div>
-            <h3 className="font-display font-black text-4xl">IEDC CEK</h3>
+            <h3 className="font-bold text-2xl text-white tracking-tight">IEDC CEK</h3>
           </div>
-          <p className="text-xl font-black leading-tight max-w-md">
-            THE ENGINE ROOM OF INNOVATION AT COLLEGE OF ENGINEERING KIDANGOOR.
+          <p className="text-slate-400 max-w-sm">
+            Empowering the next generation of innovators and entrepreneurs at the College of Engineering Kidangoor.
           </p>
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             {socialLinks.map(({ Icon, href, label }, i) => (
               <a 
                 key={i} 
@@ -30,22 +30,22 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="w-14 h-14 bg-white border-[3px] border-black flex items-center justify-center hover:bg-black group transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none translate-y-0 hover:translate-x-1 hover:translate-y-1"
+                className="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-white/5 hover:text-white transition-all"
               >
-                <Icon size={24} className="group-hover:text-white" />
+                <Icon size={18} />
               </a>
             ))}
           </div>
         </div>
 
-        <div className="space-y-8">
-          <h4 className="text-2xl font-black uppercase border-b-[4px] border-black inline-block">LINKS</h4>
-          <ul className="space-y-4 font-black uppercase text-lg">
+        <div className="space-y-6">
+          <h4 className="text-white font-semibold uppercase tracking-widest text-[10px]">Quick Links</h4>
+          <ul className="space-y-3 text-sm">
             {NAV_LINKS.map((item: NavItem) => (
               <li key={item.path}>
                 <a 
                   href={item.path === '/' ? '#' : `#${item.path}`} 
-                  className="hover:bg-black hover:text-white px-2 py-1 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   {item.label}
                 </a>
@@ -54,24 +54,24 @@ const Footer: React.FC = () => {
           </ul>
         </div>
 
-        <div className="space-y-8">
-          <h4 className="text-2xl font-black uppercase border-b-[4px] border-black inline-block">FIND US</h4>
-          <div className="space-y-6 font-bold text-lg">
+        <div className="space-y-6">
+          <h4 className="text-white font-semibold uppercase tracking-widest text-[10px]">Contact Us</h4>
+          <div className="space-y-4 text-sm">
             <div className="flex gap-3 items-start">
-              <MapPin size={24} className="shrink-0" />
-              <span>CE KIDANGOOR,<br />KERALA 686572</span>
+              <MapPin size={18} className="shrink-0 text-blue-500" />
+              <span>College of Engineering Kidangoor<br />Kottayam, Kerala 686572</span>
             </div>
             <div className="flex gap-3 items-center">
-              <Mail size={24} />
+              <Mail size={18} className="text-blue-500" />
               <span>iedc@ce-kgr.org</span>
             </div>
           </div>
         </div>
       </div>
       
-      <div className="max-w-7xl mx-auto mt-20 pt-10 border-t-[4px] border-black flex flex-col md:flex-row justify-between gap-6 font-black uppercase tracking-tight">
-        <p>© 2025 IEDC CE KIDANGOOR.</p>
-        <p>BUILD BY AMIL METHER CTO.</p>
+      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between gap-4 text-xs font-medium">
+        <p>© 2025 IEDC College of Engineering Kidangoor. All rights reserved.</p>
+        <p>Built by Amil Mether, CTO.</p>
       </div>
     </footer>
   );

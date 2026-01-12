@@ -7,34 +7,48 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ onNavigate }) => {
-  const moments = [
+  const highlights = [
     {
-      title: "Industrial Visit 2025",
-      description: "Exploring the tech giants at Bangalore.",
-      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop",
+      title: "Arduino Workshop",
+      description: "Mastering electronics and prototyping with the world's most popular microcontroller board.",
+      image: "https://res.cloudinary.com/dli8bbort/image/upload/v1768197872/fetch_7_nvwqs9.jpg",
       color: "bg-[#00FF00]",
       rotate: "hover:-rotate-2"
     },
     {
-      title: "Startup Workshop",
-      description: "Hands-on session with industry veterans.",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
+      title: "TOPSY TURVY",
+      description: "A mind-bending competition challenging perspectives and conventional thinking.",
+      image: "https://res.cloudinary.com/dli8bbort/image/upload/v1768197871/fetch_10_hnprbw.jpg",
       color: "bg-[#FF00FF]",
       rotate: "hover:rotate-2"
     },
     {
-      title: "Hackathon Night",
-      description: "48 hours of pure creation and caffeine.",
-      image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800&auto=format&fit=crop",
+      title: "Python Workshop",
+      description: "Hands-on coding session mastering the fundamentals of Python development.",
+      image: "https://res.cloudinary.com/dli8bbort/image/upload/v1768194837/WhatsApp_Image_2026-01-12_at_10.30.14_aenm4p.jpg",
       color: "bg-[#00FFFF]",
       rotate: "hover:-rotate-1"
     },
     {
-      title: "Community Meet",
-      description: "The engine room of the entrepreneur cell.",
-      image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?q=80&w=800&auto=format&fit=crop",
+      title: "3D Printer Workshop",
+      description: "Bringing ideas to life with state-of-the-art additive manufacturing tech.",
+      image: "https://res.cloudinary.com/dli8bbort/image/upload/v1768194837/WhatsApp_Image_2026-01-12_at_10.30.13_lylvyb.jpg",
       color: "bg-[#FFDE03]",
       rotate: "hover:rotate-1"
+    },
+    {
+      title: "Startup Pitching",
+      description: "Future founders presenting their groundbreaking ideas to industry experts.",
+      image: "https://res.cloudinary.com/dli8bbort/image/upload/v1768197871/fetch_12_kkdkz9.jpg",
+      color: "bg-[#FF3D00]",
+      rotate: "hover:-rotate-2"
+    },
+    {
+      title: "PHOTOGRAPHY Contest",
+      description: "Capturing the essence of innovation through the lens of pure creativity.",
+      image: "https://res.cloudinary.com/dli8bbort/image/upload/v1768197871/fetch_14_yeigmk.jpg",
+      color: "bg-[#3D5AFE]",
+      rotate: "hover:rotate-2"
     }
   ];
 
@@ -116,34 +130,34 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* Moments / Gallery Section */}
+      {/* Recent Highlights Section */}
       <section className="px-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-6 mb-16">
           <div className="p-4 bg-[#FF00FF] border-[4px] border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <Camera size={32} className="text-white" />
           </div>
-          <h2 className="text-4xl md:text-6xl font-black">FIELD TRIPS & VIBES.</h2>
+          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">Recent Highlights.</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {moments.map((moment, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {highlights.map((item, i) => (
             <GlassCard 
               key={i} 
-              className={`p-0 overflow-hidden border-black flex flex-col md:flex-row transition-transform duration-300 ${moment.rotate}`}
+              className={`p-0 overflow-hidden border-black flex flex-col transition-transform duration-300 ${item.rotate} shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]`}
             >
-              <div className="md:w-1/2 h-64 md:h-auto border-b-[4px] md:border-b-0 md:border-r-[4px] border-black">
+              <div className="h-64 border-b-[4px] border-black">
                 <img 
-                  src={moment.image} 
-                  alt={moment.title} 
+                  src={item.image} 
+                  alt={item.title} 
                   className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
                 />
               </div>
-              <div className={`md:w-1/2 p-8 ${moment.color} flex flex-col justify-center`}>
-                <h3 className="text-3xl font-black mb-4 uppercase leading-none">{moment.title}</h3>
-                <p className="font-black text-sm uppercase leading-tight opacity-80">{moment.description}</p>
-                <div className="mt-8 pt-6 border-t-[3px] border-black/20 flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-full bg-black border-[2px] border-black"></div>
-                   <span className="text-xs font-black uppercase">IEDC CEK SQUAD</span>
+              <div className={`p-8 ${item.color} flex-grow flex flex-col justify-center`}>
+                <h3 className="text-2xl font-black mb-3 uppercase leading-none">{item.title}</h3>
+                <p className="font-black text-xs uppercase leading-tight opacity-80">{item.description}</p>
+                <div className="mt-6 pt-4 border-t-[2px] border-black/20 flex items-center gap-3">
+                   <div className="w-6 h-6 rounded-full bg-black border-[2px] border-black"></div>
+                   <span className="text-[10px] font-black uppercase">Activity Log #00{i+1}</span>
                 </div>
               </div>
             </GlassCard>
