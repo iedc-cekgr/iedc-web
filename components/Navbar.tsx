@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Menu, X, Rocket } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
+import logo from '../images/logo.jpeg';
 
 interface NavbarProps {
   currentPath: string;
@@ -19,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
           onClick={() => onNavigate('/')}
         >
           <div className="p-2 bg-[#FFDE03] border-[3px] border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 transition-transform">
-            <Rocket className="w-6 h-6 text-black" />
+            <img src={logo} alt="logo" className="w-6 h-6 object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="font-display text-2xl tracking-tighter leading-none">IEDC CEK</span>
