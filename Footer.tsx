@@ -1,7 +1,9 @@
+import logo from './images/logo.jpeg';
 import React from 'react';
-import { Mail, MapPin, Instagram, Linkedin, Rocket } from 'lucide-react';
+import { Mail, MapPin, Instagram, Linkedin } from 'lucide-react';
 import { NAV_LINKS } from './constants';
 import { NavItem } from './types';
+
 
 const Footer: React.FC = () => {
   const socialLinks = [
@@ -15,7 +17,7 @@ const Footer: React.FC = () => {
         <div className="col-span-1 md:col-span-2 space-y-8">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-black border-[3px] border-black">
-              <Rocket className="w-8 h-8 text-white" />
+              <img src={logo} alt="logo" className="w-8 h-8 object-contain" />
             </div>
             <h3 className="font-display font-black text-4xl">IEDC CEK</h3>
           </div>
@@ -71,7 +73,7 @@ const Footer: React.FC = () => {
       
       <div className="max-w-7xl mx-auto mt-20 pt-10 border-t-[4px] border-black flex flex-col md:flex-row justify-between gap-6 font-black uppercase tracking-tight">
         <p>© 2025 IEDC CE KIDANGOOR.</p>
-        <p>BUILD BY AMIL METHER CTO.</p>
+        <p>BUILD BY TECHNICAL WING IEDC</p>
       </div>
     </footer>
   );

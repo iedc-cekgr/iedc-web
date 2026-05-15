@@ -305,7 +305,7 @@ export const PAST_LEADERS: PastLeader[] = [
     year: "2023-24", 
     nodalOfficer: "Chinchu M", 
     nodalOfficerImage: "https://res.cloudinary.com/dli8bbort/image/upload/v1768152331/WhatsApp_Image_2026-01-11_at_22.55.07_jqfpym.jpg",
-    ceo: "Jayalakshmi M",
-    ceoImage: "https://res.cloudinary.com/dli8bbort/image/upload/v1768150968/WhatsApp_Image_2026-01-11_at_22.18.07_jb2ngr.jpg"
+    ceo: "S Sreenandan",
+    ceoImage: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1777729852/S_Sreenandan_c6ft7s.jpg"
   }
 ];
