@@ -125,7 +125,7 @@ export const EXECOM_MEMBERS: ExecomMember[] = [
     id: 15,
     name: "Nowrin Fathima",
     role: "COMMUNITY LEAD",
-    image: "https://media.licdn.com/dms/image/v2/D5603AQHSiINi-xhmng/profile-displayphoto-scale_400_400/B56Zkj8MxRJ8Ag-/0/1757244610196?e=2147483647&v=beta&t=iwgYt5GaDhNA85rEuVlId9haeXd5IlGIT-_H8-iGFbg",
+    image: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1778865939/Nowrin_Fathima_vgf6f3.jpg",
     socials: { linkedin: "" }
   },
   {
