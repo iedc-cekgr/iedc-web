@@ -7,7 +7,6 @@ import Execom from './pages/Execom';
 import Events from './pages/Events';
 import Gallery from './pages/Gallery';
 import Projects from './pages/Projects';
-import Admin from './pages/Admin';
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState('/');
@@ -41,10 +40,6 @@ const App: React.FC = () => {
       default: return <Home onNavigate={navigate} />;
     }
   };
-
-  if (currentPath.startsWith('/admin')) {
-    return <Admin onNavigate={navigate} />;
-  }
 
   return (
     <div className="relative min-h-screen bg-slate-50 selection:bg-blue-600 selection:text-white">
