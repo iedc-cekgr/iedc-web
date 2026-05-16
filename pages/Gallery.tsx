@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Maximize2 } from 'lucide-react';
+import { Camera, Maximize2, ExternalLink } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
 import { GALLERY_ITEMS, formatImageUrl } from '../constants';
 
@@ -36,28 +36,48 @@ const Gallery: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {filteredItems.map((item) => (
-          <GlassCard key={item.id} className="p-0 border-black group overflow-hidden bg-black">
-            <div className="relative aspect-square overflow-hidden border-b-[4px] border-black">
-              <img 
-                src={formatImageUrl(item.image)} 
-                alt={item.title} 
-                className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500 opacity-90 group-hover:opacity-100"
-              />
-              <div className="absolute top-4 left-4">
-                <span className="px-3 py-1 bg-white border-[2px] border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                  {item.category}
-                </span>
+        {filteredItems.map((item) => {
+          const cardInner = (
+            <>
+              <div className="relative aspect-square overflow-hidden border-b-[4px] border-black">
+                <img 
+                  src={formatImageUrl(item.image)} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500 opacity-90 group-hover:opacity-100"
+                />
+                <div className="absolute top-4 left-4">
+                  <span className="px-3 py-1 bg-white border-[2px] border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    {item.category}
+                  </span>
+                </div>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                  {item.driveLink ? (
+                    <ExternalLink className="text-white w-10 h-10" />
+                  ) : (
+                    <Maximize2 className="text-white w-10 h-10" />
+                  )}
+                </div>
               </div>
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                 <Maximize2 className="text-white w-10 h-10" />
+              <div className="p-6 bg-white h-full">
+                <h3 className="text-xl font-black uppercase leading-tight line-clamp-2">{item.title}</h3>
               </div>
-            </div>
-            <div className="p-6 bg-white">
-              <h3 className="text-xl font-black uppercase leading-tight line-clamp-2">{item.title}</h3>
-            </div>
-          </GlassCard>
-        ))}
+            </>
+          );
+
+          return (
+            <GlassCard key={item.id} className="p-0 border-black group overflow-hidden bg-black flex flex-col h-full">
+              {item.driveLink ? (
+                <a href={item.driveLink} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+                  {cardInner}
+                </a>
+              ) : (
+                <div className="block w-full h-full">
+                  {cardInner}
+                </div>
+              )}
+            </GlassCard>
+          );
+        })}
       </div>
 
       {/* Empty State */}

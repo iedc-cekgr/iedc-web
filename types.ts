@@ -31,6 +31,7 @@ export interface GalleryItem {
   title: string;
   category: string;
   image: string;
+  driveLink?: string;
 }
 
 export interface Project {
