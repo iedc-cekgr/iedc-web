@@ -27,10 +27,11 @@ export interface Event {
 }
 
 export interface GalleryItem {
-  id: number;
+  id: number | string;
   title: string;
   category: string;
   image: string;
+  link?: string;
 }
 
 export interface Project {
