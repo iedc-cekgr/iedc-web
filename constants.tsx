@@ -104,21 +104,21 @@ export const EXECOM_MEMBERS: ExecomMember[] = [
     id: 7,
     name: "Nihal Ajinas",
     role: "DESIGNER LEAD I",
-    image: "https://media.licdn.com/dms/image/v2/D5603AQHSiINi-xhmng/profile-displayphoto-scale_400_400/B56Zkj8MxRJ8Ag-/0/1757244610196?e=2147483647&v=beta&t=iwgYt5GaDhNA85rEuVlId9haeXd5IlGIT-_H8-iGFbg",
+    image: "https://res.cloudinary.com/dvntu7mui/image/upload/v1778914945/WhatsApp_Image_2026-05-16_at_12.31.52_PM_dxswaa.jpg",
     socials: { linkedin: "" }
   },
   {
     id: 10,
     name: "Adwaith Manoj",
     role: "DESIGNER LEAD II",
-    image: "https://media.licdn.com/dms/image/v2/D5603AQHSiINi-xhmng/profile-displayphoto-scale_400_400/B56Zkj8MxRJ8Ag-/0/1757244610196?e=2147483647&v=beta&t=iwgYt5GaDhNA85rEuVlId9haeXd5IlGIT-_H8-iGFbg",
+    image: "https://res.cloudinary.com/dvntu7mui/image/upload/v1778914555/WhatsApp_Image_2026-05-16_at_12.20.35_PM_i111hx.jpg",
     socials: { linkedin: "" }
   },
   {
     id: 11,
     name: "Madhav M",
     role: "CREATIVE LEAD II",
-    image: "https://media.licdn.com/dms/image/v2/D5603AQHSiINi-xhmng/profile-displayphoto-scale_400_400/B56Zkj8MxRJ8Ag-/0/1757244610196?e=2147483647&v=beta&t=iwgYt5GaDhNA85rEuVlId9haeXd5IlGIT-_H8-iGFbg",
+    image: "https://res.cloudinary.com/dvntu7mui/image/upload/v1778914504/WhatsApp_Image_2026-05-16_at_12.20.34_PM_dcxl39.jpg",
     socials: { linkedin: "" }
   },
   {
