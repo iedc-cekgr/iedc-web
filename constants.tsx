@@ -194,7 +194,7 @@ export const EVENTS: Event[] = [
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 14,
-    title: "Industrial Visit, Python etc",
+    title: "IEDC AGM'26",
     category: "Event",
     image: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1778948026/WhatsApp_Image_2026-05-15_at_10.23.50_PM_yn7l71.jpg",
     driveLink: "https://drive.google.com/drive/folders/1Kpxg8kkc325WZNmHfbuDDhHvpQiGuPCt?usp=drive_link"
