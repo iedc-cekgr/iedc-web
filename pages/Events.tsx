@@ -1,9 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
-import { EVENTS, formatImageUrl } from '../constants';
+import { formatImageUrl } from '../constants';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+import { Event } from '../types';
 
 const Events: React.FC = () => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'events'));
+        const eventsData = querySnapshot.docs.map(doc => ({
+          ...doc.data(),
+          docId: doc.id
+        })) as unknown as Event[];
+        
+        eventsData.sort((a, b) => a.id - b.id);
+        setEvents(eventsData);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  if (loading) {
+    return <div className="pt-40 px-6 max-w-5xl mx-auto pb-20 text-center font-bold text-2xl">Loading Events...</div>;
+  }
   return (
     <div className="pt-40 px-6 max-w-5xl mx-auto pb-20 space-y-16">
       <div className="border-l-[12px] border-black pl-8 mb-20">
@@ -12,7 +41,7 @@ const Events: React.FC = () => {
       </div>
 
       <div className="space-y-16">
-        {EVENTS.map((event) => (
+        {events.map((event) => (
           <div key={event.id} className="relative">
             <GlassCard className="p-0 border-black flex flex-col md:flex-row shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
               <div className="md:w-1/3 h-64 md:h-auto border-b-[4px] md:border-b-0 md:border-r-[4px] border-black">
@@ -31,7 +60,11 @@ const Events: React.FC = () => {
                    <div className="flex gap-4 font-black text-sm uppercase">
                       <span className="flex items-center gap-1"><Calendar size={18} /> 10:00 - 16:00</span>
                    </div>
-                   {/* Join button removed as requested */}
+                   {event.registrationLink && (
+                     <a href={event.registrationLink} target="_blank" rel="noopener noreferrer" className="bg-black text-white font-bold py-2 px-4 uppercase text-sm">
+                       Register Now
+                     </a>
+                   )}
                 </div>
               </div>
             </GlassCard>

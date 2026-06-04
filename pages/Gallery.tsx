@@ -1,15 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Camera, Maximize2, ExternalLink } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
-import { GALLERY_ITEMS, formatImageUrl } from '../constants';
+import { formatImageUrl } from '../constants';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+import { GalleryItem } from '../types';
 
 const Gallery: React.FC = () => {
+  const [items, setItems] = useState<GalleryItem[]>([]);
   const [filter, setFilter] = useState('All');
-  const categories = ['All', ...new Set(GALLERY_ITEMS.map(item => item.category))];
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'gallery'));
+        const galleryData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any;
+        
+        // Restore original order for seeded items, and put newly added ones at the top
+        const originalOrder = [14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+        galleryData.sort((a: any, b: any) => {
+          const indexA = originalOrder.indexOf(a.id);
+          const indexB = originalOrder.indexOf(b.id);
+          
+          if (indexA !== -1 && indexB !== -1) return indexA - indexB; // Keep original order
+          if (indexA === -1 && indexB !== -1) return -1; // New items (not in array) go first
+          if (indexA !== -1 && indexB === -1) return 1;
+          return b.id - a.id; // If both are new, sort by ID descending (newest first)
+        });
+
+        setItems(galleryData);
+      } catch (error) {
+        console.error("Error fetching gallery:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGallery();
+  }, []);
+
+  const categories = ['All', ...new Set(items.map(item => item.category))];
 
   const filteredItems = filter === 'All' 
-    ? GALLERY_ITEMS 
-    : GALLERY_ITEMS.filter(item => item.category === filter);
+    ? items 
+    : items.filter(item => item.category === filter);
+
+  if (loading) {
+    return (
+      <div className="pt-40 px-6 max-w-7xl mx-auto pb-20 flex justify-center items-center min-h-[50vh]">
+        <p className="text-2xl font-black uppercase">Loading Vault...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-40 px-6 max-w-7xl mx-auto pb-20">
@@ -36,7 +78,7 @@ const Gallery: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {filteredItems.map((item) => {
+        {filteredItems.map((item: any) => {
           const cardInner = (
             <>
               <div className="relative aspect-square overflow-hidden border-b-[4px] border-black">

@@ -66,56 +66,56 @@ export const EXECOM_MEMBERS: ExecomMember[] = [
     socials: { linkedin: "https://www.linkedin.com/in/alen-jose-438767370" }
   },
   {
-    id: 8,
+    id: 7,
     name: "Adwaith Somkumar",
     role: "CFO",
     image: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1777730160/Adwaith_Somkumar_rgkvyb.png",
     socials: { linkedin: "https://www.linkedin.com/in/navya-s-nair-45079a321" }
   },
   {
-    id: 9,
+    id: 8,
     name: "Ansara Beegam",
     role: "WIE",
     image: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1777730187/Ansara_Beegam_neg2sl.png",
     socials: { linkedin: "https://www.linkedin.com/in/ansara-beegam-913399383?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" }
   },
   {
-    id: 14,
+    id: 9,
     name: "Jeswin Joy",
     role: "QUALITY & OPERATION LEAD",
     image: "https://res.cloudinary.com/dli8bbort/image/upload/v1768151006/WhatsApp_Image_2026-01-11_at_22.18.25_o13nmx.jpg",
     socials: { linkedin: "https://www.linkedin.com/in/jeswin-joy-800aa0321" }
   },
   {
-    id: 13,
+    id: 10,
     name: "Edwin Jijo",
     role: "Community Head",
     image: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1777730170/Edwin_Jijo_bwu6fo.webp",
     socials: { linkedin: "https://www.linkedin.com/in/edwin-jijo-b49299323/"}
   },
   {
-    id: 12,
+    id: 11,
     name: "Adwaith Krishna S",
     role: "Research Lead",
     image: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1777730096/Adwaith_Krishna_z4yfah.png",
     socials: { linkedin: "https://www.linkedin.com/in/adwaith-krishna-s?utm_source=share_via&utm_content=profile&utm_medium=member_android" }
   },
   {
-    id: 7,
+    id: 12,
     name: "Nihal Ajinas",
     role: "DESIGNER LEAD I",
     image: "https://res.cloudinary.com/dvntu7mui/image/upload/v1778914945/WhatsApp_Image_2026-05-16_at_12.31.52_PM_dxswaa.jpg",
     socials: { linkedin: "" }
   },
   {
-    id: 10,
+    id: 13,
     name: "Adwaith Manoj",
     role: "DESIGNER LEAD II",
     image: "https://res.cloudinary.com/dvntu7mui/image/upload/v1778914555/WhatsApp_Image_2026-05-16_at_12.20.35_PM_i111hx.jpg",
     socials: { linkedin: "" }
   },
   {
-    id: 11,
+    id: 14,
     name: "Madhav M",
     role: "CREATIVE LEAD II",
     image: "https://res.cloudinary.com/dvntu7mui/image/upload/v1778914504/WhatsApp_Image_2026-05-16_at_12.20.34_PM_dcxl39.jpg",
@@ -157,14 +157,14 @@ export const EXECOM_MEMBERS: ExecomMember[] = [
     socials: { linkedin: "https://www.linkedin.com/in/devendu-hari-972642387?utm_source=share_via&utm_content=profile&utm_medium=member_ios" }
   },
   {
-    id: 19,
+    id: 20,
     name: "Ganga V",
     role: "Program Officer",
     image: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1778335562/Ganga_Vinod_f6wxru.jpg",
     socials: { linkedin: "https://www.linkedin.com/in/ganga-v-162703383?utm_source=share_via&utm_content=profile&utm_medium=member_android",github:"https://github.com/vinodganga178-dot" }
   },
   {
-    id: 19,
+    id: 21,
     name: "Drishya A B",
     role: "Program Officer",
     image: "https://res.cloudinary.com/dzv86vcdt/image/upload/v1778335568/drishya_-_Drishya_y8fgs0.jpg",

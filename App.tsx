@@ -7,6 +7,7 @@ import Execom from './pages/Execom';
 import Events from './pages/Events';
 import Gallery from './pages/Gallery';
 import Projects from './pages/Projects';
+import Admin from './pages/Admin';
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState('/');
@@ -37,9 +38,18 @@ const App: React.FC = () => {
       case '/gallery': return <Gallery />;
       case '/legacy': return <Projects />;
       case '/about': return <About />;
+      case '/admin': return <Admin />;
       default: return <Home onNavigate={navigate} />;
     }
   };
+
+  if (currentPath === '/admin') {
+    return (
+      <main className="animate-in fade-in duration-500">
+        <Admin />
+      </main>
+    );
+  }
 
   return (
     <div className="relative min-h-screen bg-slate-50 selection:bg-blue-600 selection:text-white">

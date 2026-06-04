@@ -1,9 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { History, Award, Users, Trophy, Lightbulb, Zap, Medal } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
-import { TIMELINE_EVENTS, ACHIEVEMENTS, PAST_LEADERS, formatImageUrl } from '../constants';
+import { formatImageUrl } from '../constants';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+import { TimelineEvent, Achievement, PastLeader } from '../types';
 
 const Projects: React.FC = () => {
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [pastLeaders, setPastLeaders] = useState<PastLeader[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLegacyData = async () => {
+      try {
+        const [timelineSnap, achievementsSnap, pastLeadersSnap] = await Promise.all([
+          getDocs(collection(db, 'timeline')),
+          getDocs(collection(db, 'achievements')),
+          getDocs(collection(db, 'past_leaders'))
+        ]);
+
+        const timelineData = timelineSnap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+        const achievementsData = achievementsSnap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+        const pastLeadersData = pastLeadersSnap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+
+        setTimelineEvents(timelineData.sort((a, b) => a.year.localeCompare(b.year)));
+        setAchievements(achievementsData.sort((a, b) => b.year.localeCompare(a.year)));
+        setPastLeaders(pastLeadersData.sort((a, b) => b.year.localeCompare(a.year)));
+
+      } catch (error) {
+        console.error("Error fetching legacy data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLegacyData();
+  }, []);
+
   const AchievementIcon = ({ type }: { type: string }) => {
     switch (type) {
       case 'Trophy': return <Trophy className="text-black" size={32} />;
@@ -12,6 +46,14 @@ const Projects: React.FC = () => {
       default: return <Award className="text-black" size={32} />;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="pt-40 px-6 max-w-7xl mx-auto pb-20 flex justify-center items-center min-h-[50vh]">
+        <p className="text-2xl font-black uppercase">Loading Legacy...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-40 px-6 max-w-7xl mx-auto pb-20 space-y-32">
@@ -33,7 +75,7 @@ const Projects: React.FC = () => {
         </div>
 
         <div className="relative border-l-[6px] border-black ml-4 md:ml-12 pl-12 space-y-12">
-          {TIMELINE_EVENTS.map((event, i) => (
+          {timelineEvents.map((event, i) => (
             <div key={i} className="relative">
               <div className="absolute -left-[61px] top-0 w-12 h-12 bg-[#FF00FF] border-[4px] border-black flex items-center justify-center font-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 {event.year.slice(-2)}
@@ -57,7 +99,7 @@ const Projects: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {ACHIEVEMENTS.map((ach) => (
+          {achievements.map((ach: any) => (
             <div 
               key={ach.id} 
               className="bg-white border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] group flex flex-col overflow-hidden"
@@ -113,7 +155,7 @@ const Projects: React.FC = () => {
         </div>
 
         <div className="space-y-16">
-          {PAST_LEADERS.map((leader, i) => (
+          {pastLeaders.map((leader, i) => (
             <div key={i} className="space-y-8">
               <div className="inline-block px-8 py-2 bg-black text-white border-[4px] border-black text-3xl font-black skew-x-[-10deg]">
                 TENURE {leader.year}

@@ -7,6 +7,7 @@ export interface ExecomMember {
   id: number;
   name: string;
   role: string;
+  profileRole?: string;
   image: string;
   socials: {
     linkedin?: string;

@@ -131,7 +131,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
       </section>
 
       {/* Recent Highlights Section */}
-      <section className="px-6 max-w-7xl mx-auto">
+      <section className="px-6 max-w-7xl mx-auto pb-32">
         <div className="flex items-center gap-6 mb-16">
           <div className="p-4 bg-[#FF00FF] border-[4px] border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <Camera size={32} className="text-white" />
@@ -165,18 +165,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-6 max-w-7xl mx-auto pb-20">
-        <div className="bg-black text-white border-[6px] border-black p-12 shadow-[12px_12px_0px_0px_rgba(0,255,255,1)] flex flex-col md:flex-row items-center justify-between gap-12">
-          <div className="space-y-4">
-            <h2 className="text-5xl font-black leading-none">JOIN THE CELL.</h2>
-            <p className="text-xl font-bold max-w-xl text-[#00FFFF]">The journey from student to entrepreneur starts with a single click. No excuses.</p>
-          </div>
-          <button className="px-12 py-6 bg-[#FFDE03] text-black border-[4px] border-black text-2xl font-black hover:scale-105 transition-transform">
-            REGISTER NOW
-          </button>
-        </div>
-      </section>
+
     </div>
   );
 };

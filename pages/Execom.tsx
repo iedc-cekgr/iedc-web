@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Linkedin, Twitter, Github, Instagram, User, ArrowLeft } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
-import { EXECOM_MEMBERS, formatImageUrl } from '../constants';
+import { formatImageUrl } from '../constants';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 import { ExecomMember } from '../types';
 
 const ExecomMemberDetail: React.FC<{ member: ExecomMember; onBack: () => void }> = ({ member, onBack }) => {
@@ -40,7 +42,7 @@ const ExecomMemberDetail: React.FC<{ member: ExecomMember; onBack: () => void }>
         <div className="py-4">
           <h1 className="text-5xl md:text-7xl font-black uppercase mb-4 leading-none">{member.name}</h1>
           <p className="inline-block text-2xl font-black text-white bg-blue-600 px-4 py-2 uppercase tracking-widest mb-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            {member.role}
+            {member.profileRole || member.role}
           </p>
           
           <div className="mb-12">
@@ -117,9 +119,35 @@ const ExecomMemberCard: React.FC<{ member: ExecomMember; onClick: () => void }> 
 
 const Execom: React.FC = () => {
   const [selectedMember, setSelectedMember] = useState<ExecomMember | null>(null);
+  const [members, setMembers] = useState<ExecomMember[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'execom'));
+        const membersData = querySnapshot.docs.map(doc => ({
+          ...doc.data(),
+          docId: doc.id
+        })) as unknown as ExecomMember[];
+        
+        membersData.sort((a, b) => a.id - b.id);
+        setMembers(membersData);
+      } catch (error) {
+        console.error("Error fetching execom members:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMembers();
+  }, []);
 
   if (selectedMember) {
     return <ExecomMemberDetail member={selectedMember} onBack={() => setSelectedMember(null)} />;
+  }
+
+  if (loading) {
+    return <div className="pt-40 px-6 max-w-7xl mx-auto pb-20 text-center font-bold text-2xl">Loading Execom...</div>;
   }
 
   return (
@@ -130,7 +158,7 @@ const Execom: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-        {EXECOM_MEMBERS.map((member) => (
+        {members.map((member) => (
           <ExecomMemberCard key={member.id} member={member} onClick={() => setSelectedMember(member)} />
         ))}
       </div>
