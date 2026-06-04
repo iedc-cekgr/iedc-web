@@ -10,24 +10,31 @@ import Projects from './pages/Projects';
 import Admin from './pages/Admin';
 
 const App: React.FC = () => {
-  const [currentPath, setCurrentPath] = useState('/');
+  const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
 
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '') || '/';
-      setCurrentPath(hash);
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
     };
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange();
+    
+    if (window.location.hash && window.location.hash.length > 1) {
+      const path = window.location.hash.replace('#', '');
+      window.history.replaceState(null, '', path);
+      setCurrentPath(path);
+    }
+
+    window.addEventListener('popstate', handleLocationChange);
     return () => {
-      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleLocationChange);
     };
   }, []);
 
   const navigate = (path: string) => {
-    window.location.hash = path === '/' ? '' : path;
-    setCurrentPath(path);
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (path !== currentPath) {
+      window.history.pushState(null, '', path);
+      setCurrentPath(path);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
   };
 
   const renderContent = () => {
