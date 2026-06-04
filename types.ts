@@ -25,7 +25,11 @@ export interface Event {
   description: string;
   image: string;
   registrationLink?: string;
+  registrationButtonText?: string;
   type: string; 
+  mode?: 'Online' | 'Offline';
+  startDateTime?: string;
+  endDateTime?: string;
 }
 
 export interface GalleryItem {

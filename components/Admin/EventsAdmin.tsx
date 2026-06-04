@@ -21,7 +21,11 @@ const EventsAdmin: React.FC = () => {
     description: '',
     image: '',
     registrationLink: '',
-    type: ''
+    registrationButtonText: 'Register Now',
+    type: '',
+    mode: 'Offline',
+    startDateTime: '',
+    endDateTime: ''
   });
 
   const fetchEvents = async () => {
@@ -57,7 +61,11 @@ const EventsAdmin: React.FC = () => {
         description: '',
         image: '',
         registrationLink: '',
-        type: ''
+        registrationButtonText: 'Register Now',
+        type: '',
+        mode: 'Offline',
+        startDateTime: '',
+        endDateTime: ''
       });
     }
     setIsModalOpen(true);
@@ -185,7 +193,7 @@ const EventsAdmin: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Date String (Legacy Display)</label>
                   <input
                     type="text"
                     value={formData.date || ''}
@@ -194,6 +202,52 @@ const EventsAdmin: React.FC = () => {
                     className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     required
                   />
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">Start Date & Time</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="date"
+                      value={(formData.startDateTime || '').split('T')[0] || ''}
+                      onChange={(e) => {
+                        const time = (formData.startDateTime || '').split('T')[1] || '00:00';
+                        setFormData({...formData, startDateTime: e.target.value ? `${e.target.value}T${time}` : ''});
+                      }}
+                      className="w-1/2 p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                    <input
+                      type="time"
+                      value={(formData.startDateTime || '').split('T')[1] || ''}
+                      onChange={(e) => {
+                        const date = (formData.startDateTime || '').split('T')[0] || new Date().toISOString().split('T')[0];
+                        setFormData({...formData, startDateTime: e.target.value ? `${date}T${e.target.value}` : ''});
+                      }}
+                      className="w-1/2 p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-slate-700">End Date & Time</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="date"
+                      value={(formData.endDateTime || '').split('T')[0] || ''}
+                      onChange={(e) => {
+                        const time = (formData.endDateTime || '').split('T')[1] || '00:00';
+                        setFormData({...formData, endDateTime: e.target.value ? `${e.target.value}T${time}` : ''});
+                      }}
+                      className="w-1/2 p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                    <input
+                      type="time"
+                      value={(formData.endDateTime || '').split('T')[1] || ''}
+                      onChange={(e) => {
+                        const date = (formData.endDateTime || '').split('T')[0] || new Date().toISOString().split('T')[0];
+                        setFormData({...formData, endDateTime: e.target.value ? `${date}T${e.target.value}` : ''});
+                      }}
+                      className="w-1/2 p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
@@ -207,6 +261,18 @@ const EventsAdmin: React.FC = () => {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Mode</label>
+                  <select
+                    value={formData.mode || 'Offline'}
+                    onChange={(e) => setFormData({...formData, mode: e.target.value as 'Online' | 'Offline'})}
+                    className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    required
+                  >
+                    <option value="Offline">Offline</option>
+                    <option value="Online">Online</option>
+                  </select>
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Poster Image Link</label>
                   <input
                     type="url"
@@ -216,13 +282,23 @@ const EventsAdmin: React.FC = () => {
                     required
                   />
                 </div>
-                <div className="md:col-span-2">
+                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Registration Link (Optional)</label>
                   <input
                     type="url"
                     value={formData.registrationLink || ''}
                     onChange={(e) => setFormData({...formData, registrationLink: e.target.value})}
                     className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Button Text</label>
+                  <input
+                    type="text"
+                    value={formData.registrationButtonText || 'Register Now'}
+                    onChange={(e) => setFormData({...formData, registrationButtonText: e.target.value})}
+                    className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g. Register Now, Join Link, Apply"
                   />
                 </div>
                 <div className="md:col-span-2">
