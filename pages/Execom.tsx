@@ -131,7 +131,7 @@ const Execom: React.FC = () => {
           docId: doc.id
         })) as unknown as ExecomMember[];
         
-        membersData.sort((a, b) => a.id - b.id);
+        membersData.sort((a, b) => (a.order ?? a.id ?? 0) - (b.order ?? b.id ?? 0));
         setMembers(membersData);
       } catch (error) {
         console.error("Error fetching execom members:", error);

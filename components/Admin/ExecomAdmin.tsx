@@ -18,6 +18,7 @@ const ExecomAdmin: React.FC = () => {
     name: '',
     role: '',
     image: '',
+    order: 0,
     socials: { linkedin: '', twitter: '', github: '', instagram: '' }
   });
 
@@ -30,7 +31,7 @@ const ExecomAdmin: React.FC = () => {
         ...doc.data()
       })) as FirestoreMember[];
       
-      membersData.sort((a, b) => (a.id || 0) - (b.id || 0));
+      membersData.sort((a, b) => (a.order ?? a.id ?? 0) - (b.order ?? b.id ?? 0));
       setMembers(membersData);
     } catch (error) {
       console.error("Error fetching members:", error);
@@ -53,6 +54,7 @@ const ExecomAdmin: React.FC = () => {
         name: '',
         role: '',
         image: '',
+        order: 0,
         socials: { linkedin: '', twitter: '', github: '', instagram: '' }
       });
     }
@@ -141,6 +143,15 @@ const ExecomAdmin: React.FC = () => {
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Display Order (Lower number comes first)</label>
+                  <input
+                    type="number"
+                    value={formData.order ?? 0}
+                    onChange={(e) => setFormData({...formData, order: parseInt(e.target.value) || 0})}
+                    className="w-full p-2 border border-slate-300 rounded-lg"
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
                   <input

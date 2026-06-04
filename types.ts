@@ -5,6 +5,7 @@ export interface NavItem {
 
 export interface ExecomMember {
   id: number;
+  order?: number;
   name: string;
   role: string;
   profileRole?: string;
