@@ -32,6 +32,10 @@ interface ExultEventDetail {
   registrationEndDateTime?: string;
   registrationDeadline?: string;
   maxParticipants?: number;
+  feeAmount?: string;
+  isQuiz?: boolean;
+  customFields?: CustomField[];
+  paymentQrUrl?: string;
 }
 
 interface ExultEventProps {
@@ -360,7 +364,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                 </div>
 
                 {/* Custom Fields */}
-                {event.customFields && event.customFields.map((field) => (
+                {event.customFields && event.customFields.map((field: any) => (
                   <div key={field.id} className="pt-2">
                     <label className="block text-sm font-medium text-slate-300 mb-1">
                       {field.label} {field.required && '*'}
@@ -393,7 +397,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                         className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 transition-colors appearance-none"
                       >
                         <option value="" disabled className="bg-slate-900">Select an option</option>
-                        {field.options.map(opt => (
+                        {field.options.map((opt: string) => (
                           <option key={opt} value={opt} className="bg-slate-900">{opt}</option>
                         ))}
                       </select>
@@ -401,7 +405,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
 
                     {field.type === 'radio' && field.options && (
                       <div className="space-y-2 mt-2">
-                        {field.options.map(opt => (
+                        {field.options.map((opt: string) => (
                           <label key={opt} className="flex items-center gap-3 cursor-pointer group">
                             <input 
                               type="radio"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, doc, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, doc, query, orderBy, Timestamp, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Plus, Edit2, Trash2, Save, X, Download, Filter, Search, ChevronDown, ChevronUp, AlertTriangle, Trophy, Upload } from 'lucide-react';
 
@@ -49,6 +49,7 @@ interface ExultEvent {
   registrationEndDateTime?: string;
   registrationDeadline?: string;
   maxParticipants?: number;
+  quizQuestions?: AdminQuizQuestion[];
 }
 
 interface ExultRegistration {
@@ -198,13 +199,13 @@ const ExultAdmin: React.FC = () => {
       let answersData: any[] = [];
       
       if (eventForm.isQuiz) {
-        answersData = eventForm.quizQuestions?.map(q => ({
+        answersData = eventForm.quizQuestions?.map((q: any) => ({
           questionId: q.id,
           correctOption: q.correctOption
         })) || [];
         
         // Remove correctOption from the public event document
-        finalEventData.quizQuestions = eventForm.quizQuestions?.map(q => ({
+        finalEventData.quizQuestions = eventForm.quizQuestions?.map((q: any) => ({
           id: q.id, text: q.text, options: q.options
         })) as any[];
       } else {
@@ -285,24 +286,23 @@ const ExultAdmin: React.FC = () => {
 
   const editEvent = async (event: ExultEvent) => {
     let fullEvent = { ...event };
+    const inferredType = fullEvent.eventType || (fullEvent.isQuiz ? 'quiz' : (fullEvent.isGoogleForm ? 'google-form' : 'website-form'));
+    fullEvent.eventType = inferredType;
     
-    if (event.isQuiz) {
+    if (inferredType === 'quiz' && fullEvent.quizQuestions) {
       try {
-        const ansDoc = await getDoc(doc(db, 'exult_quiz_answers', event.id));
-        if (ansDoc.exists()) {
-          const answers = ansDoc.data().answers || [];
-          fullEvent.quizQuestions = fullEvent.quizQuestions?.map(q => {
-            const ans = answers.find((a: any) => a.questionId === q.id);
-            return { ...q, correctOption: ans?.correctOption || '' };
+        const answersDoc = await getDoc(doc(db, 'exult_quiz_answers', fullEvent.id));
+        if (answersDoc.exists()) {
+          const answersData = answersDoc.data().answers || [];
+          fullEvent.quizQuestions = fullEvent.quizQuestions?.map((q: any) => {
+            const ans = answersData.find((a: any) => a.questionId === q.id);
+            return { ...q, correctOption: ans ? ans.correctOption : '' };
           });
         }
-    } catch (err) {
-      console.error("Error fetching answers for edit", err);
+      } catch (err) {
+        console.error("Error fetching answers for edit", err);
+      }
     }
-  }
-  
-  const inferredType = fullEvent.eventType || (fullEvent.isQuiz ? 'quiz' : (fullEvent.isGoogleForm ? 'google-form' : 'website-form'));
-  fullEvent.eventType = inferredType;
   
   setEventForm(fullEvent);
   setEditingEventId(event.id);
@@ -725,16 +725,16 @@ const ExultAdmin: React.FC = () => {
                   </div>
                   
                   <div className="space-y-6">
-                    {(eventForm.quizQuestions || []).map((q, qIdx) => (
-                      <div key={q.id} className="bg-white p-4 rounded-lg border border-purple-200 shadow-sm relative">
+                        {(eventForm.quizQuestions || []).map((q: any, qIdx: number) => (
+                          <div key={q.id} className="bg-white p-6 rounded-xl border border-slate-200 relative group">
                         <button onClick={() => removeQuizQuestion(qIdx)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4"/></button>
                         <div className="mb-4 pr-8">
                           <label className="block text-xs font-bold text-slate-500 mb-1">Question {qIdx + 1}</label>
                           <textarea value={q.text} onChange={(e) => updateQuizQuestion(qIdx, { text: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" rows={2} placeholder="Enter your question here..."></textarea>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {q.options.map((opt, oIdx) => (
-                            <div key={oIdx} className="flex items-center gap-2">
+                                {q.options.map((opt: string, oIdx: number) => (
+                                  <div key={oIdx} className="flex items-center gap-3">
                               <input 
                                 type="radio" 
                                 name={`correct_${q.id}`} 
