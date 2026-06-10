@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { ExecomMember } from '../../types';
-import { Edit, Trash2, Plus, X } from 'lucide-react';
+import { Edit, Trash2, Plus, X, Upload } from 'lucide-react';
+
+const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
+const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
 
 interface FirestoreMember extends ExecomMember {
   docId: string;
@@ -13,6 +16,7 @@ const ExecomAdmin: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<FirestoreMember | null>(null);
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<Partial<ExecomMember>>({
     name: '',
@@ -64,6 +68,35 @@ const ExecomAdmin: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingMember(null);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ExecomMember) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingField(fieldName as string);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: 'POST',
+        body: fd
+      });
+      
+      const data = await response.json();
+      if (data.secure_url) {
+        setFormData(prev => ({ ...prev, [fieldName]: data.secure_url }));
+      } else {
+        throw new Error(data.error?.message || 'Upload failed');
+      }
+    } catch (error) {
+      console.error("Error uploading file to Cloudinary:", error);
+      alert("Failed to upload image.");
+    } finally {
+      setUploadingField(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,13 +217,22 @@ const ExecomAdmin: React.FC = () => {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-slate-700 mb-1">Image Link</label>
-                  <input
-                    type="url"
-                    value={formData.image || ''}
-                    onChange={(e) => setFormData({...formData, image: e.target.value})}
-                    className="w-full p-2 border border-slate-300 rounded-lg"
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={formData.image || ''}
+                      onChange={(e) => setFormData({...formData, image: e.target.value})}
+                      className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                    <div className="relative">
+                      <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'image'} />
+                      <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'image'}>
+                        {uploadingField === 'image' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
+                        {uploadingField === 'image' ? 'Uploading...' : 'Upload'}
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">LinkedIn URL</label>

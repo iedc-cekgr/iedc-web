@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { TimelineEvent, Achievement, PastLeader } from '../../types';
-import { Edit, Trash2, Plus, X } from 'lucide-react';
+import { Edit, Trash2, Plus, X, Upload } from 'lucide-react';
+
+const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
+const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
 
 const LegacyAdmin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'timeline' | 'achievements' | 'past_leaders'>('timeline');
@@ -133,6 +136,7 @@ const AchievementsAdmin = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<(Achievement & { docId: string }) | null>(null);
   const [formData, setFormData] = useState<Partial<Achievement>>({ title: '', year: '', description: '', icon: 'Award', image: '' });
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -148,6 +152,35 @@ const AchievementsAdmin = () => {
     setEditingItem(item || null);
     setFormData(item || { title: '', year: '', description: '', icon: 'Award', image: '' });
     setIsModalOpen(true);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof Achievement) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingField(fieldName as string);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: 'POST',
+        body: fd
+      });
+      
+      const data = await response.json();
+      if (data.secure_url) {
+        setFormData(prev => ({ ...prev, [fieldName]: data.secure_url }));
+      } else {
+        throw new Error(data.error?.message || 'Upload failed');
+      }
+    } catch (error) {
+      console.error("Error uploading file to Cloudinary:", error);
+      alert("Failed to upload image.");
+    } finally {
+      setUploadingField(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -207,7 +240,19 @@ const AchievementsAdmin = () => {
               <div><label className="block text-sm mb-1">Title</label><input required className="w-full p-2 border rounded" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} /></div>
               <div><label className="block text-sm mb-1">Description</label><textarea required className="w-full p-2 border rounded" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} /></div>
               <div><label className="block text-sm mb-1">Icon (Trophy, Lightbulb, Zap, Award)</label><input required className="w-full p-2 border rounded" value={formData.icon} onChange={e => setFormData({...formData, icon: e.target.value})} /></div>
-              <div><label className="block text-sm mb-1">Image URL</label><input className="w-full p-2 border rounded" value={formData.image || ''} onChange={e => setFormData({...formData, image: e.target.value})} /></div>
+              <div>
+                <label className="block text-sm mb-1">Image URL</label>
+                <div className="flex gap-2">
+                  <input className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" value={formData.image || ''} onChange={e => setFormData({...formData, image: e.target.value})} />
+                  <div className="relative">
+                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'image'} />
+                    <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'image'}>
+                      {uploadingField === 'image' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
+                      {uploadingField === 'image' ? 'Uploading...' : 'Upload'}
+                    </button>
+                  </div>
+                </div>
+              </div>
               <div className="pt-2 flex justify-end gap-2"><button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Save</button></div>
             </form>
           </div>
@@ -224,6 +269,7 @@ const PastLeadersAdmin = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<(PastLeader & { docId: string }) | null>(null);
   const [formData, setFormData] = useState<Partial<PastLeader>>({ year: '', nodalOfficer: '', nodalOfficerImage: '', ceo: '', ceoImage: '' });
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -239,6 +285,35 @@ const PastLeadersAdmin = () => {
     setEditingItem(item || null);
     setFormData(item || { year: '', nodalOfficer: '', nodalOfficerImage: '', ceo: '', ceoImage: '' });
     setIsModalOpen(true);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof PastLeader) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingField(fieldName as string);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+        method: 'POST',
+        body: fd
+      });
+      
+      const data = await response.json();
+      if (data.secure_url) {
+        setFormData(prev => ({ ...prev, [fieldName]: data.secure_url }));
+      } else {
+        throw new Error(data.error?.message || 'Upload failed');
+      }
+    } catch (error) {
+      console.error("Error uploading file to Cloudinary:", error);
+      alert("Failed to upload image.");
+    } finally {
+      setUploadingField(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -297,9 +372,33 @@ const PastLeadersAdmin = () => {
             <form onSubmit={handleSubmit} className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
               <div><label className="block text-sm mb-1">Tenure (Year)</label><input required className="w-full p-2 border rounded" value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} /></div>
               <div><label className="block text-sm mb-1">Nodal Officer Name</label><input required className="w-full p-2 border rounded" value={formData.nodalOfficer} onChange={e => setFormData({...formData, nodalOfficer: e.target.value})} /></div>
-              <div><label className="block text-sm mb-1">Nodal Officer Image URL</label><input required className="w-full p-2 border rounded" value={formData.nodalOfficerImage} onChange={e => setFormData({...formData, nodalOfficerImage: e.target.value})} /></div>
+              <div>
+                <label className="block text-sm mb-1">Nodal Officer Image URL</label>
+                <div className="flex gap-2">
+                  <input required className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" value={formData.nodalOfficerImage || ''} onChange={e => setFormData({...formData, nodalOfficerImage: e.target.value})} />
+                  <div className="relative">
+                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'nodalOfficerImage')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'nodalOfficerImage'} />
+                    <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'nodalOfficerImage'}>
+                      {uploadingField === 'nodalOfficerImage' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
+                      {uploadingField === 'nodalOfficerImage' ? 'Uploading...' : 'Upload'}
+                    </button>
+                  </div>
+                </div>
+              </div>
               <div><label className="block text-sm mb-1">CEO Name</label><input required className="w-full p-2 border rounded" value={formData.ceo} onChange={e => setFormData({...formData, ceo: e.target.value})} /></div>
-              <div><label className="block text-sm mb-1">CEO Image URL</label><input required className="w-full p-2 border rounded" value={formData.ceoImage} onChange={e => setFormData({...formData, ceoImage: e.target.value})} /></div>
+              <div>
+                <label className="block text-sm mb-1">CEO Image URL</label>
+                <div className="flex gap-2">
+                  <input required className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" value={formData.ceoImage || ''} onChange={e => setFormData({...formData, ceoImage: e.target.value})} />
+                  <div className="relative">
+                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'ceoImage')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'ceoImage'} />
+                    <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'ceoImage'}>
+                      {uploadingField === 'ceoImage' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
+                      {uploadingField === 'ceoImage' ? 'Uploading...' : 'Upload'}
+                    </button>
+                  </div>
+                </div>
+              </div>
               <div className="pt-2 flex justify-end gap-2"><button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Save</button></div>
             </form>
           </div>

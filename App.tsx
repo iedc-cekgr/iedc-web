@@ -8,6 +8,10 @@ import Events from './pages/Events';
 import Gallery from './pages/Gallery';
 import Projects from './pages/Projects';
 import Admin from './pages/Admin';
+import ExultHome from './pages/exult/ExultHome';
+import ExultEvent from './pages/exult/ExultEvent';
+import ExultQuiz from './pages/exult/ExultQuiz';
+
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
@@ -38,14 +42,25 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
+    if (currentPath.startsWith('/exult/event/')) {
+      const slug = currentPath.split('/exult/event/')[1];
+      return <ExultEvent slug={slug} onNavigate={navigate} />;
+    }
+    
+    if (currentPath.startsWith('/exult/quiz/')) {
+      const regId = currentPath.split('/exult/quiz/')[1];
+      return <ExultQuiz registrationId={regId} onNavigate={navigate} />;
+    }
+
     switch (currentPath) {
       case '/': return <Home onNavigate={navigate} />;
       case '/execom': return <Execom />;
-      case '/events': return <Events />;
+      case '/events': return <Events onNavigate={navigate} />;
       case '/gallery': return <Gallery />;
       case '/legacy': return <Projects />;
       case '/about': return <About />;
       case '/admin': return <Admin />;
+      case '/exult': return <ExultHome onNavigate={navigate} />;
       default: return <Home onNavigate={navigate} />;
     }
   };
@@ -54,6 +69,14 @@ const App: React.FC = () => {
     return (
       <main className="animate-in fade-in duration-500">
         <Admin />
+      </main>
+    );
+  }
+
+  if (currentPath.startsWith('/exult')) {
+    return (
+      <main className="animate-in fade-in duration-500 bg-[#050B08]">
+        {renderContent()}
       </main>
     );
   }
