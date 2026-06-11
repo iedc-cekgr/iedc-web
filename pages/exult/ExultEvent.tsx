@@ -109,13 +109,16 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
     try {
       const readableId = 'EXT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
       
+      // Clean undefined values from customData
+      const cleanCustomData = JSON.parse(JSON.stringify(customData));
+
       const registrationData: any = {
         eventId: event.id,
         eventTitle: event.title,
         readableId,
         name,
         email,
-        customData,
+        customData: cleanCustomData,
         timestamp: serverTimestamp()
       };
 
@@ -156,7 +159,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
       setCustomData({});
     } catch (err: any) {
       console.error('Registration error:', err);
-      setErrorMsg('Failed to register. Please try again.');
+      setErrorMsg(`Failed to register: ${err.message || err.toString()}`);
     } finally {
       setIsSubmitting(false);
     }
