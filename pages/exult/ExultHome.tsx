@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Lightbulb, Rocket, Zap, Globe, Cpu, ArrowRight } from 'lucide-react';
+import exultLogo from '../../images/exult.png';
 
 interface ExultEventData {
   id: string;
@@ -83,6 +84,24 @@ const ExultHome: React.FC<ExultHomeProps> = ({ onNavigate }) => {
           50% { opacity: 1; box-shadow: 0 0 40px rgba(6, 182, 212, 0.8); }
           100% { opacity: 0.5; box-shadow: 0 0 20px rgba(6, 182, 212, 0.4); }
         }
+
+        .premium-badge {
+          background: radial-gradient(circle at 75% 70%, rgba(6, 230, 245, 0.4) 0%, rgba(0, 119, 182, 0.15) 45%, rgba(2, 8, 19, 0.95) 100%), linear-gradient(135deg, #020813 0%, #03152e 30%, #00223d 70%, #003754 100%);
+          border: 1px solid rgba(6, 230, 245, 0.65);
+          box-shadow: 0 0 35px rgba(0, 119, 182, 0.25), 0 0 15px rgba(6, 230, 245, 0.15), inset 0 0 20px rgba(6, 230, 245, 0.15);
+          animation: badge-glow 6s ease-in-out infinite;
+        }
+
+        @keyframes badge-glow {
+          0%, 100% {
+            box-shadow: 0 0 35px rgba(0, 119, 182, 0.25), 0 0 15px rgba(6, 230, 245, 0.15), inset 0 0 20px rgba(6, 230, 245, 0.15);
+            border-color: rgba(6, 230, 245, 0.5);
+          }
+          50% {
+            box-shadow: 0 0 45px rgba(0, 119, 182, 0.4), 0 0 30px rgba(6, 230, 245, 0.35), inset 0 0 25px rgba(6, 230, 245, 0.25);
+            border-color: rgba(6, 230, 245, 0.85);
+          }
+        }
       `}</style>
 
       {/* Dynamic Starry Background & Glow Effects */}
@@ -121,20 +140,53 @@ const ExultHome: React.FC<ExultHomeProps> = ({ onNavigate }) => {
 
             {/* The EXULT Banner */}
             <div className="relative inline-block mb-10 group">
-              <div className="absolute inset-0 bg-blue-500 blur-3xl opacity-40 rounded-3xl group-hover:opacity-60 transition-opacity duration-500"></div>
+              {/* Soft Ambient Glow Layer */}
+              <div className="absolute inset-0 bg-cyan-500/20 blur-3xl rounded-3xl group-hover:bg-cyan-500/30 transition-all duration-500 pointer-events-none"></div>
               
-              <div className="relative bg-gradient-to-r from-[#003060] via-[#0077b6] to-[#00b4d8] px-10 py-6 md:px-20 md:py-10 rounded-2xl border-2 border-cyan-300/50" style={{ animation: 'pulse-glow 4s infinite' }}>
-                <h1 className="text-6xl md:text-9xl font-black text-white italic tracking-tighter" style={{ textShadow: '4px 4px 0px rgba(0,0,0,0.6)' }}>
-                  EXULT 
-                  <span className="text-3xl md:text-6xl inline-block transform translate-y-2 md:translate-y-4 ml-2 italic text-cyan-100">
-                    2.0
-                  </span>
-                </h1>
+              {/* Premium Badge Card */}
+              <div className="relative premium-badge px-6 py-4 sm:px-10 sm:py-6 md:px-20 md:py-10 rounded-2xl overflow-hidden">
+                <div className="relative flex items-center justify-center w-full select-none">
+                  {/* Backdrop shadow for better contrast */}
+                  <div className="absolute inset-0 bg-[#020b18]/70 filter blur-3xl rounded-full scale-90 pointer-events-none z-0"></div>
+                  
+                  <img 
+                    src={exultLogo} 
+                    alt="EXULT" 
+                    className="w-full max-w-[280px] sm:max-w-[420px] md:max-w-[580px] lg:max-w-[660px] h-auto object-contain relative z-10 filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.85)] drop-shadow-[0_8px_24px_rgba(2,8,19,0.9)]" 
+                  />
+                </div>
               </div>
 
-              {/* Decorative 3D Cursor */}
-              <div className="absolute -bottom-8 -right-8 md:-bottom-12 md:-right-12 text-5xl md:text-7xl transform -rotate-12 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" style={{ animation: 'float 5s ease-in-out infinite' }}>
-                🖱️
+              {/* Decorative Sparkle Star (Top Right) */}
+              <div className="absolute -top-6 -right-6 md:-top-12 md:-right-12 z-20" style={{ animation: 'float 7s ease-in-out infinite reverse' }}>
+                <div className="filter drop-shadow-[0_0_15px_rgba(6,230,245,0.8)] text-cyan-300">
+                  <svg className="w-10 h-10 md:w-16 md:h-16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Decorative Futuristic 3D Cursor */}
+              <div className="absolute -bottom-8 -right-8 md:-bottom-14 md:-right-14 z-20" style={{ animation: 'float 5s ease-in-out infinite' }}>
+                <div className="transform -rotate-[15deg] filter drop-shadow-[0_0_15px_rgba(6,230,245,0.5)]">
+                  <svg className="w-12 h-12 md:w-20 md:h-20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="premiumCursorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#080e18" />
+                        <stop offset="35%" stopColor="#1e1b4b" />
+                        <stop offset="70%" stopColor="#0369a1" />
+                        <stop offset="100%" stopColor="#06b6d4" />
+                      </linearGradient>
+                    </defs>
+                    <path 
+                      d="M6 3 L6 27 L13 20.5 L19.5 30 L23.5 27.5 L17.5 18 L25 18 Z" 
+                      fill="url(#premiumCursorGradient)" 
+                      stroke="#22d3ee" 
+                      strokeWidth="1.5"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
               </div>
             </div>
 
