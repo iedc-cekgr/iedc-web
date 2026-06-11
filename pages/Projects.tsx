@@ -110,7 +110,7 @@ const Projects: React.FC = () => {
                   <img 
                     src={formatImageUrl(ach.image)} 
                     alt={ach.title} 
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                    className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-500"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
@@ -167,7 +167,7 @@ const Projects: React.FC = () => {
                     <img 
                       src={formatImageUrl(leader.nodalOfficerImage)} 
                       alt={leader.nodalOfficer} 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                      className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
                   <div className="w-2/3 p-8 flex flex-col justify-center bg-white">
@@ -182,7 +182,7 @@ const Projects: React.FC = () => {
                     <img 
                       src={formatImageUrl(leader.ceoImage)} 
                       alt={leader.ceo} 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                      className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
                   <div className="w-2/3 p-8 flex flex-col justify-center bg-white">

@@ -149,7 +149,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                 <img 
                   src={item.image} 
                   alt={item.title} 
-                  className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                  className="w-full h-full object-cover md:grayscale md:hover:grayscale-0 transition-all duration-500"
                 />
               </div>
               <div className={`p-8 ${item.color} flex-grow flex flex-col justify-center`}>

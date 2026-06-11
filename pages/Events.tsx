@@ -114,7 +114,7 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
         {filteredEvents.map((event) => (
           <GlassCard key={event.id} className="p-0 border-black flex flex-col shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden group hover:-translate-y-2 transition-transform duration-300">
             <div className="h-56 border-b-[4px] border-black relative overflow-hidden bg-gray-100">
-              <img src={formatImageUrl(event.image)} alt={event.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+              <img src={formatImageUrl(event.image)} alt={event.title} className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-500" />
               {/* Event Type Badge */}
               <div className="absolute top-4 left-4 bg-[#00FFFF] border-[3px] border-black px-4 py-1 font-black text-sm uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 {event.type}

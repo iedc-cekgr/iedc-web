@@ -85,7 +85,7 @@ const Gallery: React.FC = () => {
                 <img 
                   src={formatImageUrl(item.image)} 
                   alt={item.title} 
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500 opacity-90 group-hover:opacity-100"
+                  className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500 opacity-90 group-hover:opacity-100"
                 />
                 <div className="absolute top-4 left-4">
                   <span className="px-3 py-1 bg-white border-[2px] border-black font-black uppercase text-[10px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">

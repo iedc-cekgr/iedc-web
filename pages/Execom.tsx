@@ -28,9 +28,8 @@ const ExecomMemberDetail: React.FC<{ member: ExecomMember; onBack: () => void }>
           {!imgError ? (
             <img 
               src={formatImageUrl(member.image)} 
-              alt={member.name} 
               onError={() => setImgError(true)}
-              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+              className="w-full h-full object-cover md:grayscale md:hover:grayscale-0 transition-all duration-500"
             />
           ) : (
              <div className="w-full h-full flex flex-col items-center justify-center bg-[#f0f0f0] text-black p-4 text-center">
@@ -90,9 +89,8 @@ const ExecomMemberCard: React.FC<{ member: ExecomMember; onClick: () => void }> 
           {!imgError ? (
             <img 
               src={formatImageUrl(member.image)} 
-              alt={member.name} 
               onError={() => setImgError(true)}
-              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+              className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-300"
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-[#f0f0f0] text-black p-4 text-center">
