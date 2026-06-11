@@ -144,7 +144,7 @@ const ExultHome: React.FC<ExultHomeProps> = ({ onNavigate }) => {
               <div className="absolute inset-0 bg-cyan-500/20 blur-3xl rounded-3xl group-hover:bg-cyan-500/30 transition-all duration-500 pointer-events-none"></div>
               
               {/* Premium Badge Card */}
-              <div className="relative premium-badge px-6 py-4 sm:px-10 sm:py-6 md:px-20 md:py-10 rounded-2xl overflow-hidden">
+              <div className="relative premium-badge px-5 py-3.5 sm:px-8 sm:py-5 md:px-14 md:py-8 rounded-2xl overflow-hidden">
                 <div className="relative flex items-center justify-center w-full select-none">
                   {/* Backdrop shadow for better contrast */}
                   <div className="absolute inset-0 bg-[#020b18]/70 filter blur-3xl rounded-full scale-90 pointer-events-none z-0"></div>
@@ -152,7 +152,7 @@ const ExultHome: React.FC<ExultHomeProps> = ({ onNavigate }) => {
                   <img 
                     src={exultLogo} 
                     alt="EXULT" 
-                    className="w-full max-w-[280px] sm:max-w-[420px] md:max-w-[580px] lg:max-w-[660px] h-auto object-contain relative z-10 filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.85)] drop-shadow-[0_8px_24px_rgba(2,8,19,0.9)]" 
+                    className="w-full max-w-[200px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[480px] h-auto object-contain relative z-10 filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.85)] drop-shadow-[0_8px_24px_rgba(2,8,19,0.9)]" 
                   />
                 </div>
               </div>
