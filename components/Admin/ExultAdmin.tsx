@@ -16,7 +16,9 @@ interface CustomField {
 
 interface AdminQuizQuestion {
   id: string;
+  type?: 'multiple-choice' | 'short-answer' | 'image-identification';
   text: string;
+  imageUrl?: string;
   options: string[];
   correctOption: string;
 }
@@ -84,15 +86,31 @@ const ExultAdmin: React.FC = () => {
   const [regSearch, setRegSearch] = useState('');
   const [regFilterEvent, setRegFilterEvent] = useState('all');
   const [allQuizAnswers, setAllQuizAnswers] = useState<Record<string, any[]>>({});
+  const [selectedRegResults, setSelectedRegResults] = useState<ExultRegistration | null>(null);
 
   // Event Form State
-  const [eventForm, setEventForm] = useState<Partial<ExultEvent>>({
-    title: '', slug: '', description: '', date: '', time: '', venue: '', 
-    speaker: '', guidelines: '', posterUrl: '', isRegistrationEnabled: true,
-    customFields: [], order: 0, isQuiz: false, quizTimeLimit: 10, quizQuestions: [],
-    feeAmount: '', paymentQrUrl: '', isGoogleForm: false, googleFormLink: ''
+  const [eventForm, setEventForm] = useState<Partial<ExultEvent>>(() => {
+    const saved = localStorage.getItem('exultAdminDraftForm');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return {
+      title: '', slug: '', description: '', date: '', time: '', venue: '', 
+      speaker: '', guidelines: '', posterUrl: '', isRegistrationEnabled: true,
+      customFields: [], order: 0, isQuiz: false, quizTimeLimit: 10, quizQuestions: [],
+      feeAmount: '', paymentQrUrl: '', isGoogleForm: false, googleFormLink: ''
+    };
   });
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+
+  // Autosave Draft
+  useEffect(() => {
+    if (isEditingEvent || Object.keys(eventForm).length > 20) {
+      localStorage.setItem('exultAdminDraftForm', JSON.stringify(eventForm));
+    }
+  }, [eventForm, isEditingEvent]);
 
   const fetchQuizAnswers = async () => {
     try {
@@ -201,12 +219,17 @@ const ExultAdmin: React.FC = () => {
       if (eventForm.isQuiz) {
         answersData = eventForm.quizQuestions?.map((q: any) => ({
           questionId: q.id,
+          type: q.type || 'multiple-choice',
           correctOption: q.correctOption
         })) || [];
         
         // Remove correctOption from the public event document
         finalEventData.quizQuestions = eventForm.quizQuestions?.map((q: any) => ({
-          id: q.id, text: q.text, options: q.options
+          id: q.id, 
+          type: q.type || 'multiple-choice', 
+          text: q.text, 
+          options: q.options,
+          imageUrl: q.imageUrl
         })) as any[];
       } else {
         finalEventData.quizQuestions = [];
@@ -215,17 +238,18 @@ const ExultAdmin: React.FC = () => {
       
       let savedEventId = editingEventId;
 
+      // Remove undefined values to prevent Firebase errors
+      const cleanEventData = JSON.parse(JSON.stringify({
+        ...finalEventData,
+        customFields: eventForm.customFields || [],
+        order: eventForm.order || events.length
+      }));
+      delete cleanEventData.id; // ensure ID isn't written directly if not needed, though it's fine
+
       if (editingEventId) {
-        await updateDoc(doc(db, 'exult_events', editingEventId), {
-          ...finalEventData,
-          customFields: eventForm.customFields || [],
-        });
+        await updateDoc(doc(db, 'exult_events', editingEventId), cleanEventData);
       } else {
-        const docRef = await addDoc(collection(db, 'exult_events'), {
-          ...finalEventData,
-          customFields: eventForm.customFields || [],
-          order: eventForm.order || events.length
-        });
+        const docRef = await addDoc(collection(db, 'exult_events'), cleanEventData);
         savedEventId = docRef.id;
       }
       
@@ -240,6 +264,7 @@ const ExultAdmin: React.FC = () => {
 
       setIsEditingEvent(false);
       setEditingEventId(null);
+      localStorage.removeItem('exultAdminDraftForm');
       setEventForm({ 
         isRegistrationEnabled: true, customFields: [], order: events.length, 
         isQuiz: false, quizTimeLimit: 10, questionTimeLimitSeconds: undefined, quizQuestions: [], 
@@ -334,7 +359,7 @@ const ExultAdmin: React.FC = () => {
 
   // Quiz Builder
   const addQuizQuestion = () => {
-    const newQ: AdminQuizQuestion = { id: `q_${Date.now()}`, text: '', options: ['', '', '', ''], correctOption: '' };
+    const newQ: AdminQuizQuestion = { id: `q_${Date.now()}`, type: 'multiple-choice', text: '', options: ['', '', '', ''], correctOption: '' };
     setEventForm(prev => ({ ...prev, quizQuestions: [...(prev.quizQuestions || []), newQ] }));
   };
 
@@ -357,8 +382,14 @@ const ExultAdmin: React.FC = () => {
     
     let score = 0;
     answers.forEach(ans => {
-      if (reg.quizAnswers?.[ans.questionId] === ans.correctOption) {
-        score += 1;
+      const studentAns = reg.quizAnswers?.[ans.questionId] || '';
+      if (!ans.type || ans.type === 'multiple-choice') {
+        if (studentAns === ans.correctOption) score += 1;
+      } else {
+        // For short-answer and image-identification
+        const cleanStudentAns = studentAns.replace(/\s+/g, '').toLowerCase();
+        const cleanCorrectAns = (ans.correctOption || '').replace(/\s+/g, '').toLowerCase();
+        if (cleanStudentAns === cleanCorrectAns && cleanCorrectAns !== '') score += 1;
       }
     });
     return score;
@@ -415,8 +446,8 @@ const ExultAdmin: React.FC = () => {
     csvRows.push(headers.map(h => `"${h.replace(/"/g, '""')}"`).join(','));
     
     filteredRegs.forEach(r => {
-      // Use toLocaleDateString to remove the time component as requested
-      const dateStr = r.timestamp?.toDate ? r.timestamp.toDate().toLocaleDateString() : '';
+      // Use toLocaleString to get both date and time in a standard format
+      const dateStr = r.timestamp?.toDate ? r.timestamp.toDate().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '';
       
       const formatField = (val: any) => {
         if (val === undefined || val === null) return '""';
@@ -448,7 +479,8 @@ const ExultAdmin: React.FC = () => {
       if (hasQuizzes) {
         row.push(formatField(r.status || ''));
         const score = (r.status === 'completed' || r.status === 'disqualified') ? calculateScore(r) : '';
-        row.push(formatField(score !== null && score !== '' ? `${score} / ${allQuizAnswers[r.eventId]?.length || 0}` : ''));
+        // Use 'out of' instead of '/' to prevent Excel from converting scores like '1 / 6' into dates like '01-Jun'
+        row.push(formatField(score !== null && score !== '' ? `${score} out of ${allQuizAnswers[r.eventId]?.length || 0}` : ''));
         row.push(formatField(r.timeTaken || ''));
         row.push(formatField(r.disqualifiedReason || ''));
       }
@@ -551,7 +583,7 @@ const ExultAdmin: React.FC = () => {
                     TYPE: {eventForm.eventType?.replace('-', ' ')}
                   </div>
                 </div>
-                <button onClick={() => { setIsEditingEvent(false); setEditingEventId(null); setEventForm({}); }} className="text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full">
+                <button onClick={() => { setIsEditingEvent(false); setEditingEventId(null); localStorage.removeItem('exultAdminDraftForm'); setEventForm({}); }} className="text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -728,36 +760,89 @@ const ExultAdmin: React.FC = () => {
                         {(eventForm.quizQuestions || []).map((q: any, qIdx: number) => (
                           <div key={q.id} className="bg-white p-6 rounded-xl border border-slate-200 relative group">
                         <button onClick={() => removeQuizQuestion(qIdx)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4"/></button>
-                        <div className="mb-4 pr-8">
-                          <label className="block text-xs font-bold text-slate-500 mb-1">Question {qIdx + 1}</label>
-                          <textarea value={q.text} onChange={(e) => updateQuizQuestion(qIdx, { text: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" rows={2} placeholder="Enter your question here..."></textarea>
+                        <div className="mb-4 pr-8 flex items-center justify-between">
+                          <label className="block text-xs font-bold text-slate-500">Question {qIdx + 1}</label>
+                          <select 
+                            value={q.type || 'multiple-choice'} 
+                            onChange={(e) => updateQuizQuestion(qIdx, { type: e.target.value as any })}
+                            className="text-xs border border-slate-300 rounded px-2 py-1"
+                          >
+                            <option value="multiple-choice">Round 1: Objective</option>
+                            <option value="short-answer">Round 2: Short Answer</option>
+                            <option value="image-identification">Round 3: Image ID</option>
+                          </select>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {q.options.map((opt: string, oIdx: number) => (
-                                  <div key={oIdx} className="flex items-center gap-3">
-                              <input 
-                                type="radio" 
-                                name={`correct_${q.id}`} 
-                                checked={q.correctOption === opt && opt !== ''} 
-                                onChange={() => updateQuizQuestion(qIdx, { correctOption: opt })}
-                                className="w-4 h-4 text-purple-600 focus:ring-purple-500"
-                                title="Mark as correct answer"
-                              />
-                              <input 
-                                type="text" 
-                                value={opt} 
-                                onChange={(e) => {
-                                  const newOpts = [...q.options];
-                                  newOpts[oIdx] = e.target.value;
-                                  const newCorrect = q.correctOption === opt ? e.target.value : q.correctOption;
-                                  updateQuizQuestion(qIdx, { options: newOpts, correctOption: newCorrect });
-                                }} 
-                                placeholder={`Option ${oIdx + 1}`} 
-                                className={`w-full px-3 py-1.5 border rounded-md text-sm ${q.correctOption === opt && opt !== '' ? 'border-purple-500 bg-purple-50/50' : 'border-slate-300'}`}
-                              />
+                        <div className="mb-4">
+                          <textarea value={q.text} onChange={(e) => updateQuizQuestion(qIdx, { text: e.target.value })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm mb-2" rows={2} placeholder="Enter your question here..."></textarea>
+                          
+                          {q.type === 'image-identification' && (
+                            <div className="mb-3">
+                              <label className="block text-xs font-bold text-slate-500 mb-1">Image URL (Optional)</label>
+                              <div className="flex gap-2">
+                                <input type="text" value={q.imageUrl || ''} onChange={(e) => updateQuizQuestion(qIdx, { imageUrl: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm" placeholder="Paste image URL..." />
+                                <div className="relative shrink-0">
+                                  <input type="file" accept="image/*" onChange={async (e) => {
+                                    if (!e.target.files?.[0]) return;
+                                    setUploadingField(`q_${q.id}`);
+                                    const formData = new FormData();
+                                    formData.append('file', e.target.files[0]);
+                                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                                    try {
+                                      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+                                      const data = await res.json();
+                                      updateQuizQuestion(qIdx, { imageUrl: data.secure_url });
+                                    } catch (err) {}
+                                    setUploadingField(null);
+                                  }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                                  <button type="button" className="bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap" disabled={uploadingField === `q_${q.id}`}>
+                                    {uploadingField === `q_${q.id}` ? 'Uploading...' : 'Upload'}
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                          ))}
+                          )}
                         </div>
+
+                        {(!q.type || q.type === 'multiple-choice') ? (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {q.options.map((opt: string, oIdx: number) => (
+                              <div key={oIdx} className="flex items-center gap-3">
+                                <input 
+                                  type="radio" 
+                                  name={`correct_${q.id}`} 
+                                  checked={q.correctOption === opt && opt !== ''} 
+                                  onChange={() => updateQuizQuestion(qIdx, { correctOption: opt })}
+                                  className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                                  title="Mark as correct answer"
+                                />
+                                <input 
+                                  type="text" 
+                                  value={opt} 
+                                  onChange={(e) => {
+                                    const newOpts = [...q.options];
+                                    newOpts[oIdx] = e.target.value;
+                                    const newCorrect = q.correctOption === opt ? e.target.value : q.correctOption;
+                                    updateQuizQuestion(qIdx, { options: newOpts, correctOption: newCorrect });
+                                  }} 
+                                  placeholder={`Option ${oIdx + 1}`} 
+                                  className={`w-full px-3 py-1.5 border rounded-md text-sm ${q.correctOption === opt && opt !== '' ? 'border-purple-500 bg-purple-50/50' : 'border-slate-300'}`}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 mb-1">Correct Answer</label>
+                            <input 
+                              type="text" 
+                              value={q.correctOption} 
+                              onChange={(e) => updateQuizQuestion(qIdx, { correctOption: e.target.value })} 
+                              placeholder="Type the exact correct answer here..." 
+                              className="w-full px-3 py-1.5 border border-purple-300 bg-purple-50/30 rounded-md text-sm"
+                            />
+                            <p className="text-[10px] text-slate-400 mt-1">Verification is case-insensitive and ignores extra spaces.</p>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -1039,9 +1124,16 @@ const ExultAdmin: React.FC = () => {
                           {reg.timestamp?.toDate ? reg.timestamp.toDate().toLocaleDateString() : 'N/A'}
                         </td>
                         <td className="p-3 text-right">
-                          <button onClick={() => deleteRegistration(reg.id)} className="text-red-500 hover:text-red-700 p-1 bg-red-50 hover:bg-red-100 rounded transition-colors">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <div className="flex justify-end gap-2 items-center">
+                            {(reg.status === 'completed' || reg.status === 'disqualified') && (
+                              <button onClick={() => setSelectedRegResults(reg)} className="text-blue-600 hover:text-blue-800 p-1.5 bg-blue-50 hover:bg-blue-100 rounded transition-colors text-xs font-bold border border-blue-200">
+                                View Results
+                              </button>
+                            )}
+                            <button onClick={() => deleteRegistration(reg.id)} className="text-red-500 hover:text-red-700 p-1.5 bg-red-50 hover:bg-red-100 rounded transition-colors border border-red-200">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -1053,6 +1145,82 @@ const ExultAdmin: React.FC = () => {
           )}
         </div>
       )}
+      {/* Quiz Results Modal */}
+      {selectedRegResults && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200">
+            <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center z-10 shadow-sm">
+              <div>
+                <h3 className="text-lg font-bold text-slate-800">Quiz Results: {selectedRegResults.name}</h3>
+                <p className="text-sm text-slate-500">{selectedRegResults.email}</p>
+              </div>
+              <button onClick={() => setSelectedRegResults(null)} className="text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <div className="font-semibold text-slate-700">Total Score</div>
+                <div className="text-xl font-bold text-purple-600">
+                  {calculateScore(selectedRegResults) ?? 0} / {allQuizAnswers[selectedRegResults.eventId]?.length || 0}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {events.find(e => e.id === selectedRegResults.eventId)?.quizQuestions?.map((q: any, i: number) => {
+                  const studentAns = selectedRegResults.quizAnswers?.[q.id] || '';
+                  const correctAnsKey = allQuizAnswers[selectedRegResults.eventId]?.find(a => a.questionId === q.id);
+                  const correctAns = correctAnsKey?.correctOption || '';
+                  
+                  let isCorrect = false;
+                  if (!q.type || q.type === 'multiple-choice') {
+                    isCorrect = studentAns === correctAns;
+                  } else {
+                    const cleanStudentAns = studentAns.replace(/\s+/g, '').toLowerCase();
+                    const cleanCorrectAns = correctAns.replace(/\s+/g, '').toLowerCase();
+                    isCorrect = cleanStudentAns === cleanCorrectAns && cleanCorrectAns !== '';
+                  }
+
+                  return (
+                    <div key={q.id} className={`p-4 rounded-lg border ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                      <div className="flex gap-3">
+                        <div className="mt-1">
+                          {isCorrect ? (
+                            <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg></div>
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center"><X className="w-4 h-4" /></div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-start gap-4 mb-2">
+                            <p className="font-semibold text-slate-800 text-sm">Q{i + 1}: {q.text}</p>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap bg-white px-2 py-0.5 rounded border border-slate-200">{q.type === 'short-answer' ? 'Short Answer' : q.type === 'image-identification' ? 'Image ID' : 'Objective'}</span>
+                          </div>
+                          
+                          {q.imageUrl && <img src={q.imageUrl} alt="Question" className="max-h-32 mb-3 rounded-lg border border-slate-200 object-contain bg-white" />}
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                            <div className="bg-white p-2.5 rounded border border-slate-200 shadow-sm">
+                              <span className="text-slate-500 text-xs block mb-1">Their Answer:</span>
+                              <span className={`font-medium ${!studentAns ? 'text-slate-400 italic' : isCorrect ? 'text-green-700' : 'text-red-700'}`}>{studentAns || '(No Answer)'}</span>
+                            </div>
+                            <div className="bg-white p-2.5 rounded border border-slate-200 shadow-sm">
+                              <span className="text-slate-500 text-xs block mb-1">Correct Answer:</span>
+                              <span className="font-medium text-slate-800">{correctAns}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

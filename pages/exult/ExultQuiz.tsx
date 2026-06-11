@@ -61,13 +61,24 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
         const eventData = eventDoc.data();
         setEvent(eventData);
 
-        // Shuffle Questions and Options
+        // Group and shuffle questions by type to create rounds
         if (eventData.quizQuestions) {
-          const shuffledQs = [...eventData.quizQuestions].sort(() => Math.random() - 0.5).map(q => ({
-            ...q,
-            options: [...q.options].sort(() => Math.random() - 0.5)
+          const round1 = eventData.quizQuestions.filter((q: any) => !q.type || q.type === 'multiple-choice');
+          const round2 = eventData.quizQuestions.filter((q: any) => q.type === 'short-answer');
+          const round3 = eventData.quizQuestions.filter((q: any) => q.type === 'image-identification');
+
+          const shuffle = (arr: any[]) => arr.sort(() => Math.random() - 0.5);
+          const prepareQuestions = (arr: any[]) => shuffle([...arr]).map((q: any) => ({
+             ...q,
+             options: q.options ? shuffle([...q.options]) : []
           }));
-          setQuestions(shuffledQs);
+
+          const sortedQs = [
+            ...prepareQuestions(round1),
+            ...prepareQuestions(round2),
+            ...prepareQuestions(round3)
+          ];
+          setQuestions(sortedQs);
         }
         
         setLoading(false);
@@ -344,8 +355,12 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
       <div className="relative z-10 border-b border-white/10 bg-black/50 backdrop-blur-md px-6 py-4 flex justify-between items-center sticky top-0">
         <div className="font-bold text-purple-400 hidden md:block">{event?.title}</div>
         <div className="flex items-center gap-4 text-sm font-medium">
+          <div className="bg-white/5 px-4 py-2 rounded-lg border border-white/10 hidden md:block text-purple-200">
+            {(!questions[currentQuestionIdx]?.type || questions[currentQuestionIdx]?.type === 'multiple-choice') ? 'Round 1: Objective' : 
+             questions[currentQuestionIdx]?.type === 'short-answer' ? 'Round 2: Short Answer' : 'Round 3: Image ID'}
+          </div>
           <div className="bg-white/5 px-4 py-2 rounded-lg border border-white/10">
-            Question {currentQuestionIdx + 1} / {questions.length}
+            Q {currentQuestionIdx + 1} / {questions.length}
           </div>
           
           {event?.questionTimeLimitSeconds && (
@@ -374,26 +389,48 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
               {currentQ.text}
             </h2>
             
-            <div className="space-y-4">
-              {currentQ.options.map((opt: string, i: number) => {
-                const isSelected = answers[currentQ.id] === opt;
-                return (
-                  <label key={i} className={`flex items-center p-5 rounded-xl border cursor-pointer transition-all ${isSelected ? 'bg-purple-600/20 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}`}>
-                    <div className={`w-6 h-6 rounded-full border-2 mr-4 flex items-center justify-center ${isSelected ? 'border-purple-500' : 'border-slate-500'}`}>
-                      {isSelected && <div className="w-3 h-3 bg-purple-500 rounded-full"></div>}
-                    </div>
-                    <input 
-                      type="radio" 
-                      name={`q_${currentQ.id}`} 
-                      className="hidden" 
-                      checked={isSelected}
-                      onChange={() => setAnswers(prev => ({ ...prev, [currentQ.id]: opt }))}
-                    />
-                    <span className="text-lg">{opt}</span>
-                  </label>
-                );
-              })}
-            </div>
+              {currentQ.imageUrl && currentQ.type === 'image-identification' && (
+                <div className="mb-6 flex justify-center">
+                  <img src={currentQ.imageUrl} alt="Quiz Question" className="max-w-full max-h-[400px] object-contain rounded-xl border border-white/20 shadow-2xl" />
+                </div>
+              )}
+
+              {(!currentQ.type || currentQ.type === 'multiple-choice') ? (
+                <div className="space-y-4">
+                  {currentQ.options.map((opt: string, i: number) => {
+                    const isSelected = answers[currentQ.id] === opt;
+                    return (
+                      <label key={i} className={`flex items-center p-5 rounded-xl border cursor-pointer transition-all ${isSelected ? 'bg-purple-600/20 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}`}>
+                        <div className={`w-6 h-6 rounded-full border-2 mr-4 flex items-center justify-center ${isSelected ? 'border-purple-500' : 'border-slate-500'}`}>
+                          {isSelected && <div className="w-3 h-3 bg-purple-500 rounded-full"></div>}
+                        </div>
+                        <input 
+                          type="radio" 
+                          name={`q_${currentQ.id}`} 
+                          className="hidden" 
+                          checked={isSelected}
+                          onChange={() => setAnswers(prev => ({ ...prev, [currentQ.id]: opt }))}
+                        />
+                        <span className="text-lg">{opt}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mt-6">
+                  <input 
+                    type="text" 
+                    placeholder="Type your answer here..." 
+                    value={answers[currentQ.id] || ''}
+                    onChange={(e) => setAnswers(prev => ({ ...prev, [currentQ.id]: e.target.value }))}
+                    className="w-full bg-white/5 border border-white/20 rounded-xl px-6 py-4 text-xl text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-white/20"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    spellCheck="false"
+                  />
+                  <p className="text-sm text-white/40 mt-3 text-center">Type your exact answer. Spelling matters!</p>
+                </div>
+              )}
           </div>
         )}
         
@@ -401,7 +438,8 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
         <div className="flex justify-between mt-12 pt-8 border-t border-white/10">
           {!event?.questionTimeLimitSeconds ? (
             <button 
-              disabled={currentQuestionIdx === 0}
+              disabled={currentQuestionIdx === 0 || questions[currentQuestionIdx]?.type !== questions[currentQuestionIdx - 1]?.type}
+              title={questions[currentQuestionIdx]?.type !== questions[currentQuestionIdx - 1]?.type ? "Cannot go back to previous round" : "Previous Question"}
               onClick={() => setCurrentQuestionIdx(prev => prev - 1)}
               className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
             >
