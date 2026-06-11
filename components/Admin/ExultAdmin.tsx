@@ -27,6 +27,7 @@ interface ExultEvent {
   id: string;
   title: string;
   slug: string;
+  isVisible?: boolean;
   description: string;
   date: string;
   time: string;
@@ -600,6 +601,17 @@ const ExultAdmin: React.FC = () => {
                   <input type="text" name="slug" value={eventForm.slug || ''} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
                 </div>
                 
+                <div className="md:col-span-2 bg-slate-50 p-4 rounded-lg flex items-center gap-3 border border-slate-200">
+                  <div className="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="isVisible" id="toggle-isVisible" checked={eventForm.isVisible ?? true} onChange={(e) => setEventForm(prev => ({...prev, isVisible: e.target.checked}))} className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-transform duration-200 ease-in-out" style={{ transform: (eventForm.isVisible ?? true) ? 'translateX(100%)' : 'translateX(0)', borderColor: (eventForm.isVisible ?? true) ? '#22c55e' : '#cbd5e1' }}/>
+                    <label htmlFor="toggle-isVisible" className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" style={{ backgroundColor: (eventForm.isVisible ?? true) ? '#22c55e' : '#cbd5e1' }}></label>
+                  </div>
+                  <div>
+                    <div className="font-bold text-slate-800">Event Visibility (Master Switch)</div>
+                    <div className="text-sm text-slate-500">If disabled, this event will be completely hidden from the public website and cannot be accessed.</div>
+                  </div>
+                </div>
+
                 {/* Date/Time is for all EXCEPT Google Form might use start/end times instead, but let's keep it for display */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Display Date</label>

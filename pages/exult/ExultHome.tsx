@@ -28,7 +28,7 @@ const ExultHome: React.FC<ExultHomeProps> = ({ onNavigate }) => {
           id: doc.id,
           ...doc.data()
         })) as ExultEventData[];
-        setEvents(eventsData);
+        setEvents(eventsData.filter((e: any) => e.isVisible !== false));
       } catch (error) {
         console.error('Error fetching Exult events:', error);
       } finally {
