@@ -6,6 +6,23 @@ import { Plus, Edit2, Trash2, Save, X, Download, Filter, Search, ChevronDown, Ch
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
 
+const encodeText = (text: string) => {
+  if (!text) return text;
+  return `[ENC]${btoa(encodeURIComponent(text))}`;
+};
+
+const decodeText = (text: string) => {
+  if (text && typeof text === 'string' && text.startsWith('[ENC]')) {
+    try {
+      return decodeURIComponent(atob(text.substring(5)));
+    } catch(e) {
+      return text;
+    }
+  }
+  return text;
+};
+
+
 interface CustomField {
   id: string;
   type: 'text' | 'textarea' | 'dropdown' | 'checkbox' | 'radio';
@@ -224,14 +241,22 @@ const ExultAdmin: React.FC = () => {
           correctOption: q.correctOption
         })) || [];
         
-        // Remove correctOption from the public event document
-        finalEventData.quizQuestions = eventForm.quizQuestions?.map((q: any) => ({
-          id: q.id, 
-          type: q.type || 'multiple-choice', 
-          text: q.text, 
-          options: q.options,
-          imageUrl: q.imageUrl
-        })) as any[];
+        // Remove correctOption from the public event document, shuffle, and obfuscate
+        finalEventData.quizQuestions = eventForm.quizQuestions?.map((q: any) => {
+          const cleanQ: any = {
+            id: q.id, 
+            type: q.type || 'multiple-choice', 
+            text: encodeText(q.text), 
+            imageUrl: q.imageUrl
+          };
+          
+          if (!q.type || q.type === 'multiple-choice') {
+            // Shuffle options before saving to prevent network inspection from revealing the answer via its index
+            cleanQ.options = q.options ? [...q.options].sort(() => Math.random() - 0.5).map((opt: string) => encodeText(opt)) : [];
+          }
+          
+          return cleanQ;
+        }) as any[];
       } else {
         finalEventData.quizQuestions = [];
         finalEventData.quizTimeLimit = 0;
@@ -318,13 +343,17 @@ const ExultAdmin: React.FC = () => {
     if (inferredType === 'quiz' && fullEvent.quizQuestions) {
       try {
         const answersDoc = await getDoc(doc(db, 'exult_quiz_answers', fullEvent.id));
-        if (answersDoc.exists()) {
-          const answersData = answersDoc.data().answers || [];
-          fullEvent.quizQuestions = fullEvent.quizQuestions?.map((q: any) => {
-            const ans = answersData.find((a: any) => a.questionId === q.id);
-            return { ...q, correctOption: ans ? ans.correctOption : '' };
-          });
-        }
+        const answersData = answersDoc.exists() ? (answersDoc.data().answers || []) : [];
+        
+        fullEvent.quizQuestions = fullEvent.quizQuestions?.map((q: any) => {
+          const ans = answersData.find((a: any) => a.questionId === q.id);
+          return { 
+            ...q, 
+            text: decodeText(q.text),
+            options: q.options ? q.options.map((opt: string) => decodeText(opt)) : [],
+            correctOption: ans ? ans.correctOption : '' 
+          };
+        });
       } catch (err) {
         console.error("Error fetching answers for edit", err);
       }
@@ -1181,6 +1210,7 @@ const ExultAdmin: React.FC = () => {
 
               <div className="space-y-4">
                 {events.find(e => e.id === selectedRegResults.eventId)?.quizQuestions?.map((q: any, i: number) => {
+                  const decodedText = decodeText(q.text);
                   const studentAns = selectedRegResults.quizAnswers?.[q.id] || '';
                   const correctAnsKey = allQuizAnswers[selectedRegResults.eventId]?.find(a => a.questionId === q.id);
                   const correctAns = correctAnsKey?.correctOption || '';
@@ -1206,7 +1236,7 @@ const ExultAdmin: React.FC = () => {
                         </div>
                         <div className="flex-1">
                           <div className="flex justify-between items-start gap-4 mb-2">
-                            <p className="font-semibold text-slate-800 text-sm">Q{i + 1}: {q.text}</p>
+                            <p className="font-semibold text-slate-800 text-sm">Q{i + 1}: {decodedText}</p>
                             <span className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap bg-white px-2 py-0.5 rounded border border-slate-200">{q.type === 'short-answer' ? 'Short Answer' : q.type === 'image-identification' ? 'Image ID' : 'Objective'}</span>
                           </div>
                           

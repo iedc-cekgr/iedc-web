@@ -67,10 +67,22 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
           const round2 = eventData.quizQuestions.filter((q: any) => q.type === 'short-answer');
           const round3 = eventData.quizQuestions.filter((q: any) => q.type === 'image-identification');
 
+          const decodeText = (text: string) => {
+            if (text && typeof text === 'string' && text.startsWith('[ENC]')) {
+              try {
+                return decodeURIComponent(atob(text.substring(5)));
+              } catch(e) {
+                return text;
+              }
+            }
+            return text;
+          };
+
           const shuffle = (arr: any[]) => arr.sort(() => Math.random() - 0.5);
           const prepareQuestions = (arr: any[]) => shuffle([...arr]).map((q: any) => ({
              ...q,
-             options: q.options ? shuffle([...q.options]) : []
+             text: decodeText(q.text),
+             options: q.options ? shuffle([...q.options]).map((opt: string) => decodeText(opt)) : []
           }));
 
           const sortedQs = [
