@@ -247,8 +247,26 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
       if (el.requestFullscreen) {
         await el.requestFullscreen();
       }
+      
+      // Initialize the quiz timer only after the user starts
+      if (!registration?.quizStartTime) {
+        await updateDoc(doc(db, 'exult_registrations', registrationId), {
+          status: 'started',
+          quizStartTime: serverTimestamp()
+        });
+        
+        // Capture the static start time locally
+        const staticStartTime = new Date();
+        
+        // Update local state so the timer can begin immediately
+        setRegistration((prev: any) => ({
+          ...prev,
+          status: 'started',
+          quizStartTime: { toDate: () => staticStartTime }
+        }));
+      }
+
       setHasStarted(true);
-      // Immediately trigger an update to get fresh serverTimestamp if needed, but it was already set in ExultEvent.
     } catch (err) {
       alert("You must allow full screen mode to start the quiz.");
     }

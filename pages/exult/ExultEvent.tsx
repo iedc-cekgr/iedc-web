@@ -142,8 +142,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
       }
       
       if (event.isQuiz) {
-        registrationData.status = 'started';
-        registrationData.quizStartTime = serverTimestamp();
+        registrationData.status = 'registered';
       }
 
       const docRef = await addDoc(collection(db, 'exult_registrations'), registrationData);
