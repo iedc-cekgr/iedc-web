@@ -250,7 +250,7 @@ const ExultAdmin: React.FC = () => {
             imageUrl: q.imageUrl
           };
           
-          if (!q.type || q.type === 'multiple-choice') {
+          if (!q.type || q.type === 'multiple-choice' || q.type === 'image-identification') {
             // Shuffle options before saving to prevent network inspection from revealing the answer via its index
             cleanQ.options = q.options ? [...q.options].sort(() => Math.random() - 0.5).map((opt: string) => encodeText(opt)) : [];
           }
@@ -413,10 +413,10 @@ const ExultAdmin: React.FC = () => {
     let score = 0;
     answers.forEach(ans => {
       const studentAns = reg.quizAnswers?.[ans.questionId] || '';
-      if (!ans.type || ans.type === 'multiple-choice') {
+      if (!ans.type || ans.type === 'multiple-choice' || ans.type === 'image-identification') {
         if (studentAns === ans.correctOption) score += 1;
       } else {
-        // For short-answer and image-identification
+        // For short-answer
         const cleanStudentAns = studentAns.replace(/\s+/g, '').toLowerCase();
         const cleanCorrectAns = (ans.correctOption || '').replace(/\s+/g, '').toLowerCase();
         if (cleanStudentAns === cleanCorrectAns && cleanCorrectAns !== '') score += 1;
@@ -844,9 +844,9 @@ const ExultAdmin: React.FC = () => {
                           )}
                         </div>
 
-                        {(!q.type || q.type === 'multiple-choice') ? (
+                        {(!q.type || q.type === 'multiple-choice' || q.type === 'image-identification') ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {q.options.map((opt: string, oIdx: number) => (
+                            {(q.options && q.options.length > 0 ? q.options : ['', '', '', '']).map((opt: string, oIdx: number) => (
                               <div key={oIdx} className="flex items-center gap-3">
                                 <input 
                                   type="radio" 
@@ -860,7 +860,7 @@ const ExultAdmin: React.FC = () => {
                                   type="text" 
                                   value={opt} 
                                   onChange={(e) => {
-                                    const newOpts = [...q.options];
+                                    const newOpts = [...(q.options && q.options.length > 0 ? q.options : ['', '', '', ''])];
                                     newOpts[oIdx] = e.target.value;
                                     const newCorrect = q.correctOption === opt ? e.target.value : q.correctOption;
                                     updateQuizQuestion(qIdx, { options: newOpts, correctOption: newCorrect });

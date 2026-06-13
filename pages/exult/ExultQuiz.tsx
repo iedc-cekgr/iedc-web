@@ -432,7 +432,7 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
                 </div>
               )}
 
-              {(!currentQ.type || currentQ.type === 'multiple-choice') ? (
+              {(!currentQ.type || currentQ.type === 'multiple-choice' || currentQ.type === 'image-identification') ? (
                 <div className="space-y-4">
                   {currentQ.options.map((opt: string, i: number) => {
                     const isSelected = answers[currentQ.id] === opt;
