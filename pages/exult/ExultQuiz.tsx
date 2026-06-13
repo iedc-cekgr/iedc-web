@@ -307,6 +307,13 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
               {event?.questionTimeLimitSeconds && (
                 <li><b>EACH QUESTION</b> has a strict timer of {event.questionTimeLimitSeconds} seconds. It will auto-skip if unanswered. You cannot go back to previous questions.</li>
               )}
+              <li>The quiz is divided into 3 levels:
+                <ul className="list-[circle] pl-5 mt-1 space-y-1">
+                  <li><b>1. Multiple Choice Questions</b></li>
+                  <li><b>2. Short Answer</b></li>
+                  <li><b>3. Find the Image</b></li>
+                </ul>
+              </li>
               <li>Do <b>NOT</b> switch tabs or minimize the browser. The first offense will trigger a warning, the second will <b>disqualify</b> and auto-submit your quiz.</li>
               <li>Right-click, text selection, and keyboard shortcuts are disabled.</li>
               <li>The quiz will automatically submit when the timer expires.</li>
