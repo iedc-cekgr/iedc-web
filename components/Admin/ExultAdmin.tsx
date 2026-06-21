@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, doc, query, orderBy, Timestamp, where } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { Plus, Edit2, Trash2, Save, X, Download, Filter, Search, ChevronDown, ChevronUp, AlertTriangle, Trophy, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Download, Filter, Search, ChevronDown, ChevronUp, AlertTriangle, Trophy, Upload, FileText } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
@@ -531,6 +533,41 @@ const ExultAdmin: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  const exportPDF = () => {
+    if (filteredRegs.length === 0) {
+      alert("No data to export");
+      return;
+    }
+    
+    const doc = new jsPDF();
+    const eventName = regFilterEvent === 'all' ? 'All Events' : events.find(e => e.id === regFilterEvent)?.title || 'Registrations';
+    
+    doc.setFontSize(16);
+    doc.text(`Registrations: ${eventName}`, 14, 15);
+    doc.setFontSize(10);
+    
+    const head = [["Name", "Mark"]];
+    
+    const body = filteredRegs.map(r => {
+      let markStr = '';
+      if (r.status) {
+        const score = (r.status === 'completed' || r.status === 'disqualified') ? calculateScore(r) : '';
+        markStr = score !== null && score !== '' ? `${score} / ${allQuizAnswers[r.eventId]?.length || 0}` : '';
+      }
+      return [r.name || '', markStr];
+    });
+
+    autoTable(doc, {
+      startY: 20,
+      head: head,
+      body: body,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [79, 70, 229] }
+    });
+    
+    doc.save(`exult_registrations_${new Date().getTime()}.pdf`);
+  };
+
   const renderLeaderboard = () => {
     if (regFilterEvent === 'all') return null;
     
@@ -658,7 +695,7 @@ const ExultAdmin: React.FC = () => {
                       <input type="text" name="venue" value={eventForm.venue || ''} onChange={handleEventFormChange} placeholder="e.g. Online or Main Hall" className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Speaker/Judge (Optional)</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Speaker (Optional)</label>
                       <input type="text" name="speaker" value={eventForm.speaker || ''} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                     </div>
                   </>
@@ -1087,9 +1124,14 @@ const ExultAdmin: React.FC = () => {
                 </select>
               </div>
             </div>
-            <button onClick={exportCSV} className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-              <Download className="w-5 h-5" /> Export CSV
-            </button>
+            <div className="flex gap-2">
+              <button onClick={exportPDF} className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                <FileText className="w-5 h-5" /> Export PDF
+              </button>
+              <button onClick={exportCSV} className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                <Download className="w-5 h-5" /> Export CSV
+              </button>
+            </div>
           </div>
 
           {renderLeaderboard()}

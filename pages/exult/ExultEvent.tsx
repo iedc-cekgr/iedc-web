@@ -288,7 +288,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
 
           {event.speaker && (
             <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-3 text-white border-b border-white/10 pb-2">Speaker/Judge</h3>
+              <h3 className="text-xl font-semibold mb-3 text-white border-b border-white/10 pb-2">Speaker</h3>
               <p className="text-slate-300">{event.speaker}</p>
             </div>
           )}
