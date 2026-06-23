@@ -23,7 +23,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
             <img src={logo} alt="logo" className="w-6 h-6 object-contain" />
           </div>
           <div className="flex flex-col">
-            <span className="font-display text-2xl tracking-tighter leading-none">IEDC CEK</span>
+            <span className="font-display text-2xl tracking-tighter leading-none">IEDC CEKGR</span>
             <span className="text-[10px] font-black uppercase tracking-widest text-black/60">Neo-Innovation</span>
           </div>
         </div>
