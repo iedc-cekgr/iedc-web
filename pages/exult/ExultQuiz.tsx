@@ -315,7 +315,7 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
           <h1 className="text-3xl font-bold mb-2 text-purple-400">{event?.title} - Quiz Mode</h1>
           <p className="text-slate-300 mb-8">Welcome, {registration?.name}. Please read the strict guidelines below.</p>
           
-          <div className="text-left space-y-4 mb-8 bg-black/40 p-6 rounded-xl border border-white/5">
+          <div className="text-left space-y-4 mb-8 bg-black dark:bg-white/40 p-6 rounded-xl border border-white/5">
             <h3 className="font-bold text-red-400 flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
               STRICT ANTI-CHEAT ENABLED
@@ -379,7 +379,7 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
       {/* Warning Modal */}
       {showWarning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-red-900/90 backdrop-blur-sm p-6">
-          <div className="bg-black border border-red-500 p-8 rounded-2xl max-w-lg text-center shadow-[0_0_50px_rgba(239,68,68,0.5)]">
+          <div className="bg-black dark:bg-white border border-red-500 p-8 rounded-2xl max-w-lg text-center shadow-[0_0_50px_rgba(239,68,68,0.5)]">
             <svg className="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             <h2 className="text-2xl font-bold text-red-500 mb-4">RULE VIOLATION DETECTED</h2>
             <p className="text-lg mb-6">{warningMessage}</p>
@@ -389,14 +389,14 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
       )}
 
       {/* Header */}
-      <div className="relative z-10 border-b border-white/10 bg-black/50 backdrop-blur-md px-6 py-4 flex justify-between items-center sticky top-0">
+      <div className="relative z-10 border-b border-white/10 bg-black dark:bg-white/50 backdrop-blur-md px-6 py-4 flex justify-between items-center sticky top-0">
         <div className="font-bold text-purple-400 hidden md:block">{event?.title}</div>
         <div className="flex items-center gap-4 text-sm font-medium">
-          <div className="bg-white/5 px-4 py-2 rounded-lg border border-white/10 hidden md:block text-purple-200">
+          <div className="bg-white dark:bg-slate-900/5 px-4 py-2 rounded-lg border border-white/10 hidden md:block text-purple-200">
             {(!questions[currentQuestionIdx]?.type || questions[currentQuestionIdx]?.type === 'multiple-choice') ? 'Round 1: Objective' : 
              questions[currentQuestionIdx]?.type === 'short-answer' ? 'Round 2: Short Answer' : 'Round 3: Image ID'}
           </div>
-          <div className="bg-white/5 px-4 py-2 rounded-lg border border-white/10">
+          <div className="bg-white dark:bg-slate-900/5 px-4 py-2 rounded-lg border border-white/10">
             Q {currentQuestionIdx + 1} / {questions.length}
           </div>
           
@@ -437,7 +437,7 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
                   {currentQ.options.map((opt: string, i: number) => {
                     const isSelected = answers[currentQ.id] === opt;
                     return (
-                      <label key={i} className={`flex items-center p-5 rounded-xl border cursor-pointer transition-all ${isSelected ? 'bg-purple-600/20 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}`}>
+                      <label key={i} className={`flex items-center p-5 rounded-xl border cursor-pointer transition-all ${isSelected ? 'bg-purple-600/20 border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.2)]' : 'bg-white dark:bg-slate-900/5 border-white/10 hover:bg-white dark:bg-slate-900/10 hover:border-white/20'}`}>
                         <div className={`w-6 h-6 rounded-full border-2 mr-4 flex items-center justify-center ${isSelected ? 'border-purple-500' : 'border-slate-500'}`}>
                           {isSelected && <div className="w-3 h-3 bg-purple-500 rounded-full"></div>}
                         </div>
@@ -460,7 +460,7 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
                     placeholder="Type your answer here..." 
                     value={answers[currentQ.id] || ''}
                     onChange={(e) => setAnswers(prev => ({ ...prev, [currentQ.id]: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-6 py-4 text-xl text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-white/20"
+                    className="w-full bg-white dark:bg-slate-900/5 border border-white/20 rounded-xl px-6 py-4 text-xl text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all placeholder:text-white/20"
                     autoComplete="off"
                     autoCorrect="off"
                     spellCheck="false"
@@ -478,7 +478,7 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
               disabled={currentQuestionIdx === 0 || questions[currentQuestionIdx]?.type !== questions[currentQuestionIdx - 1]?.type}
               title={questions[currentQuestionIdx]?.type !== questions[currentQuestionIdx - 1]?.type ? "Cannot go back to previous round" : "Previous Question"}
               onClick={() => setCurrentQuestionIdx(prev => prev - 1)}
-              className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
+              className="px-6 py-3 bg-white dark:bg-slate-900/5 hover:bg-white dark:bg-slate-900/10 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-medium flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
               Previous
@@ -498,7 +498,7 @@ const ExultQuiz: React.FC<ExultQuizProps> = ({ registrationId, onNavigate }) => 
           ) : (
             <button 
               onClick={() => submitQuiz('completed')}
-              className="px-8 py-3 bg-green-600 hover:bg-green-500 rounded-xl transition-all shadow-[0_0_15px_rgba(34,197,94,0.4)] font-bold flex items-center gap-2 text-black"
+              className="px-8 py-3 bg-green-600 hover:bg-green-500 rounded-xl transition-all shadow-[0_0_15px_rgba(34,197,94,0.4)] font-bold flex items-center gap-2 text-black dark:text-white"
             >
               Submit Quiz
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>

@@ -189,7 +189,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
         </div>
         <h2 className="text-3xl font-bold mb-4">Event is Hidden</h2>
         <p className="text-slate-400 mb-8 max-w-md">This event is currently hidden by the administrators and cannot be accessed. Please check back later.</p>
-        <button onClick={() => onNavigate('/exult')} className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-bold transition-all">Back to Events</button>
+        <button onClick={() => onNavigate('/exult')} className="bg-white dark:bg-slate-900/10 hover:bg-white dark:bg-slate-900/20 text-white px-6 py-3 rounded-xl font-bold transition-all">Back to Events</button>
       </div>
     );
   }
@@ -260,19 +260,19 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
           
           <div className="flex flex-wrap gap-4 mb-8">
             {event.date && (
-              <div className="flex items-center gap-2 text-slate-300 bg-white/5 px-4 py-2 rounded-lg border border-white/5">
+              <div className="flex items-center gap-2 text-slate-300 bg-white dark:bg-slate-900/5 px-4 py-2 rounded-lg border border-white/5">
                 <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 {event.date}
               </div>
             )}
             {event.time && (
-              <div className="flex items-center gap-2 text-slate-300 bg-white/5 px-4 py-2 rounded-lg border border-white/5">
+              <div className="flex items-center gap-2 text-slate-300 bg-white dark:bg-slate-900/5 px-4 py-2 rounded-lg border border-white/5">
                 <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 {event.time}
               </div>
             )}
             {event.venue && (
-              <div className="flex items-center gap-2 text-slate-300 bg-white/5 px-4 py-2 rounded-lg border border-white/5">
+              <div className="flex items-center gap-2 text-slate-300 bg-white dark:bg-slate-900/5 px-4 py-2 rounded-lg border border-white/5">
                 <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 {event.venue}
               </div>
@@ -296,7 +296,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
           {event.guidelines && (
             <div className="mb-8">
               <h3 className="text-xl font-semibold mb-3 text-white border-b border-white/10 pb-2">Guidelines</h3>
-              <div className="text-slate-300 leading-relaxed whitespace-pre-wrap bg-white/5 p-4 rounded-xl border border-white/5">
+              <div className="text-slate-300 leading-relaxed whitespace-pre-wrap bg-white dark:bg-slate-900/5 p-4 rounded-xl border border-white/5">
                 {event.guidelines}
               </div>
             </div>
@@ -327,7 +327,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                     href={event.googleFormLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black font-bold text-xl py-4 px-8 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-3"
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black dark:text-white font-bold text-xl py-4 px-8 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transform hover:-translate-y-1 transition-all duration-300 flex items-center gap-3"
                   >
                     Proceed to Registration
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
@@ -362,7 +362,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors"
+                      className="w-full bg-black dark:bg-white/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors"
                       placeholder="John Doe"
                     />
                   </div>
@@ -373,7 +373,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors"
+                      className="w-full bg-black dark:bg-white/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors"
                       placeholder="john@example.com"
                     />
                   </div>
@@ -392,7 +392,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                         required={field.required}
                         value={customData[field.id] || ''}
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 transition-colors"
+                        className="w-full bg-black dark:bg-white/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 transition-colors"
                       />
                     )}
                     
@@ -401,7 +401,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                         required={field.required}
                         value={customData[field.id] || ''}
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 transition-colors min-h-[100px] resize-y"
+                        className="w-full bg-black dark:bg-white/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 transition-colors min-h-[100px] resize-y"
                       />
                     )}
 
@@ -410,7 +410,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                         required={field.required}
                         value={customData[field.id] || ''}
                         onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 transition-colors appearance-none"
+                        className="w-full bg-black dark:bg-white/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 transition-colors appearance-none"
                       >
                         <option value="" disabled className="bg-slate-900">Select an option</option>
                         {field.options.map((opt: string) => (
@@ -430,7 +430,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                               required={field.required}
                               checked={customData[field.id] === opt}
                               onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                              className="w-4 h-4 text-green-500 bg-black/40 border-white/20 focus:ring-green-500 focus:ring-offset-slate-900"
+                              className="w-4 h-4 text-green-500 bg-black dark:bg-white/40 border-white/20 focus:ring-green-500 focus:ring-offset-slate-900"
                             />
                             <span className="text-slate-300 group-hover:text-white transition-colors">{opt}</span>
                           </label>
@@ -445,7 +445,7 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                           required={field.required}
                           checked={customData[field.id] || false}
                           onChange={(e) => handleCheckboxChange(field.id, e.target.checked)}
-                          className="mt-1 w-4 h-4 text-green-500 rounded border-white/20 bg-black/40 focus:ring-green-500 focus:ring-offset-slate-900"
+                          className="mt-1 w-4 h-4 text-green-500 rounded border-white/20 bg-black dark:bg-white/40 focus:ring-green-500 focus:ring-offset-slate-900"
                         />
                         <span className="text-slate-300 group-hover:text-white transition-colors text-sm leading-snug">
                           {field.label}
@@ -463,14 +463,14 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                       Payment Details
                     </h3>
                     
-                    <div className="bg-white/5 rounded-xl p-6 border border-green-500/30 text-center mb-6">
+                    <div className="bg-white dark:bg-slate-900/5 rounded-xl p-6 border border-green-500/30 text-center mb-6">
                       <p className="text-slate-300 mb-2">Registration Fee</p>
                       <div className="text-3xl font-bold text-white mb-6">{event.feeAmount}</div>
                       
                       {event.paymentQrUrl && (
                         <div className="flex flex-col items-center">
                           <p className="text-sm text-slate-400 mb-3">Scan this QR Code to Pay</p>
-                          <div className="bg-white p-2 rounded-xl inline-block shadow-lg">
+                          <div className="bg-white dark:bg-slate-900 p-2 rounded-xl inline-block shadow-lg">
                             <img src={event.paymentQrUrl} alt="Payment QR Code" className="w-48 h-48 object-cover rounded-lg" />
                           </div>
                         </div>
@@ -488,9 +488,9 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                             setPaymentScreenshot(e.target.files[0]);
                           }
                         }}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-500/10 file:text-green-500 hover:file:bg-green-500/20"
+                        className="w-full bg-black dark:bg-white/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-500/10 file:text-green-500 hover:file:bg-green-500/20"
                       />
-                      <p className="text-xs text-slate-500 mt-2">Please upload a clear screenshot of your successful payment.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Please upload a clear screenshot of your successful payment.</p>
                     </div>
                   </div>
                 )}
@@ -498,11 +498,11 @@ const ExultEvent: React.FC<ExultEventProps> = ({ slug, onNavigate }) => {
                 <button 
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black font-bold text-lg py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-black dark:text-white font-bold text-lg py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:shadow-[0_0_30px_rgba(34,197,94,0.5)] transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center justify-center gap-2">
-                      <div className="w-5 h-5 rounded-full border-2 border-black/20 border-t-black animate-spin"></div>
+                      <div className="w-5 h-5 rounded-full border-2 border-black dark:border-white/20 border-t-black animate-spin"></div>
                       Processing...
                     </span>
                   ) : event.isQuiz ? (

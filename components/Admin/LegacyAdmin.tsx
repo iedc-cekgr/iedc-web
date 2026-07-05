@@ -13,7 +13,7 @@ const LegacyAdmin: React.FC = () => {
   // Common UI shell, we will define separate components or render functions for each tab
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-slate-800 mb-6">Manage Legacy Page</h2>
+      <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6">Manage Legacy Page</h2>
       
       <div className="flex space-x-2 mb-6">
         {['timeline', 'achievements', 'past_leaders'].map((tab) => (
@@ -23,7 +23,7 @@ const LegacyAdmin: React.FC = () => {
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === tab
                 ? 'bg-blue-600 text-white'
-                : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700'
             }`}
           >
             {tab === 'past_leaders' ? 'Pioneers' : tab.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
@@ -31,7 +31,7 @@ const LegacyAdmin: React.FC = () => {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         {activeTab === 'timeline' && <TimelineAdmin />}
         {activeTab === 'achievements' && <AchievementsAdmin />}
         {activeTab === 'past_leaders' && <PastLeadersAdmin />}
@@ -93,7 +93,7 @@ const TimelineAdmin = () => {
       </div>
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-slate-50 border-b"><th className="p-3">Year</th><th className="p-3">Title</th><th className="p-3 text-right">Actions</th></tr>
+          <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Year</th><th className="p-3">Title</th><th className="p-3 text-right">Actions</th></tr>
         </thead>
         <tbody>
           {items.map(item => (
@@ -111,7 +111,7 @@ const TimelineAdmin = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-md">
             <div className="p-4 border-b flex justify-between">
               <h3 className="font-bold">{editingItem ? 'Edit' : 'Add'} Timeline Event</h3>
               <button onClick={() => setIsModalOpen(false)}><X className="w-5 h-5"/></button>
@@ -212,7 +212,7 @@ const AchievementsAdmin = () => {
       </div>
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-slate-50 border-b"><th className="p-3">Year</th><th className="p-3">Title</th><th className="p-3 text-right">Actions</th></tr>
+          <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Year</th><th className="p-3">Title</th><th className="p-3 text-right">Actions</th></tr>
         </thead>
         <tbody>
           {items.map(item => (
@@ -230,7 +230,7 @@ const AchievementsAdmin = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-md">
             <div className="p-4 border-b flex justify-between">
               <h3 className="font-bold">{editingItem ? 'Edit' : 'Add'} Achievement</h3>
               <button onClick={() => setIsModalOpen(false)}><X className="w-5 h-5"/></button>
@@ -246,7 +246,7 @@ const AchievementsAdmin = () => {
                   <input className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" value={formData.image || ''} onChange={e => setFormData({...formData, image: e.target.value})} />
                   <div className="relative">
                     <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'image'} />
-                    <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'image'}>
+                    <button type="button" className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-800 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'image'}>
                       {uploadingField === 'image' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
                       {uploadingField === 'image' ? 'Uploading...' : 'Upload'}
                     </button>
@@ -345,7 +345,7 @@ const PastLeadersAdmin = () => {
       </div>
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-slate-50 border-b"><th className="p-3">Tenure</th><th className="p-3">Nodal Officer</th><th className="p-3">CEO</th><th className="p-3 text-right">Actions</th></tr>
+          <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Tenure</th><th className="p-3">Nodal Officer</th><th className="p-3">CEO</th><th className="p-3 text-right">Actions</th></tr>
         </thead>
         <tbody>
           {items.map(item => (
@@ -364,7 +364,7 @@ const PastLeadersAdmin = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-md">
             <div className="p-4 border-b flex justify-between">
               <h3 className="font-bold">{editingItem ? 'Edit' : 'Add'} Past Leaders</h3>
               <button onClick={() => setIsModalOpen(false)}><X className="w-5 h-5"/></button>
@@ -378,7 +378,7 @@ const PastLeadersAdmin = () => {
                   <input required className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" value={formData.nodalOfficerImage || ''} onChange={e => setFormData({...formData, nodalOfficerImage: e.target.value})} />
                   <div className="relative">
                     <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'nodalOfficerImage')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'nodalOfficerImage'} />
-                    <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'nodalOfficerImage'}>
+                    <button type="button" className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-800 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'nodalOfficerImage'}>
                       {uploadingField === 'nodalOfficerImage' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
                       {uploadingField === 'nodalOfficerImage' ? 'Uploading...' : 'Upload'}
                     </button>
@@ -392,7 +392,7 @@ const PastLeadersAdmin = () => {
                   <input required className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" value={formData.ceoImage || ''} onChange={e => setFormData({...formData, ceoImage: e.target.value})} />
                   <div className="relative">
                     <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'ceoImage')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'ceoImage'} />
-                    <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'ceoImage'}>
+                    <button type="button" className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-800 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'ceoImage'}>
                       {uploadingField === 'ceoImage' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
                       {uploadingField === 'ceoImage' ? 'Uploading...' : 'Upload'}
                     </button>

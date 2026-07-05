@@ -130,7 +130,7 @@ const GalleryAdmin: React.FC = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-slate-800">Manage Gallery</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Manage Gallery</h2>
         <button
           onClick={() => handleOpenModal()}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
@@ -140,23 +140,23 @@ const GalleryAdmin: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="p-4 font-semibold text-slate-600">Image</th>
-              <th className="p-4 font-semibold text-slate-600">Category</th>
-              <th className="p-4 font-semibold text-slate-600 text-right">Actions</th>
+            <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
+              <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Image</th>
+              <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Category</th>
+              <th className="p-4 font-semibold text-slate-600 dark:text-slate-300 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr key={item.docId} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+              <tr key={item.docId} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-950 transition-colors">
                 <td className="p-4">
                   <div className="flex items-center gap-3">
                     <img src={item.image || 'https://via.placeholder.com/150'} alt={item.title} className="w-12 h-12 rounded-lg object-cover" />
                     <div>
-                      <p className="font-semibold text-slate-800">{item.title}</p>
+                      <p className="font-semibold text-slate-800 dark:text-slate-200">{item.title}</p>
                       {item.driveLink && <a href={item.driveLink} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 hover:underline">Drive Link</a>}
                     </div>
                   </div>
@@ -178,7 +178,7 @@ const GalleryAdmin: React.FC = () => {
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={3} className="p-8 text-center text-slate-500">
+                <td colSpan={3} className="p-8 text-center text-slate-500 dark:text-slate-400">
                   No items found. Click "Add New Image" to create one or seed the database.
                 </td>
               </tr>
@@ -189,12 +189,12 @@ const GalleryAdmin: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
-              <h3 className="text-xl font-bold text-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-900">
+              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">
                 {editingItem ? 'Edit Gallery Item' : 'Add New Image'}
               </h3>
-              <button onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600">
+              <button onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600 dark:text-slate-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -233,7 +233,7 @@ const GalleryAdmin: React.FC = () => {
                     />
                     <div className="relative">
                       <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'image'} />
-                      <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'image'}>
+                      <button type="button" className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-800 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'image'}>
                         {uploadingField === 'image' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
                         {uploadingField === 'image' ? 'Uploading...' : 'Upload'}
                       </button>
@@ -251,7 +251,7 @@ const GalleryAdmin: React.FC = () => {
                 </div>
               </div>
               <div className="pt-4 flex justify-end gap-3">
-                <button type="button" onClick={handleCloseModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                <button type="button" onClick={handleCloseModal} className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:bg-slate-900 rounded-lg">
                   Cancel
                 </button>
                 <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">

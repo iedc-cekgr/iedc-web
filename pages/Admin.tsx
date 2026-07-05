@@ -101,9 +101,9 @@ const Admin: React.FC = () => {
       case 'dashboard':
         return (
           <div className="p-6">
-            <h2 className="text-2xl font-bold text-slate-800 mb-6">Dashboard Overview</h2>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6">Dashboard Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
                 <h3 className="text-lg font-semibold text-slate-700">Quick Actions</h3>
                 <button 
                   onClick={handleSeedDatabase}
@@ -139,12 +139,12 @@ const Admin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950">
       {/* Sidebar */}
-      <div className="w-64 bg-white border-r border-slate-200 flex flex-col">
-        <div className="p-6 border-b border-slate-200">
+      <div className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 flex flex-col">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-700">
           <h1 className="text-xl font-bold text-blue-600">IEDC Admin</h1>
-          <p className="text-sm text-slate-500 truncate mt-1">{user.email}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 truncate mt-1">{user.email}</p>
         </div>
         <nav className="flex-1 p-4 space-y-2">
           {[
@@ -161,7 +161,7 @@ const Admin: React.FC = () => {
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
                 activeTab === item.id 
                   ? 'bg-blue-50 text-blue-700 font-medium' 
-                  : 'text-slate-600 hover:bg-slate-50'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-950'
               }`}
             >
               <item.icon className={`w-5 h-5 ${activeTab === item.id ? 'text-blue-600' : 'text-slate-400'}`} />
@@ -169,7 +169,7 @@ const Admin: React.FC = () => {
             </button>
           ))}
         </nav>
-        <div className="p-4 border-t border-slate-200">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700">
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"

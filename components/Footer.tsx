@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-white/5 hover:text-white transition-all"
+                className="w-10 h-10 rounded-full border border-slate-800 flex items-center justify-center hover:bg-white dark:bg-slate-900/5 hover:text-white transition-all"
               >
                 <Icon size={18} />
               </a>

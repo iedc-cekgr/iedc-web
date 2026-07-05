@@ -82,7 +82,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-slate-50 selection:bg-blue-600 selection:text-white">
+    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-600 selection:text-white">
       {/* Background decoration */}
       <div className="fixed inset-0 pointer-events-none -z-10 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px]"></div>
 

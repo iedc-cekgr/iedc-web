@@ -133,7 +133,7 @@ const ExecomAdmin: React.FC = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-slate-800">Manage Execom</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Manage Execom</h2>
         <button
           onClick={() => handleOpenModal()}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
@@ -145,17 +145,17 @@ const ExecomAdmin: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {members.map((member) => (
-          <div key={member.docId} className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center gap-4">
+          <div key={member.docId} className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 flex items-center gap-4">
             <img src={member.image || 'https://via.placeholder.com/150'} alt={member.name} className="w-16 h-16 rounded-full object-cover" />
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-slate-800 truncate">{member.name}</h3>
-              <p className="text-sm text-slate-500 truncate">{member.role}</p>
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 truncate">{member.name}</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{member.role}</p>
             </div>
             <div className="flex flex-col gap-2">
-              <button onClick={() => handleOpenModal(member)} className="p-2 text-slate-400 hover:text-blue-600 bg-slate-50 rounded-lg">
+              <button onClick={() => handleOpenModal(member)} className="p-2 text-slate-400 hover:text-blue-600 bg-slate-50 dark:bg-slate-950 rounded-lg">
                 <Edit className="w-4 h-4" />
               </button>
-              <button onClick={() => handleDelete(member.docId)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 rounded-lg">
+              <button onClick={() => handleDelete(member.docId)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 dark:bg-slate-950 rounded-lg">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
@@ -165,12 +165,12 @@ const ExecomAdmin: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
-              <h3 className="text-xl font-bold text-slate-800">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-900">
+              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">
                 {editingMember ? 'Edit Member' : 'Add New Member'}
               </h3>
-              <button onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600">
+              <button onClick={handleCloseModal} className="text-slate-400 hover:text-slate-600 dark:text-slate-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -227,7 +227,7 @@ const ExecomAdmin: React.FC = () => {
                     />
                     <div className="relative">
                       <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'image'} />
-                      <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'image'}>
+                      <button type="button" className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-800 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'image'}>
                         {uploadingField === 'image' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
                         {uploadingField === 'image' ? 'Uploading...' : 'Upload'}
                       </button>
@@ -284,7 +284,7 @@ const ExecomAdmin: React.FC = () => {
                 </div>
               </div>
               <div className="pt-4 flex justify-end gap-3">
-                <button type="button" onClick={handleCloseModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                <button type="button" onClick={handleCloseModal} className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:bg-slate-900 rounded-lg">
                   Cancel
                 </button>
                 <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">

@@ -71,4 +71,9 @@ export interface PastLeader {
   nodalOfficerImage: string;
   ceo: string;
   ceoImage: string;
+  additionalPioneers?: {
+    name: string;
+    role: string;
+    image: string;
+  }[];
 }

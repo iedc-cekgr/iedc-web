@@ -3,7 +3,7 @@ import { Rocket } from 'lucide-react';
 
 const Loading: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-[100] bg-slate-50 flex flex-col items-center justify-center">
+    <div className="fixed inset-0 z-[100] bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center">
       <style>
         {`
           @keyframes float {

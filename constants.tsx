@@ -309,7 +309,7 @@ export const ACHIEVEMENTS: Achievement[] = [
 
 export const PAST_LEADERS: PastLeader[] = [
   { 
-    year: "2023-24", 
+    year: "2026-27", 
     nodalOfficer: "Chinchu M", 
     nodalOfficerImage: "https://res.cloudinary.com/dli8bbort/image/upload/v1768152331/WhatsApp_Image_2026-01-11_at_22.55.07_jqfpym.jpg",
     ceo: "S Sreenandan",

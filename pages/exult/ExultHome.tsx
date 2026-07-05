@@ -275,7 +275,7 @@ const ExultHome: React.FC<ExultHomeProps> = ({ onNavigate }) => {
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#050B14] to-[#0A1930]">
                           <Globe className="w-12 h-12 text-slate-700 mb-2" />
-                          <span className="text-slate-500 font-medium text-sm tracking-widest uppercase">No Poster Available</span>
+                          <span className="text-slate-500 dark:text-slate-400 font-medium text-sm tracking-widest uppercase">No Poster Available</span>
                         </div>
                       )}
                       {/* Glassy overlay gradient */}

@@ -40,10 +40,10 @@ const Projects: React.FC = () => {
 
   const AchievementIcon = ({ type }: { type: string }) => {
     switch (type) {
-      case 'Trophy': return <Trophy className="text-black" size={32} />;
-      case 'Lightbulb': return <Lightbulb className="text-black" size={32} />;
-      case 'Zap': return <Zap className="text-black" size={32} />;
-      default: return <Award className="text-black" size={32} />;
+      case 'Trophy': return <Trophy className="text-black dark:text-white" size={32} />;
+      case 'Lightbulb': return <Lightbulb className="text-black dark:text-white" size={32} />;
+      case 'Zap': return <Zap className="text-black dark:text-white" size={32} />;
+      default: return <Award className="text-black dark:text-white" size={32} />;
     }
   };
 
@@ -58,9 +58,9 @@ const Projects: React.FC = () => {
   return (
     <div className="pt-40 px-6 max-w-7xl mx-auto pb-20 space-y-32">
       {/* Header */}
-      <div className="flex flex-col items-start gap-8 border-b-[8px] border-black pb-12">
+      <div className="flex flex-col items-start gap-8 border-b-[8px] border-black dark:border-white pb-12">
         <h1 className="text-6xl md:text-9xl font-black tracking-tighter uppercase leading-none">LEGACY.</h1>
-        <div className="inline-block px-6 py-2 bg-[#FFDE03] border-[4px] border-black text-2xl font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <div className="inline-block px-6 py-2 bg-[#FFDE03] border-[4px] rounded-[10px] border-black dark:border-white text-2xl font-black uppercase shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
           Decades of Innovation.
         </div>
       </div>
@@ -68,19 +68,19 @@ const Projects: React.FC = () => {
       {/* Timeline Section */}
       <section className="space-y-16">
         <div className="flex items-center gap-6">
-          <div className="p-4 bg-black text-white border-[4px] border-black shadow-[6px_6px_0px_0px_rgba(0,255,255,1)]">
+          <div className="p-4 bg-black dark:bg-white text-white dark:text-black border-[4px] rounded-[10px] border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,255,255,1)]">
             <History size={32} />
           </div>
           <h2 className="text-4xl md:text-6xl font-black uppercase">Our Journey</h2>
         </div>
 
-        <div className="relative border-l-[6px] border-black ml-4 md:ml-12 pl-12 space-y-12">
+        <div className="relative border-l-[6px] border-black  dark:border-white ml-4 md:ml-12 pl-12 space-y-12">
           {timelineEvents.map((event, i) => (
             <div key={i} className="relative">
-              <div className="absolute -left-[61px] top-0 w-12 h-12 bg-[#FF00FF] border-[4px] border-black flex items-center justify-center font-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="absolute -left-[61px] top-0 w-12 h-12 bg-[#FF00FF] border-[4px] rounded-[10px] border-black dark:border-white flex items-center justify-center font-black text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                 {event.year.slice(-2)}
               </div>
-              <GlassCard className="p-8 bg-white max-w-2xl">
+              <GlassCard className="p-8 bg-white dark:bg-slate-900 max-w-2xl">
                 <h3 className="text-3xl font-black mb-2 uppercase">{event.year}: {event.title}</h3>
                 <p className="text-lg font-bold text-gray-700">{event.description}</p>
               </GlassCard>
@@ -92,7 +92,7 @@ const Projects: React.FC = () => {
       {/* Hall of Fame Section with Images */}
       <section className="space-y-16">
         <div className="flex items-center gap-6">
-          <div className="p-4 bg-[#00FF00] text-black border-[4px] border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="p-4 bg-[#00FF00] text-black dark:text-white border-[4px] rounded-[10px] border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
             <Medal size={48} strokeWidth={2.5} />
           </div>
           <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter">Hall of Fame</h2>
@@ -102,10 +102,10 @@ const Projects: React.FC = () => {
           {achievements.map((ach: any) => (
             <div 
               key={ach.id} 
-              className="bg-white border-[4px] border-black shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] group flex flex-col overflow-hidden"
+              className="bg-white dark:bg-slate-900 border-[4px] border-black dark:border-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] group flex flex-col overflow-hidden"
             >
               {/* Achievement Photo */}
-              <div className="relative h-64 bg-gray-100 border-b-[4px] border-black overflow-hidden">
+              <div className="relative h-64 bg-gray-100 border-b-[4px] border-black dark:border-white overflow-hidden">
                 {ach.image ? (
                   <img 
                     src={formatImageUrl(ach.image)} 
@@ -119,14 +119,14 @@ const Projects: React.FC = () => {
                 )}
                 
                 {/* Icon Box Overlay */}
-                <div className="absolute bottom-4 right-4 w-16 h-16 bg-white border-[4px] border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10">
+                <div className="absolute bottom-4 right-4 w-16 h-16 bg-white dark:bg-slate-900 border-[4px] border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] z-10">
                   <AchievementIcon type={ach.icon} />
                 </div>
               </div>
 
               <div className="p-8 flex flex-col items-center text-center space-y-6">
                 {/* Year Badge */}
-                <div className="bg-black text-white px-6 py-1 text-xl font-black">
+                <div className="bg-black dark:bg-white text-white dark:text-black px-6 py-1 text-xl font-black">
                   {ach.year}
                 </div>
 
@@ -135,7 +135,7 @@ const Projects: React.FC = () => {
                   <h3 className="text-3xl font-black uppercase leading-tight">
                     {ach.title}
                   </h3>
-                  <p className="text-sm font-black uppercase leading-snug text-black opacity-80">
+                  <p className="text-sm font-black uppercase leading-snug text-black dark:text-white opacity-80">
                     {ach.description}
                   </p>
                 </div>
@@ -148,7 +148,7 @@ const Projects: React.FC = () => {
       {/* Past Leaders Section */}
       <section className="space-y-16">
         <div className="flex items-center gap-6">
-          <div className="p-4 bg-[#FFDE03] text-black border-[4px] border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <div className="p-4 bg-[#FFDE03] text-black dark:text-white border-[4px] rounded-[10px] border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
             <Users size={32} />
           </div>
           <h2 className="text-4xl md:text-6xl font-black uppercase">The Pioneers</h2>
@@ -157,36 +157,53 @@ const Projects: React.FC = () => {
         <div className="space-y-16">
           {pastLeaders.map((leader, i) => (
             <div key={i} className="space-y-8">
-              <div className="inline-block px-8 py-2 bg-black text-white border-[4px] border-black text-3xl font-black skew-x-[-10deg]">
+              <div className="inline-block px-8 py-2 bg-black dark:bg-white text-white dark:text-black border-[4px] border-black dark:border-white text-3xl font-black skew-x-[-10deg]">
                 TENURE {leader.year}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className={`grid grid-cols-1 ${leader.additionalPioneers && leader.additionalPioneers.length > 0 ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-8`}>
                 {/* Nodal Officer Card */}
-                <GlassCard className="p-0 border-black flex overflow-hidden group">
-                  <div className="w-1/3 aspect-square border-r-[4px] border-black bg-gray-200">
+                <GlassCard className="p-0 border-black dark:border-white flex overflow-hidden group">
+                  <div className="w-1/3 aspect-square border-r-[4px] border-black dark:border-white bg-gray-200">
                     <img 
                       src={formatImageUrl(leader.nodalOfficerImage)} 
                       alt={leader.nodalOfficer} 
                       className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
-                  <div className="w-2/3 p-8 flex flex-col justify-center bg-white">
-                    <span className="text-xs font-black uppercase bg-[#00FFFF] border-[2px] border-black px-2 py-0.5 inline-block w-fit mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Nodal Officer</span>
+                  <div className="w-2/3 p-8 flex flex-col justify-center bg-white dark:bg-slate-900">
+                    <span className="text-xs font-black uppercase bg-[#00FFFF] border-[2px] border-black dark:border-white px-2 py-0.5 inline-block w-fit mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] text-black">Nodal Officer</span>
                     <h3 className="text-2xl font-black uppercase leading-tight">{leader.nodalOfficer}</h3>
                   </div>
                 </GlassCard>
 
+                {/* Additional Pioneers */}
+                {leader.additionalPioneers?.map((pioneer, idx) => (
+                  <GlassCard key={`additional-${idx}`} className="p-0 border-black dark:border-white flex overflow-hidden group">
+                    <div className="w-1/3 aspect-square border-r-[4px] border-black dark:border-white bg-gray-200">
+                      <img 
+                        src={formatImageUrl(pioneer.image)} 
+                        alt={pioneer.name} 
+                        className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-300"
+                      />
+                    </div>
+                    <div className="w-2/3 p-8 flex flex-col justify-center bg-white dark:bg-slate-900">
+                      <span className="text-xs font-black uppercase bg-[#FFDE03] border-[2px] border-black dark:border-white px-2 py-0.5 inline-block w-fit mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] text-black">{pioneer.role}</span>
+                      <h3 className="text-2xl font-black uppercase leading-tight">{pioneer.name}</h3>
+                    </div>
+                  </GlassCard>
+                ))}
+
                 {/* CEO Card */}
-                <GlassCard className="p-0 border-black flex overflow-hidden group">
-                  <div className="w-1/3 aspect-square border-r-[4px] border-black bg-gray-200">
+                <GlassCard className="p-0 border-black dark:border-white flex overflow-hidden group">
+                  <div className="w-1/3 aspect-square border-r-[4px] border-black dark:border-white bg-gray-200">
                     <img 
                       src={formatImageUrl(leader.ceoImage)} 
                       alt={leader.ceo} 
                       className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
-                  <div className="w-2/3 p-8 flex flex-col justify-center bg-white">
-                    <span className="text-xs font-black uppercase bg-[#FF00FF] text-white border-[2px] border-black px-2 py-0.5 inline-block w-fit mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">CEO</span>
+                  <div className="w-2/3 p-8 flex flex-col justify-center bg-white dark:bg-slate-900">
+                    <span className="text-xs font-black uppercase bg-[#FF00FF] text-white border-[2px] border-black dark:border-white px-2 py-0.5 inline-block w-fit mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">CEO</span>
                     <h3 className="text-2xl font-black uppercase leading-tight">{leader.ceo}</h3>
                   </div>
                 </GlassCard>

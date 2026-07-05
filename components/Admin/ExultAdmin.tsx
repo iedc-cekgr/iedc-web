@@ -590,15 +590,15 @@ const ExultAdmin: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {scoredRegs.map((reg, idx) => (
-              <div key={reg.id} className="bg-white p-4 rounded-xl border border-purple-100 shadow-sm flex justify-between items-center relative overflow-hidden">
+              <div key={reg.id} className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-purple-100 shadow-sm flex justify-between items-center relative overflow-hidden">
                 {idx === 0 && <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-yellow-300 to-yellow-500 opacity-20 rounded-bl-full"></div>}
                 <div className="flex items-center gap-3 relative z-10">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${idx === 0 ? 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300' : idx === 1 ? 'bg-slate-100 text-slate-600 border-2 border-slate-300' : 'bg-orange-50 text-orange-700 border-2 border-orange-200'}`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${idx === 0 ? 'bg-yellow-100 text-yellow-700 border-2 border-yellow-300' : idx === 1 ? 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-2 border-slate-300' : 'bg-orange-50 text-orange-700 border-2 border-orange-200'}`}>
                     #{idx + 1}
                   </div>
                   <div>
-                    <div className="font-bold text-slate-800">{reg.name}</div>
-                    <div className="text-xs text-slate-500 max-w-[120px] truncate" title={reg.email}>{reg.email}</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-200">{reg.name}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 max-w-[120px] truncate" title={reg.email}>{reg.email}</div>
                   </div>
                 </div>
                 <div className="text-right relative z-10">
@@ -616,19 +616,19 @@ const ExultAdmin: React.FC = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-slate-800">Exult 2026 Admin</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Exult 2026 Admin</h2>
       </div>
 
-      <div className="flex gap-4 mb-6 border-b border-slate-200">
+      <div className="flex gap-4 mb-6 border-b border-slate-200 dark:border-slate-700">
         <button
           onClick={() => setActiveTab('events')}
-          className={`pb-3 px-4 font-medium transition-colors ${activeTab === 'events' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+          className={`pb-3 px-4 font-medium transition-colors ${activeTab === 'events' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'}`}
         >
           Manage Events
         </button>
         <button
           onClick={() => setActiveTab('registrations')}
-          className={`pb-3 px-4 font-medium transition-colors ${activeTab === 'registrations' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+          className={`pb-3 px-4 font-medium transition-colors ${activeTab === 'registrations' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'}`}
         >
           Registrations
         </button>
@@ -637,20 +637,20 @@ const ExultAdmin: React.FC = () => {
       {activeTab === 'events' && (
         <div>
           {isEditingEvent ? (
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <div className="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
+            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+              <div className="flex justify-between items-center mb-6 border-b border-slate-200 dark:border-slate-700 pb-4">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-800">
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">
                     {editingEventId ? 'Edit Event' : 
                      eventForm.eventType === 'google-form' ? 'Add Google Form Event' :
                      eventForm.eventType === 'website-form' ? 'Add Website Registration Event' :
                      'Add Quiz Event'}
                   </h3>
-                  <div className="text-sm text-slate-500 uppercase tracking-wider font-semibold mt-1">
+                  <div className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mt-1">
                     TYPE: {eventForm.eventType?.replace('-', ' ')}
                   </div>
                 </div>
-                <button onClick={() => { setIsEditingEvent(false); setEditingEventId(null); localStorage.removeItem('exultAdminDraftForm'); setEventForm({}); }} className="text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full">
+                <button onClick={() => { setIsEditingEvent(false); setEditingEventId(null); localStorage.removeItem('exultAdminDraftForm'); setEventForm({}); }} className="text-slate-400 hover:text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 p-2 rounded-full">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -667,14 +667,14 @@ const ExultAdmin: React.FC = () => {
                   <input type="text" name="slug" value={eventForm.slug || ''} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
                 </div>
                 
-                <div className="md:col-span-2 bg-slate-50 p-4 rounded-lg flex items-center gap-3 border border-slate-200">
+                <div className="md:col-span-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-lg flex items-center gap-3 border border-slate-200 dark:border-slate-700">
                   <div className="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
-                    <input type="checkbox" name="isVisible" id="toggle-isVisible" checked={eventForm.isVisible ?? true} onChange={(e) => setEventForm(prev => ({...prev, isVisible: e.target.checked}))} className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-transform duration-200 ease-in-out" style={{ transform: (eventForm.isVisible ?? true) ? 'translateX(100%)' : 'translateX(0)', borderColor: (eventForm.isVisible ?? true) ? '#22c55e' : '#cbd5e1' }}/>
+                    <input type="checkbox" name="isVisible" id="toggle-isVisible" checked={eventForm.isVisible ?? true} onChange={(e) => setEventForm(prev => ({...prev, isVisible: e.target.checked}))} className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white dark:bg-slate-900 border-4 appearance-none cursor-pointer transition-transform duration-200 ease-in-out" style={{ transform: (eventForm.isVisible ?? true) ? 'translateX(100%)' : 'translateX(0)', borderColor: (eventForm.isVisible ?? true) ? '#22c55e' : '#cbd5e1' }}/>
                     <label htmlFor="toggle-isVisible" className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" style={{ backgroundColor: (eventForm.isVisible ?? true) ? '#22c55e' : '#cbd5e1' }}></label>
                   </div>
                   <div>
-                    <div className="font-bold text-slate-800">Event Visibility (Master Switch)</div>
-                    <div className="text-sm text-slate-500">If disabled, this event will be completely hidden from the public website and cannot be accessed.</div>
+                    <div className="font-bold text-slate-800 dark:text-slate-200">Event Visibility (Master Switch)</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400">If disabled, this event will be completely hidden from the public website and cannot be accessed.</div>
                   </div>
                 </div>
 
@@ -707,7 +707,7 @@ const ExultAdmin: React.FC = () => {
                     <input type="text" name="posterUrl" value={eventForm.posterUrl || ''} onChange={handleEventFormChange} placeholder="Paste image URL here..." className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                     <div className="relative">
                       <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'posterUrl')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload Image" disabled={uploadingField === 'posterUrl'} />
-                      <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'posterUrl'}>
+                      <button type="button" className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-800 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'posterUrl'}>
                         {uploadingField === 'posterUrl' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
                         {uploadingField === 'posterUrl' ? 'Uploading...' : 'Upload'}
                       </button>
@@ -741,7 +741,7 @@ const ExultAdmin: React.FC = () => {
 
               {/* GOOGLE FORM SECTION */}
               {eventForm.eventType === 'google-form' && (
-                <div className="border-t border-slate-200 pt-6 mt-6">
+                <div className="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
                   <h4 className="text-lg font-bold mb-4 text-slate-700 border-l-4 border-green-500 pl-2">Google Form Registration Settings</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
@@ -751,12 +751,12 @@ const ExultAdmin: React.FC = () => {
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">Registration Start Date & Time</label>
                       <input type="datetime-local" name="registrationStartDateTime" value={eventForm.registrationStartDateTime || ''} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
-                      <p className="text-xs text-slate-500 mt-1">Leave blank to open immediately.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Leave blank to open immediately.</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">Registration End Date & Time</label>
                       <input type="datetime-local" name="registrationEndDateTime" value={eventForm.registrationEndDateTime || ''} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
-                      <p className="text-xs text-slate-500 mt-1">Leave blank to keep open indefinitely.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Leave blank to keep open indefinitely.</p>
                     </div>
                   </div>
                 </div>
@@ -764,10 +764,10 @@ const ExultAdmin: React.FC = () => {
 
               {/* WEBSITE FORM SECTION */}
               {eventForm.eventType === 'website-form' && (
-                <div className="border-t border-slate-200 pt-6 mt-6">
+                <div className="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
                   <h4 className="text-lg font-bold mb-4 text-slate-700 border-l-4 border-indigo-500 pl-2">Registration Settings</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex items-center space-x-2 md:col-span-2 bg-slate-50 p-4 rounded-lg">
+                    <div className="flex items-center space-x-2 md:col-span-2 bg-slate-50 dark:bg-slate-950 p-4 rounded-lg">
                       <input type="checkbox" name="isRegistrationEnabled" checked={eventForm.isRegistrationEnabled ?? true} onChange={handleEventFormChange} className="w-5 h-5 text-indigo-600 rounded" />
                       <span className="font-bold text-slate-700">Enable Registrations Now</span>
                     </div>
@@ -775,13 +775,13 @@ const ExultAdmin: React.FC = () => {
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">Registration Deadline (Optional)</label>
                       <input type="datetime-local" name="registrationDeadline" value={eventForm.registrationDeadline || ''} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
-                      <p className="text-xs text-slate-500 mt-1">Form will auto-close after this time.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Form will auto-close after this time.</p>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">Max Participants (Optional)</label>
                       <input type="number" name="maxParticipants" value={eventForm.maxParticipants || ''} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="e.g. 100" />
-                      <p className="text-xs text-slate-500 mt-1">Leave blank for unlimited.</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Leave blank for unlimited.</p>
                     </div>
 
                     <div className="md:col-span-2">
@@ -790,7 +790,7 @@ const ExultAdmin: React.FC = () => {
                         <input type="text" name="paymentQrUrl" value={eventForm.paymentQrUrl || ''} onChange={handleEventFormChange} placeholder="Paste QR Code URL here..." className="w-full px-3 py-2 border border-slate-300 rounded-lg" />
                         <div className="relative">
                           <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, 'paymentQrUrl')} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" title="Upload QR Code" disabled={uploadingField === 'paymentQrUrl'} />
-                          <button type="button" className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'paymentQrUrl'}>
+                          <button type="button" className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:bg-slate-800 border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-medium whitespace-nowrap" disabled={uploadingField === 'paymentQrUrl'}>
                             {uploadingField === 'paymentQrUrl' ? <div className="w-4 h-4 rounded-full border-2 border-slate-400 border-t-slate-700 animate-spin"></div> : <Upload className="w-4 h-4" />}
                             {uploadingField === 'paymentQrUrl' ? 'Uploading...' : 'Upload'}
                           </button>
@@ -806,12 +806,12 @@ const ExultAdmin: React.FC = () => {
                 <div className="border-t border-purple-200 bg-purple-50 p-6 rounded-xl mt-6 mb-6">
                   <h4 className="text-lg font-bold text-purple-900 mb-4 border-l-4 border-purple-500 pl-2">Quiz Settings & Questions</h4>
                   
-                  <div className="flex items-center space-x-2 bg-white p-4 rounded-lg mb-6 border border-purple-100">
+                  <div className="flex items-center space-x-2 bg-white dark:bg-slate-900 p-4 rounded-lg mb-6 border border-purple-100">
                     <input type="checkbox" name="isRegistrationEnabled" checked={eventForm.isRegistrationEnabled ?? true} onChange={handleEventFormChange} className="w-5 h-5 text-purple-600 rounded" />
                     <span className="font-bold text-purple-900">Enable Quiz Registrations Now</span>
                   </div>
 
-                  <div className="mb-6 bg-white p-4 rounded-lg border border-purple-100 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="mb-6 bg-white dark:bg-slate-900 p-4 rounded-lg border border-purple-100 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="text-sm font-bold text-purple-800 mb-2 block">Total Time Limit (Minutes)</label>
                       <input type="number" name="quizTimeLimit" value={eventForm.quizTimeLimit || 10} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500" />
@@ -823,7 +823,7 @@ const ExultAdmin: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="mb-6 bg-white p-4 rounded-lg border border-purple-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="mb-6 bg-white dark:bg-slate-900 p-4 rounded-lg border border-purple-100 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-bold text-purple-800 mb-2 block">Quiz Start Date & Time</label>
                       <input type="datetime-local" name="quizStartDateTime" value={eventForm.quizStartDateTime || ''} onChange={handleEventFormChange} className="w-full px-3 py-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500" />
@@ -836,10 +836,10 @@ const ExultAdmin: React.FC = () => {
                   
                   <div className="space-y-6">
                         {(eventForm.quizQuestions || []).map((q: any, qIdx: number) => (
-                          <div key={q.id} className="bg-white p-6 rounded-xl border border-slate-200 relative group">
+                          <div key={q.id} className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-700 relative group">
                         <button onClick={() => removeQuizQuestion(qIdx)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4"/></button>
                         <div className="mb-4 pr-8 flex items-center justify-between">
-                          <label className="block text-xs font-bold text-slate-500">Question {qIdx + 1}</label>
+                          <label className="block text-xs font-bold text-slate-500 dark:text-slate-400">Question {qIdx + 1}</label>
                           <select 
                             value={q.type || 'multiple-choice'} 
                             onChange={(e) => updateQuizQuestion(qIdx, { type: e.target.value as any })}
@@ -855,7 +855,7 @@ const ExultAdmin: React.FC = () => {
                           
                           {q.type === 'image-identification' && (
                             <div className="mb-3">
-                              <label className="block text-xs font-bold text-slate-500 mb-1">Image URL (Optional)</label>
+                              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Image URL (Optional)</label>
                               <div className="flex gap-2">
                                 <input type="text" value={q.imageUrl || ''} onChange={(e) => updateQuizQuestion(qIdx, { imageUrl: e.target.value })} className="w-full px-3 py-1.5 border border-slate-300 rounded-md text-sm" placeholder="Paste image URL..." />
                                 <div className="relative shrink-0">
@@ -872,7 +872,7 @@ const ExultAdmin: React.FC = () => {
                                     } catch (err) {}
                                     setUploadingField(null);
                                   }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                                  <button type="button" className="bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap" disabled={uploadingField === `q_${q.id}`}>
+                                  <button type="button" className="bg-slate-100 dark:bg-slate-900 border border-slate-300 px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap" disabled={uploadingField === `q_${q.id}`}>
                                     {uploadingField === `q_${q.id}` ? 'Uploading...' : 'Upload'}
                                   </button>
                                 </div>
@@ -910,7 +910,7 @@ const ExultAdmin: React.FC = () => {
                           </div>
                         ) : (
                           <div>
-                            <label className="block text-xs font-bold text-slate-500 mb-1">Correct Answer</label>
+                            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Correct Answer</label>
                             <input 
                               type="text" 
                               value={q.correctOption} 
@@ -932,24 +932,24 @@ const ExultAdmin: React.FC = () => {
 
               {/* Form Builder Section (Only for Website Form and Quiz) */}
               {(eventForm.eventType === 'website-form' || eventForm.eventType === 'quiz') && (
-                <div className="border-t border-slate-200 pt-6 mt-6">
+                <div className="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
                   <h4 className="text-lg font-bold mb-4 border-l-4 border-orange-400 pl-2">Custom Registration Fields</h4>
-                  <p className="text-sm text-slate-500 mb-4">Name and Email are included by default. Add custom fields below if you need extra info from participants.</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Name and Email are included by default. Add custom fields below if you need extra info from participants.</p>
                   
                   <div className="space-y-4 mb-4">
                     {(eventForm.customFields || []).map((field, idx) => (
-                      <div key={field.id} className="p-4 bg-slate-50 border border-slate-200 rounded-lg flex flex-col gap-4">
+                      <div key={field.id} className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg flex flex-col gap-4">
                         <div className="flex justify-between">
                           <span className="font-medium">Field #{idx + 1}</span>
                           <button onClick={() => removeCustomField(idx)} className="text-red-500 hover:text-red-700 text-sm flex items-center"><Trash2 className="w-4 h-4 mr-1"/> Remove</button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
-                            <label className="block text-xs text-slate-500 mb-1">Label</label>
+                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Label</label>
                             <input type="text" value={field.label} onChange={(e) => updateCustomField(idx, { label: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" />
                           </div>
                           <div>
-                            <label className="block text-xs text-slate-500 mb-1">Type</label>
+                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Type</label>
                             <select value={field.type} onChange={(e) => updateCustomField(idx, { type: e.target.value as any })} className="w-full px-2 py-1 border rounded text-sm">
                               <option value="text">Short Text</option>
                               <option value="textarea">Long Text</option>
@@ -966,7 +966,7 @@ const ExultAdmin: React.FC = () => {
                         </div>
                         {(field.type === 'dropdown' || field.type === 'radio') && (
                           <div>
-                            <label className="block text-xs text-slate-500 mb-1">Options (comma separated)</label>
+                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1">Options (comma separated)</label>
                             <input 
                               type="text" 
                               key={`options_${field.id}_${field.options?.join(',')}`}
@@ -987,7 +987,7 @@ const ExultAdmin: React.FC = () => {
               )}
 
               <div className="mt-8 flex justify-end gap-3">
-                <button onClick={() => { setIsEditingEvent(false); setEditingEventId(null); }} className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 font-medium">Cancel</button>
+                <button onClick={() => { setIsEditingEvent(false); setEditingEventId(null); }} className="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 dark:bg-slate-950 font-medium">Cancel</button>
                 <button onClick={saveEvent} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center gap-2"><Save className="w-4 h-4" /> Save Event</button>
               </div>
             </div>
@@ -1000,13 +1000,13 @@ const ExultAdmin: React.FC = () => {
                     setIsEditingEvent(true); 
                     setEventForm({ eventType: 'google-form', isGoogleForm: true, isQuiz: false, isRegistrationEnabled: true, customFields: [], order: events.length }); 
                   }}
-                  className="flex flex-col items-center justify-center p-6 bg-white border-2 border-slate-200 hover:border-blue-500 rounded-xl transition-all hover:shadow-lg group"
+                  className="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 hover:border-blue-500 rounded-xl transition-all hover:shadow-lg group"
                 >
                   <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">Create Google Form Event</h3>
-                  <p className="text-sm text-slate-500 text-center">Create an event where registration happens through an external Google Form.</p>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">Create Google Form Event</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 text-center">Create an event where registration happens through an external Google Form.</p>
                 </button>
 
                 {/* 2. Website Registration Event */}
@@ -1015,13 +1015,13 @@ const ExultAdmin: React.FC = () => {
                     setIsEditingEvent(true); 
                     setEventForm({ eventType: 'website-form', isGoogleForm: false, isQuiz: false, isRegistrationEnabled: true, customFields: [], order: events.length }); 
                   }}
-                  className="flex flex-col items-center justify-center p-6 bg-white border-2 border-slate-200 hover:border-green-500 rounded-xl transition-all hover:shadow-lg group"
+                  className="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 hover:border-green-500 rounded-xl transition-all hover:shadow-lg group"
                 >
                   <div className="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">Create Website Event</h3>
-                  <p className="text-sm text-slate-500 text-center">Create an event that uses the website's built-in registration system.</p>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">Create Website Event</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 text-center">Create an event that uses the website's built-in registration system.</p>
                 </button>
 
                 {/* 3. Quiz Event */}
@@ -1030,50 +1030,50 @@ const ExultAdmin: React.FC = () => {
                     setIsEditingEvent(true); 
                     setEventForm({ eventType: 'quiz', isGoogleForm: false, isQuiz: true, isRegistrationEnabled: true, customFields: [], order: events.length, quizTimeLimit: 10, quizQuestions: [] }); 
                   }}
-                  className="flex flex-col items-center justify-center p-6 bg-white border-2 border-slate-200 hover:border-purple-500 rounded-xl transition-all hover:shadow-lg group"
+                  className="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 hover:border-purple-500 rounded-xl transition-all hover:shadow-lg group"
                 >
                   <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-2">Create Quiz Event</h3>
-                  <p className="text-sm text-slate-500 text-center">Create a quiz event using the existing quiz system.</p>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">Create Quiz Event</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 text-center">Create a quiz event using the existing quiz system.</p>
                 </button>
               </div>
 
               {loadingEvents ? (
                 <div>Loading events...</div>
               ) : (
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="p-4 font-semibold text-slate-600">Event</th>
-                        <th className="p-4 font-semibold text-slate-600">Type</th>
-                        <th className="p-4 font-semibold text-slate-600">Date/Time</th>
-                        <th className="p-4 font-semibold text-slate-600">Registrations</th>
-                        <th className="p-4 font-semibold text-slate-600">Actions</th>
+                      <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
+                        <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Event</th>
+                        <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Type</th>
+                        <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Date/Time</th>
+                        <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Registrations</th>
+                        <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {events.length === 0 ? (
-                        <tr><td colSpan={4} className="p-4 text-center text-slate-500">No events found</td></tr>
+                        <tr><td colSpan={4} className="p-4 text-center text-slate-500 dark:text-slate-400">No events found</td></tr>
                       ) : (
                         events.map(event => (
-                          <tr key={event.id} className="border-b border-slate-100 hover:bg-slate-50">
+                          <tr key={event.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-950">
                             <td className="p-4">
-                              <div className="font-medium text-slate-800">{event.title}</div>
-                              <div className="text-sm text-slate-500">/{event.slug}</div>
+                              <div className="font-medium text-slate-800 dark:text-slate-200">{event.title}</div>
+                              <div className="text-sm text-slate-500 dark:text-slate-400">/{event.slug}</div>
                             </td>
                             <td className="p-4">
                               {event.isQuiz ? (
                                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md border border-purple-200"><AlertTriangle className="w-3 h-3"/> Quiz</span>
                               ) : (
-                                <span className="inline-flex items-center px-2 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-md border border-slate-200">Standard</span>
+                                <span className="inline-flex items-center px-2 py-1 bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 text-xs font-semibold rounded-md border border-slate-200 dark:border-slate-700">Standard</span>
                               )}
                             </td>
                             <td className="p-4">
                               <div className="text-sm">{event.date}</div>
-                              <div className="text-sm text-slate-500">{event.time}</div>
+                              <div className="text-sm text-slate-500 dark:text-slate-400">{event.time}</div>
                             </td>
                             <td className="p-4">
                               <span className={`px-2 py-1 text-xs rounded-full font-medium ${event.isRegistrationEnabled ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -1097,7 +1097,7 @@ const ExultAdmin: React.FC = () => {
       )}
 
       {activeTab === 'registrations' && (
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative">
@@ -1115,7 +1115,7 @@ const ExultAdmin: React.FC = () => {
                 <select 
                   value={regFilterEvent}
                   onChange={(e) => setRegFilterEvent(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none bg-white"
+                  className="pl-10 pr-4 py-2 border border-slate-300 rounded-lg w-full md:w-64 focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none bg-white dark:bg-slate-900"
                 >
                   <option value="all">All Events</option>
                   {events.map(ev => (
@@ -1137,40 +1137,40 @@ const ExultAdmin: React.FC = () => {
           {renderLeaderboard()}
 
           {loadingRegs ? (
-            <div className="text-center py-10 text-slate-500">Loading registrations...</div>
+            <div className="text-center py-10 text-slate-500 dark:text-slate-400">Loading registrations...</div>
           ) : (
             regFilterEvent !== 'all' && (events.find(e => e.id === regFilterEvent)?.eventType === 'google-form' || events.find(e => e.id === regFilterEvent)?.isGoogleForm) ? (
-              <div className="bg-slate-50 rounded-xl border border-dashed border-slate-300 p-12 text-center">
+              <div className="bg-slate-50 dark:bg-slate-950 rounded-xl border border-dashed border-slate-300 p-12 text-center">
                 <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">External Registration</h3>
-                <p className="text-slate-500">This event uses Google Forms. No internal registration records are collected here.</p>
+                <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">External Registration</h3>
+                <p className="text-slate-500 dark:text-slate-400">This event uses Google Forms. No internal registration records are collected here.</p>
               </div>
             ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-y border-slate-200">
-                    <th className="p-3 font-semibold text-slate-600">ID</th>
-                    <th className="p-3 font-semibold text-slate-600">Name</th>
-                    <th className="p-3 font-semibold text-slate-600">Email</th>
-                    <th className="p-3 font-semibold text-slate-600">Event</th>
-                    <th className="p-3 font-semibold text-slate-600">Status</th>
-                    <th className="p-3 font-semibold text-slate-600">Date</th>
-                    <th className="p-3 font-semibold text-slate-600 text-right">Actions</th>
+                  <tr className="bg-slate-50 dark:bg-slate-950 border-y border-slate-200 dark:border-slate-700">
+                    <th className="p-3 font-semibold text-slate-600 dark:text-slate-300">ID</th>
+                    <th className="p-3 font-semibold text-slate-600 dark:text-slate-300">Name</th>
+                    <th className="p-3 font-semibold text-slate-600 dark:text-slate-300">Email</th>
+                    <th className="p-3 font-semibold text-slate-600 dark:text-slate-300">Event</th>
+                    <th className="p-3 font-semibold text-slate-600 dark:text-slate-300">Status</th>
+                    <th className="p-3 font-semibold text-slate-600 dark:text-slate-300">Date</th>
+                    <th className="p-3 font-semibold text-slate-600 dark:text-slate-300 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredRegs.length === 0 ? (
-                    <tr><td colSpan={7} className="p-8 text-center text-slate-500">No registrations found</td></tr>
+                    <tr><td colSpan={7} className="p-8 text-center text-slate-500 dark:text-slate-400">No registrations found</td></tr>
                   ) : (
                     filteredRegs.map(reg => (
-                      <tr key={reg.id} className="border-b border-slate-100 hover:bg-slate-50">
-                        <td className="p-3 text-slate-600 text-sm font-mono">{reg.readableId || reg.id.substring(0, 8)}</td>
-                        <td className="p-3 font-medium text-slate-800">{reg.name}</td>
-                        <td className="p-3 text-slate-600 text-sm">{reg.email}</td>
-                        <td className="p-3 text-slate-600 text-sm">
+                      <tr key={reg.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-950">
+                        <td className="p-3 text-slate-600 dark:text-slate-300 text-sm font-mono">{reg.readableId || reg.id.substring(0, 8)}</td>
+                        <td className="p-3 font-medium text-slate-800 dark:text-slate-200">{reg.name}</td>
+                        <td className="p-3 text-slate-600 dark:text-slate-300 text-sm">{reg.email}</td>
+                        <td className="p-3 text-slate-600 dark:text-slate-300 text-sm">
                           <span className="bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md border border-indigo-100">
                             {reg.eventTitle || 'Unknown Event'}
                           </span>
@@ -1193,7 +1193,7 @@ const ExultAdmin: React.FC = () => {
                                 {reg.status.toUpperCase()}
                               </span>
                               { (reg.status === 'completed' || reg.status === 'disqualified') && (
-                                <span className="text-xs text-slate-500 font-medium">Score: {calculateScore(reg) ?? '?'} / {allQuizAnswers[reg.eventId]?.length || 0}</span>
+                                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Score: {calculateScore(reg) ?? '?'} / {allQuizAnswers[reg.eventId]?.length || 0}</span>
                               )}
                               {reg.status === 'disqualified' && reg.disqualifiedReason && (
                                 <span className="text-[10px] text-red-500 font-semibold leading-tight max-w-[120px]">{reg.disqualifiedReason}</span>
@@ -1203,7 +1203,7 @@ const ExultAdmin: React.FC = () => {
                             <span className="text-xs text-slate-400">-</span>
                           )}
                         </td>
-                        <td className="p-3 text-slate-500 text-sm">
+                        <td className="p-3 text-slate-500 dark:text-slate-400 text-sm">
                           {reg.timestamp?.toDate ? reg.timestamp.toDate().toLocaleDateString() : 'N/A'}
                         </td>
                         <td className="p-3 text-right">
@@ -1231,19 +1231,19 @@ const ExultAdmin: React.FC = () => {
       {/* Quiz Results Modal */}
       {selectedRegResults && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200">
-            <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center z-10 shadow-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 dark:border-slate-700">
+            <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-6 py-4 flex justify-between items-center z-10 shadow-sm">
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Quiz Results: {selectedRegResults.name}</h3>
-                <p className="text-sm text-slate-500">{selectedRegResults.email}</p>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">Quiz Results: {selectedRegResults.name}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{selectedRegResults.email}</p>
               </div>
-              <button onClick={() => setSelectedRegResults(null)} className="text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full">
+              <button onClick={() => setSelectedRegResults(null)} className="text-slate-400 hover:text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 p-2 rounded-full">
                 <X className="w-5 h-5" />
               </button>
             </div>
             
             <div className="p-6">
-              <div className="flex justify-between items-center mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <div className="flex justify-between items-center mb-6 bg-slate-50 dark:bg-slate-950 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
                 <div className="font-semibold text-slate-700">Total Score</div>
                 <div className="text-xl font-bold text-purple-600">
                   {calculateScore(selectedRegResults) ?? 0} / {allQuizAnswers[selectedRegResults.eventId]?.length || 0}
@@ -1278,20 +1278,20 @@ const ExultAdmin: React.FC = () => {
                         </div>
                         <div className="flex-1">
                           <div className="flex justify-between items-start gap-4 mb-2">
-                            <p className="font-semibold text-slate-800 text-sm">Q{i + 1}: {decodedText}</p>
-                            <span className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap bg-white px-2 py-0.5 rounded border border-slate-200">{q.type === 'short-answer' ? 'Short Answer' : q.type === 'image-identification' ? 'Image ID' : 'Objective'}</span>
+                            <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">Q{i + 1}: {decodedText}</p>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase whitespace-nowrap bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">{q.type === 'short-answer' ? 'Short Answer' : q.type === 'image-identification' ? 'Image ID' : 'Objective'}</span>
                           </div>
                           
-                          {q.imageUrl && <img src={q.imageUrl} alt="Question" className="max-h-32 mb-3 rounded-lg border border-slate-200 object-contain bg-white" />}
+                          {q.imageUrl && <img src={q.imageUrl} alt="Question" className="max-h-32 mb-3 rounded-lg border border-slate-200 dark:border-slate-700 object-contain bg-white dark:bg-slate-900" />}
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                            <div className="bg-white p-2.5 rounded border border-slate-200 shadow-sm">
-                              <span className="text-slate-500 text-xs block mb-1">Their Answer:</span>
+                            <div className="bg-white dark:bg-slate-900 p-2.5 rounded border border-slate-200 dark:border-slate-700 shadow-sm">
+                              <span className="text-slate-500 dark:text-slate-400 text-xs block mb-1">Their Answer:</span>
                               <span className={`font-medium ${!studentAns ? 'text-slate-400 italic' : isCorrect ? 'text-green-700' : 'text-red-700'}`}>{studentAns || '(No Answer)'}</span>
                             </div>
-                            <div className="bg-white p-2.5 rounded border border-slate-200 shadow-sm">
-                              <span className="text-slate-500 text-xs block mb-1">Correct Answer:</span>
-                              <span className="font-medium text-slate-800">{correctAns}</span>
+                            <div className="bg-white dark:bg-slate-900 p-2.5 rounded border border-slate-200 dark:border-slate-700 shadow-sm">
+                              <span className="text-slate-500 dark:text-slate-400 text-xs block mb-1">Correct Answer:</span>
+                              <span className="font-medium text-slate-800 dark:text-slate-200">{correctAns}</span>
                             </div>
                           </div>
                         </div>
