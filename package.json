@@ -15,7 +15,8 @@
     "jspdf-autotable": "^5.0.8",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "recharts": "^3.9.2"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
