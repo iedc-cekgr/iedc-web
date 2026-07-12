@@ -21,15 +21,38 @@ export interface ExecomMember {
 export interface Event {
   id: number;
   title: string;
-  date: string;
+  date: string; // Used for legacy display, usually startDateTime is preferred now
   description: string;
   image: string;
+  
+  // Existing legacy fields (optional)
   registrationLink?: string;
   registrationButtonText?: string;
+  
+  // New Registration fields
+  eventType?: 'google-form' | 'website-form';
+  googleFormLink?: string;
+  registrationStartDateTime?: string;
+  registrationEndDateTime?: string;
+  isRegistrationEnabled?: boolean;
+  maxParticipants?: number;
+  currentParticipants?: number;
+  paymentQrUrl?: string;
+  feeAmount?: number;
+  customFields?: CustomField[];
+  
   type: string; 
   mode?: 'Online' | 'Offline';
   startDateTime?: string;
   endDateTime?: string;
+}
+
+export interface CustomField {
+  id: string;
+  type: 'text' | 'textarea' | 'dropdown' | 'checkbox' | 'radio' | 'file';
+  label: string;
+  required: boolean;
+  options?: string[]; // For dropdown, checkbox, radio
 }
 
 export interface GalleryItem {

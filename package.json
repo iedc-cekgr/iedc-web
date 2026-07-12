@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "browser-image-compression": "^2.0.2",
     "firebase": "^12.14.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",

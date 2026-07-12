@@ -5,6 +5,7 @@ import { formatImageUrl } from '../constants';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Event } from '../types';
+import EventRegistrationModal from '../components/EventRegistrationModal';
 
 interface EventsProps {
   onNavigate: (path: string) => void;
@@ -14,25 +15,28 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'All' | 'Online' | 'Offline'>('All');
+  
+  // Registration Modal State
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
+  const fetchEvents = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'events'));
+      const eventsData = querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        docId: doc.id
+      })) as unknown as Event[];
+      
+      eventsData.sort((a, b) => b.id - a.id);
+      setEvents(eventsData);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'events'));
-        const eventsData = querySnapshot.docs.map(doc => ({
-          ...doc.data(),
-          docId: doc.id
-        })) as unknown as Event[];
-        
-        // Sort by ID descending (newest first)
-        eventsData.sort((a, b) => b.id - a.id);
-        setEvents(eventsData);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchEvents();
   }, []);
 
@@ -42,7 +46,7 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
 
   const filteredEvents = events.filter(event => {
     if (activeTab === 'All') return true;
-    return event.mode === activeTab || (!event.mode && activeTab === 'Offline'); // Default legacy events to Offline
+    return event.mode === activeTab || (!event.mode && activeTab === 'Offline');
   });
 
   const formatDateTime = (isoString?: string) => {
@@ -59,29 +63,54 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
 
   const parseDateTime = (dtStr?: string) => {
     if (!dtStr) return null;
+    if (dtStr.includes('T') && dtStr.length === 16) {
+      // It's a datetime-local string (YYYY-MM-DDTHH:mm)
+      return new Date(dtStr);
+    }
     if (dtStr.includes('T')) {
+      // Legacy string splitting logic, just in case
       const [d, t] = dtStr.split('T');
       const [y, m, day] = d.split('-');
       const [hr, min] = t.split(':');
-      return new Date(parseInt(y), parseInt(m) - 1, parseInt(day), parseInt(hr), parseInt(min));
+      if (y && m && day && hr && min) {
+        return new Date(parseInt(y), parseInt(m) - 1, parseInt(day), parseInt(hr), parseInt(min));
+      }
     }
     return new Date(dtStr);
   };
 
   const getRegistrationStatus = (event: Event) => {
-    if (!event.registrationLink) return { status: 'closed', message: 'Registrations Closed' };
-    
+    // 1. Check if explicitly disabled for website forms
+    if (event.eventType === 'website-form' && event.isRegistrationEnabled === false) {
+      return { status: 'closed', message: 'Registrations Closed' };
+    }
+
+    // 2. Check participant limits
+    if (event.maxParticipants && event.currentParticipants !== undefined && event.currentParticipants >= event.maxParticipants) {
+      return { status: 'closed', message: 'Sold Out' };
+    }
+
     const now = new Date();
-    const start = parseDateTime(event.startDateTime);
-    const end = parseDateTime(event.endDateTime);
     
-    if (start && start > now) {
+    // 3. Time bounds check (for all types if provided)
+    const regStartStr = event.registrationStartDateTime || event.startDateTime;
+    const regEndStr = event.registrationEndDateTime || event.endDateTime;
+
+    const start = parseDateTime(regStartStr);
+    const end = parseDateTime(regEndStr);
+    
+    if (regStartStr && start && start > now) {
       return { status: 'not_started', message: 'Not Started Yet' };
     }
-    if (end && end < now) {
+    if (regEndStr && end && end < now) {
       return { status: 'ended', message: 'Registrations Ended' };
     }
     
+    // Legacy fallback
+    if (!event.eventType && !event.registrationLink) {
+      return { status: 'closed', message: 'Registrations Closed' };
+    }
+
     return { status: 'open', message: event.registrationButtonText || 'Register Now' };
   };
 
@@ -92,7 +121,6 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
         <p className="text-2xl font-black uppercase text-pink-600 bg-black dark:bg-white text-white dark:text-black inline-block px-4 py-1 mt-2 shadow-[6px_6px_0px_0px_rgba(236,72,153,1)]">Events that matter.</p>
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex flex-wrap gap-4 mb-16">
         {['All', 'Online', 'Offline'].map((tab) => (
           <button
@@ -109,17 +137,14 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
         ))}
       </div>
 
-      {/* Events Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {filteredEvents.map((event) => (
           <GlassCard key={event.id} className="p-0 border-black dark:border-white flex flex-col shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] overflow-hidden group hover:-translate-y-2 transition-transform duration-300">
             <div className="h-56 border-b-[4px] border-black dark:border-white relative overflow-hidden bg-gray-100">
               <img src={formatImageUrl(event.image)} alt={event.title} className="w-full h-full object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-500" />
-              {/* Event Type Badge */}
               <div className="absolute top-4 left-4 bg-[#00FFFF] border-[3px] border-black dark:border-white px-4 py-1 font-black text-sm uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                 {event.type}
               </div>
-              {/* Mode Badge */}
               <div className="absolute top-4 right-4 bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white px-3 py-1 font-black text-xs uppercase flex items-center gap-2">
                 {event.mode === 'Online' ? <ExternalLink size={14} /> : <MapPin size={14} />}
                 {event.mode || 'Offline'}
@@ -139,15 +164,33 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
                 </div>
                 <h3 className="text-3xl font-black uppercase leading-none">{event.title}</h3>
                 <p className="font-bold text-gray-700 leading-tight">{event.description}</p>
+                {event.maxParticipants && event.currentParticipants !== undefined && (
+                   <p className="text-xs font-bold text-pink-600 uppercase bg-pink-100 inline-block px-2 py-1 rounded">
+                     {event.maxParticipants - event.currentParticipants} spots left
+                   </p>
+                )}
               </div>
               
               <div className="flex items-center justify-between border-t-[4px] border-black dark:border-white pt-6 mt-auto">
                  {(() => {
                    const regStatus = getRegistrationStatus(event);
                    if (regStatus.status === 'open') {
-                     const isInternal = event.registrationLink?.startsWith('/');
+                     // Google Form or External Link
+                     if (event.eventType === 'google-form' || (!event.eventType && event.registrationLink && !event.registrationLink.startsWith('/'))) {
+                       return (
+                         <a 
+                           href={event.googleFormLink || event.registrationLink} 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           className="w-full text-center bg-[#FF00FF] text-white border-[3px] border-black dark:border-white font-black py-4 px-6 uppercase text-lg shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-2"
+                         >
+                           {regStatus.message} <ExternalLink size={20} />
+                         </a>
+                       );
+                     }
                      
-                     if (isInternal) {
+                     // Internal Page Navigation (Legacy)
+                     if (!event.eventType && event.registrationLink?.startsWith('/')) {
                        return (
                          <button 
                            onClick={() => onNavigate(event.registrationLink!)}
@@ -157,17 +200,16 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
                          </button>
                        );
                      }
-
+                     
+                     // Website Form (Modal)
                      return (
-                       <a 
-                         href={event.registrationLink} 
-                         target="_blank" 
-                         rel="noopener noreferrer" 
-                         className="w-full text-center bg-[#FF00FF] text-white border-[3px] border-black dark:border-white font-black py-4 px-6 uppercase text-lg shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-2"
-                       >
-                         {regStatus.message} <ExternalLink size={20} />
-                       </a>
-                     );
+                        <button 
+                          onClick={() => setSelectedEvent(event)}
+                          className="w-full text-center bg-[#FF00FF] text-white border-[3px] border-black dark:border-white font-black py-4 px-6 uppercase text-lg shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-2"
+                        >
+                          {regStatus.message}
+                        </button>
+                      );
                    } else {
                      return (
                        <div className="w-full text-center bg-gray-200 text-gray-500 dark:text-gray-400 border-[3px] border-gray-300 font-black py-4 px-6 uppercase text-lg cursor-not-allowed">
@@ -186,6 +228,16 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
           </div>
         )}
       </div>
+
+      {selectedEvent && (
+        <EventRegistrationModal 
+          event={selectedEvent} 
+          onClose={() => setSelectedEvent(null)}
+          onSuccess={() => {
+            fetchEvents(); // Refresh data to update participant counts
+          }}
+        />
+      )}
     </div>
   );
 };

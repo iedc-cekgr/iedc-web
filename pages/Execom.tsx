@@ -15,61 +15,83 @@ const ExecomMemberDetail: React.FC<{ member: ExecomMember; onBack: () => void }>
   }, []);
 
   return (
-    <div className="pt-40 px-6 max-w-5xl mx-auto pb-20 animate-in fade-in duration-300">
+    <div className="pt-32 px-6 max-w-7xl mx-auto pb-20 overflow-hidden">
       <button 
         onClick={onBack} 
-        className="mb-12 flex items-center gap-3 text-xl font-black uppercase tracking-wider hover:bg-black dark:bg-white hover:text-white border-[3px] border-black dark:border-white px-6 py-2 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+        className="mb-16 flex items-center gap-3 text-xl font-black uppercase tracking-wider hover:bg-black dark:bg-white hover:text-white dark:hover:text-black border-[4px] border-black dark:border-white px-6 py-2 transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] animate-in slide-in-from-top-10 fade-in duration-500"
       >
         <ArrowLeft size={24} /> Back to Board
       </button>
 
-      <div className="grid md:grid-cols-2 gap-16 items-start">
-        <div className="aspect-square border-[4px] border-black dark:border-white bg-gray-100 overflow-hidden shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] sticky top-32">
-          {!imgError ? (
-            <img 
-              src={formatImageUrl(member.image)} 
-              onError={() => setImgError(true)}
-              className="w-full h-full object-cover md:grayscale md:hover:grayscale-0 transition-all duration-500"
-            />
-          ) : (
-             <div className="w-full h-full flex flex-col items-center justify-center bg-[#f0f0f0] text-black dark:text-white p-4 text-center">
-               <User size={120} className="mb-4 opacity-20" />
-               <span className="font-black text-6xl opacity-10">{member.name.split(' ').map((n: string) => n[0]).join('')}</span>
-             </div>
-          )}
-        </div>
-        <div className="py-4">
-          <h1 className="text-5xl md:text-7xl font-black uppercase mb-4 leading-none">{member.name}</h1>
-          <p className="inline-block text-2xl font-black text-white bg-blue-600 px-4 py-2 uppercase tracking-widest mb-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-            {member.profileRole || member.role}
-          </p>
+      <div className="grid lg:grid-cols-[1fr_1.5fr] gap-16 lg:gap-24 items-center">
+        {/* Left Side: Animated Image */}
+        <div className="relative group animate-in slide-in-from-left-10 fade-in duration-700">
+          {/* Decorative background shapes */}
+          <div className="absolute inset-0 bg-[#FF00FF] translate-x-4 translate-y-4 border-[4px] border-black dark:border-white group-hover:translate-x-8 group-hover:translate-y-8 transition-transform duration-500 ease-out z-0"></div>
+          <div className="absolute inset-0 bg-[#00FFFF] translate-x-2 translate-y-2 border-[4px] border-black dark:border-white group-hover:translate-x-4 group-hover:translate-y-4 transition-transform duration-500 delay-75 ease-out z-10"></div>
           
-          <div className="mb-12">
-            <h3 className="text-2xl font-black uppercase tracking-widest mb-6 border-b-[4px] border-black dark:border-white pb-2 inline-block">Connect</h3>
+          <div className="relative z-20 aspect-[4/5] border-[4px] border-black dark:border-white bg-gray-100 overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] group-hover:shadow-none group-hover:translate-x-[8px] group-hover:translate-y-[8px] transition-all duration-500 bg-white">
+            {!imgError ? (
+              <img 
+                src={formatImageUrl(member.image)} 
+                onError={() => setImgError(true)}
+                className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+              />
+            ) : (
+               <div className="w-full h-full flex flex-col items-center justify-center bg-[#f0f0f0] text-black dark:text-white p-4 text-center">
+                 <User size={120} className="mb-4 opacity-20" />
+                 <span className="font-black text-6xl opacity-10">{member.name.split(' ').map((n: string) => n[0]).join('')}</span>
+               </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Side: Details */}
+        <div className="py-4 animate-in slide-in-from-right-10 fade-in duration-700 delay-150 fill-mode-both">
+          <div className="mb-8 space-y-6">
+            <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-black uppercase leading-[0.9] tracking-tighter break-words text-black dark:text-white">
+              {member.name}
+            </h1>
+            <div className="inline-flex overflow-hidden border-[4px] border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all group">
+              <span className="bg-[#FFDE03] text-black px-6 py-3 text-2xl md:text-3xl font-black uppercase tracking-widest group-hover:bg-[#FF00FF] group-hover:text-white transition-colors duration-300">
+                {member.profileRole || member.role}
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-16">
+            <h3 className="text-xl font-black uppercase tracking-widest mb-8 flex items-center gap-4 text-black dark:text-white">
+              <span className="w-12 h-1 bg-black dark:bg-white"></span>
+              Connect
+            </h3>
             
             <div className="flex flex-wrap gap-6">
                {member.socials.linkedin && (
-                  <a href={member.socials.linkedin} target="_blank" rel="noopener noreferrer" className="w-16 h-16 bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white flex items-center justify-center hover:bg-[#0077b5] group/icon transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px]">
-                    <Linkedin className="text-black dark:text-white group-hover/icon:text-white w-8 h-8" />
+                  <a href={member.socials.linkedin} target="_blank" rel="noopener noreferrer" className="relative group/link w-16 h-16 bg-white dark:bg-slate-900 border-[4px] border-black dark:border-white flex items-center justify-center transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px]">
+                    <div className="absolute inset-0 bg-[#0077b5] scale-y-0 group-hover/link:scale-y-100 origin-bottom transition-transform duration-300 ease-out"></div>
+                    <Linkedin className="relative z-10 text-black dark:text-white group-hover/link:text-white w-8 h-8 group-hover/link:-rotate-12 transition-transform duration-300" />
                   </a>
                )}
                {member.socials.github && (
-                  <a href={member.socials.github} target="_blank" rel="noopener noreferrer" className="w-16 h-16 bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white flex items-center justify-center hover:bg-[#333] group/icon transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px]">
-                    <Github className="text-black dark:text-white group-hover/icon:text-white w-8 h-8" />
+                  <a href={member.socials.github} target="_blank" rel="noopener noreferrer" className="relative group/link w-16 h-16 bg-white dark:bg-slate-900 border-[4px] border-black dark:border-white flex items-center justify-center transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px]">
+                    <div className="absolute inset-0 bg-[#333] scale-y-0 group-hover/link:scale-y-100 origin-bottom transition-transform duration-300 ease-out"></div>
+                    <Github className="relative z-10 text-black dark:text-white group-hover/link:text-white w-8 h-8 group-hover/link:rotate-12 transition-transform duration-300" />
                   </a>
                )}
                {member.socials.twitter && (
-                  <a href={member.socials.twitter} target="_blank" rel="noopener noreferrer" className="w-16 h-16 bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white flex items-center justify-center hover:bg-[#1DA1F2] group/icon transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px]">
-                    <Twitter className="text-black dark:text-white group-hover/icon:text-white w-8 h-8" />
+                  <a href={member.socials.twitter} target="_blank" rel="noopener noreferrer" className="relative group/link w-16 h-16 bg-white dark:bg-slate-900 border-[4px] border-black dark:border-white flex items-center justify-center transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px]">
+                    <div className="absolute inset-0 bg-[#1DA1F2] scale-y-0 group-hover/link:scale-y-100 origin-bottom transition-transform duration-300 ease-out"></div>
+                    <Twitter className="relative z-10 text-black dark:text-white group-hover/link:text-white w-8 h-8 group-hover/link:-rotate-12 transition-transform duration-300" />
                   </a>
                )}
                {member.socials.instagram && (
-                  <a href={member.socials.instagram} target="_blank" rel="noopener noreferrer" className="w-16 h-16 bg-white dark:bg-slate-900 border-[3px] border-black dark:border-white flex items-center justify-center hover:bg-[#E1306C] group/icon transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px]">
-                    <Instagram className="text-black dark:text-white group-hover/icon:text-white w-8 h-8" />
+                  <a href={member.socials.instagram} target="_blank" rel="noopener noreferrer" className="relative group/link w-16 h-16 bg-white dark:bg-slate-900 border-[4px] border-black dark:border-white flex items-center justify-center transition-all shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[4px] hover:translate-y-[4px]">
+                    <div className="absolute inset-0 bg-[#E1306C] scale-y-0 group-hover/link:scale-y-100 origin-bottom transition-transform duration-300 ease-out"></div>
+                    <Instagram className="relative z-10 text-black dark:text-white group-hover/link:text-white w-8 h-8 group-hover/link:rotate-12 transition-transform duration-300" />
                   </a>
                )}
                {!member.socials.linkedin && !member.socials.github && !member.socials.twitter && !member.socials.instagram && (
-                 <p className="text-gray-500 dark:text-gray-400 font-bold italic uppercase border-[3px] border-gray-200 p-4 bg-gray-50">No social links provided.</p>
+                 <p className="text-gray-500 dark:text-gray-400 font-bold italic uppercase border-[4px] border-gray-200 border-dashed p-4 bg-gray-50 dark:bg-slate-800">No social links provided.</p>
                )}
             </div>
           </div>
