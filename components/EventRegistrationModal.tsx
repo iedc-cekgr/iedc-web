@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Upload, CheckCircle } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
-import { addDoc, collection, doc, updateDoc, increment } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc, increment, query, where, getDocs, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Event } from '../types';
 
@@ -27,6 +27,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
   const [error, setError] = useState('');
   const [uploadProgress, setUploadProgress] = useState('');
   const [success, setSuccess] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
 
   const handleCustomFieldChange = (fieldId: string, value: any, type: string) => {
     if (type === 'checkbox') {
@@ -89,6 +90,26 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
         throw new Error("Sorry, this event is already full.");
       }
 
+      // Validate referral code if entered
+      let verifiedPromoterDocId = '';
+      if (referralCode.trim()) {
+        setUploadProgress('Validating referral code...');
+        const promotersRef = collection(db, 'promoters');
+        const q = query(promotersRef, where('code', '==', referralCode.trim().toUpperCase()));
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) {
+          throw new Error("Invalid referral code. Please correct it or leave it blank to register.");
+        }
+        
+        const promoterDoc = querySnapshot.docs[0];
+        const promoterData = promoterDoc.data();
+        if (promoterData.isActive === false) {
+          throw new Error("This referral code is currently inactive.");
+        }
+        verifiedPromoterDocId = promoterDoc.id;
+      }
+
       let paymentScreenshotUrl = '';
       
       // 2. Upload Payment Screenshot if required
@@ -124,23 +145,50 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
         phone: formData.phone,
         customData: finalCustomData,
         paymentScreenshotUrl,
+        referralCode: referralCode.trim().toUpperCase() || null,
         timestamp: new Date()
       };
 
       await addDoc(collection(db, 'event_registrations'), registrationDoc);
 
-      // 5. Increment Participant Count in Event Doc
-      // NOTE: We rely on the event object having a document ID in firestore. We should pass `docId` into the Event type or find it by `id`.
-      // Since Event has `id: number`, we have to query it or if it has `docId` we can just use that. 
-      // For now, if event has a docId we use it, otherwise we might skip incrementing here and just count docs later.
-      // Assuming event.id is actually the numeric ID, we need to know its document ID. 
-      // To be safe, we will fetch the doc ID by querying the numeric ID.
-      // Wait, in Events.tsx, we inject `docId` into the objects! So we can use `(event as any).docId`.
       const eventDocId = (event as any).docId;
       if (eventDocId) {
         await updateDoc(doc(db, 'events', eventDocId), {
           currentParticipants: increment(1)
         });
+      }
+
+      // Increment promoter score globally and per-event if referral code was verified
+      if (verifiedPromoterDocId && eventDocId) {
+        await updateDoc(doc(db, 'promoters', verifiedPromoterDocId), {
+          siteReferrals: increment(1),
+          totalReferrals: increment(1)
+        });
+
+        const eventReferralRef = doc(db, 'event_referrals', `${eventDocId}_${verifiedPromoterDocId}`);
+        const eventReferralSnap = await getDoc(eventReferralRef);
+        if (eventReferralSnap.exists()) {
+          await updateDoc(eventReferralRef, {
+            siteReferrals: increment(1),
+            totalReferrals: increment(1)
+          });
+        } else {
+          const promoterSnap = await getDoc(doc(db, 'promoters', verifiedPromoterDocId));
+          if (promoterSnap.exists()) {
+            const promoterData = promoterSnap.data();
+            await setDoc(eventReferralRef, {
+              eventId: eventDocId,
+              eventTitle: event.title,
+              promoterId: verifiedPromoterDocId,
+              promoterName: promoterData.name,
+              promoterCode: promoterData.code,
+              siteReferrals: 1,
+              gformReferrals: 0,
+              totalReferrals: 1,
+              lastUpdated: new Date()
+            });
+          }
+        }
       }
 
       setSuccess(true);
@@ -201,9 +249,13 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Email Address *</label>
                 <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} disabled={loading} className="w-full p-3 border-2 border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:border-pink-500 outline-none transition-colors" />
               </div>
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Phone Number *</label>
                 <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} disabled={loading} className="w-full p-3 border-2 border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:border-pink-500 outline-none transition-colors" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Referral Code (Optional)</label>
+                <input type="text" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} placeholder="e.g. REF-AMAL-492" disabled={loading} className="w-full p-3 border-2 border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:border-pink-500 outline-none transition-colors" />
               </div>
             </div>
           </div>

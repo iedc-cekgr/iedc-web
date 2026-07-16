@@ -100,3 +100,14 @@ export interface PastLeader {
     image: string;
   }[];
 }
+
+export interface Promoter {
+  id?: string;
+  name: string;
+  code: string;
+  siteReferrals: number;
+  gformReferrals: number;
+  totalReferrals: number;
+  isActive: boolean;
+  createdAt?: any;
+}

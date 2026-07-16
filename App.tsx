@@ -8,6 +8,7 @@ import Events from './pages/Events';
 import Gallery from './pages/Gallery';
 import Projects from './pages/Projects';
 import Admin from './pages/Admin';
+import Leaderboard from './pages/Leaderboard';
 import ExultHome from './pages/exult/ExultHome';
 import ExultEvent from './pages/exult/ExultEvent';
 import ExultQuiz from './pages/exult/ExultQuiz';
@@ -60,6 +61,7 @@ const App: React.FC = () => {
       case '/legacy': return <Projects />;
       case '/about': return <About />;
       case '/admin': return <Admin />;
+      case '/leaderboard': return <Leaderboard onNavigate={navigate} />;
       case '/exult': return <ExultHome onNavigate={navigate} />;
       default: return <Home onNavigate={navigate} />;
     }
@@ -69,6 +71,14 @@ const App: React.FC = () => {
     return (
       <main className="animate-in fade-in duration-500">
         <Admin />
+      </main>
+    );
+  }
+
+  if (currentPath === '/leaderboard') {
+    return (
+      <main className="animate-in fade-in duration-500 bg-[#060112]">
+        {renderContent()}
       </main>
     );
   }
