@@ -12,6 +12,7 @@ import Leaderboard from './pages/Leaderboard';
 import ExultHome from './pages/exult/ExultHome';
 import ExultEvent from './pages/exult/ExultEvent';
 import ExultQuiz from './pages/exult/ExultQuiz';
+import CslLive from './pages/CslLive';
 
 
 const App: React.FC = () => {
@@ -42,7 +43,27 @@ const App: React.FC = () => {
     }
   };
 
+  // Detect custom domain for the event
+  const hostname = window.location.hostname;
+  const isCustomEventDomain = 
+    (hostname !== 'localhost' && 
+     hostname !== '127.0.0.1' && 
+     !hostname.includes('iedc') && 
+     !hostname.includes('vercel.app')) || 
+    hostname.includes('csl') || 
+    hostname.includes('auction');
+
+  const isCslRoute = 
+    currentPath === '/csl' || 
+    currentPath === '/live' || 
+    currentPath === '/auction' || 
+    (isCustomEventDomain && currentPath === '/');
+
   const renderContent = () => {
+    if (isCslRoute) {
+      return <CslLive onNavigate={navigate} />;
+    }
+
     if (currentPath.startsWith('/exult/event/')) {
       const slug = currentPath.split('/exult/event/')[1];
       return <ExultEvent slug={slug} onNavigate={navigate} />;
@@ -66,6 +87,14 @@ const App: React.FC = () => {
       default: return <Home onNavigate={navigate} />;
     }
   };
+
+  if (isCslRoute) {
+    return (
+      <main className="animate-in fade-in duration-500 bg-[#020704]">
+        {renderContent()}
+      </main>
+    );
+  }
 
   if (currentPath === '/admin') {
     return (

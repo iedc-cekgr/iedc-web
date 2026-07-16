@@ -9,7 +9,8 @@ import GalleryAdmin from '../components/Admin/GalleryAdmin';
 import LegacyAdmin from '../components/Admin/LegacyAdmin';
 import ExultAdmin from '../components/Admin/ExultAdmin';
 import LeaderboardAdmin from '../components/Admin/LeaderboardAdmin';
-import { LogOut, LayoutDashboard, Calendar, Users, Image as ImageIcon, Database, History, Zap, Trophy } from 'lucide-react';
+import LiveStreamAdmin from '../components/Admin/LiveStreamAdmin';
+import { LogOut, LayoutDashboard, Calendar, Users, Image as ImageIcon, Database, History, Zap, Trophy, Radio } from 'lucide-react';
 
 // We'll import initial data to seed database if empty
 import { EVENTS, EXECOM_MEMBERS, GALLERY_ITEMS, TIMELINE_EVENTS, ACHIEVEMENTS, PAST_LEADERS } from '../constants';
@@ -136,6 +137,8 @@ const Admin: React.FC = () => {
         return <ExultAdmin />;
       case 'leaderboard':
         return <LeaderboardAdmin />;
+      case 'live_stream':
+        return <LiveStreamAdmin />;
       default:
         return null;
     }
@@ -158,6 +161,7 @@ const Admin: React.FC = () => {
             { id: 'legacy', label: 'Legacy Page', icon: History },
             { id: 'exult', label: 'Exult 2026', icon: Zap },
             { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
+            { id: 'live_stream', label: 'Live Stream', icon: Radio },
           ].map((item) => (
             <button
               key={item.id}
