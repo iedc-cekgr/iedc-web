@@ -3,7 +3,7 @@ import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { Radio, Calendar, Volume2, Share2, MessageSquare, AlertTriangle } from 'lucide-react';
 import iedcLogo from '../images/iedc-logo.jpeg';
-import ieeeLogo from '../images/ieee_logo.png';
+import ieeeLogo from '../images/ieee-logo.png';
 import bgImage from '../images/bg.jpg';
 
 interface StreamData {
@@ -102,7 +102,7 @@ const CslLive: React.FC<CslLiveProps> = ({ onNavigate }) => {
     : '';
 
   return (
-    <div className="min-h-screen bg-[#020704] text-white overflow-x-hidden relative font-sans select-none">
+    <div className="min-h-screen bg-[#020704] text-white overflow-x-hidden relative font-sans select-none flex flex-col">
       
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Outfit:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap');
@@ -240,6 +240,53 @@ const CslLive: React.FC<CslLiveProps> = ({ onNavigate }) => {
         <div className="spark spark-5"></div>
       </div>
 
+      {/* Professional Sponsor Bar (Sticky Navbar style at the absolute top of the page) */}
+      <nav className="relative z-20 w-full border-b border-white/10 bg-black/45 backdrop-blur-md px-6 py-3">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+          
+          {/* Branding Partner (IEDC CEK) - Enlarged w-16 logo */}
+          <div className="flex items-center gap-4 animate-float-partner-1">
+            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center p-1.5 border-2 border-white/20 shrink-0 shadow-2xl overflow-hidden transition-transform hover:scale-105 duration-300">
+              <img 
+                src={iedcLogo} 
+                alt="IEDC CEK Logo" 
+                className="w-full h-full object-contain rounded-full"
+              />
+            </div>
+            <div className="text-left">
+              <div className="text-[9px] text-[#D4AF37]/90 font-extrabold uppercase tracking-widest leading-none">Branding & Ecosystem Partner</div>
+              <div className="text-lg md:text-xl font-extrabold uppercase mt-2 partner-text-shimmer leading-none">IEDC CEK</div>
+            </div>
+          </div>
+
+          {/* Center Brand Divider for Broadcast */}
+          <div className="hidden md:flex flex-col items-center">
+            <span className="text-[10px] tracking-[0.3em] uppercase text-white/40 font-bold">Official Event Partners</span>
+            <span className="text-xs tracking-[0.15em] uppercase text-[#D4AF37] font-black mt-1">CSL Auction Season 1</span>
+          </div>
+
+          {/* Technical Partner (IEEE CEK) - Enlarged w-16 logo */}
+          <div className="flex items-center gap-4 animate-float-partner-2">
+            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center p-1.5 border-2 border-white/20 shrink-0 shadow-2xl relative overflow-hidden transition-transform hover:scale-105 duration-300">
+              {ieeeLogoError ? (
+                <span className="font-black text-xs text-black tracking-widest uppercase">IEEE</span>
+              ) : (
+                <img 
+                  src={ieeeLogo} 
+                  alt="IEEE CEK Logo" 
+                  onError={() => setIeeeLogoError(true)} 
+                  className="w-full h-full object-contain rounded-full"
+                />
+              )}
+            </div>
+            <div className="text-left">
+              <div className="text-[9px] text-[#D4AF37]/90 font-extrabold uppercase tracking-widest leading-none">Technical Partner</div>
+              <div className="text-lg md:text-xl font-extrabold uppercase mt-2 partner-text-shimmer leading-none">IEEE CEK</div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* Page Header (Always visible, styled like the poster) */}
       <header className="relative z-10 w-full pt-10 pb-6 px-4 text-center">
         <div className="max-w-4xl mx-auto flex flex-col items-center">
@@ -273,54 +320,14 @@ const CslLive: React.FC<CslLiveProps> = ({ onNavigate }) => {
           </h1>
 
           <div className="w-20 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mb-6"></div>
-
-          {/* Premium Partners Banner at the Top - Enriched, Enlarged and Animated */}
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mt-4 px-8 py-5 bg-black/60 border rounded-3xl backdrop-blur-lg max-w-3xl mx-auto shadow-2xl partner-banner-glow">
-            {/* Branding Partner (IEDC CEK) */}
-            <div className="flex items-center gap-4 animate-float-partner-1">
-              <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center p-1.5 border-2 border-white/20 shrink-0 shadow-xl overflow-hidden transition-transform hover:scale-105 duration-300">
-                <img 
-                  src={iedcLogo} 
-                  alt="IEDC CEK Logo" 
-                  className="w-full h-full object-contain rounded-xl"
-                />
-              </div>
-              <div className="text-left">
-                <div className="text-[10px] text-[#D4AF37]/90 font-bold uppercase tracking-widest">Branding & Ecosystem Partner</div>
-                <div className="text-xl md:text-2xl font-extrabold uppercase leading-none mt-1 partner-text-shimmer">IEDC CEK</div>
-              </div>
-            </div>
-
-            <div className="hidden sm:block h-12 w-[1px] bg-white/15"></div>
-
-            {/* Technical Partner (IEEE CEK) */}
-            <div className="flex items-center gap-4 animate-float-partner-2">
-              <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center p-2 border-2 border-white/20 shrink-0 shadow-xl relative overflow-hidden transition-transform hover:scale-105 duration-300">
-                {ieeeLogoError || !stream?.showIeeeLogoImage ? (
-                  <span className="font-black text-xs text-white tracking-widest uppercase">IEEE</span>
-                ) : (
-                  <img 
-                    src={ieeeLogo} 
-                    alt="IEEE CEK Logo" 
-                    onError={() => setIeeeLogoError(true)} 
-                    className="w-full h-full object-contain rounded-xl"
-                  />
-                )}
-              </div>
-              <div className="text-left">
-                <div className="text-[10px] text-[#D4AF37]/90 font-bold uppercase tracking-widest">Technical Partner</div>
-                <div className="text-xl md:text-2xl font-extrabold uppercase leading-none mt-1 partner-text-shimmer">IEEE CEK</div>
-              </div>
-            </div>
-          </div>
         </div>
       </header>
 
       {/* Main View */}
-      <main className="relative z-10 max-w-4xl mx-auto px-4 pb-20 flex flex-col gap-6">
+      <main className="relative z-10 max-w-4xl mx-auto px-4 pb-20 flex flex-col gap-6 w-full">
         
         {/* Player Container Card */}
-        <div className="glass-card-live rounded-2xl overflow-hidden p-2 transition-all duration-300 relative shadow-2xl">
+        <div className="glass-card-live rounded-2xl overflow-hidden p-2 transition-all duration-300 relative shadow-2xl w-full">
           
           {/* Top controls ribbon */}
           <div className="flex items-center justify-between p-3 border-b border-white/10 text-xs text-white/70">
@@ -439,7 +446,7 @@ const CslLive: React.FC<CslLiveProps> = ({ onNavigate }) => {
         </div>
 
         {/* Video description text card (below player) */}
-        <div className="glass-card-live rounded-2xl p-6 space-y-4">
+        <div className="glass-card-live rounded-2xl p-6 space-y-4 w-full">
           <h3 className="text-xl font-bold uppercase tracking-wide text-white">{stream?.title}</h3>
           <p className="text-sm text-slate-300 leading-relaxed font-sans">{stream?.description}</p>
           
