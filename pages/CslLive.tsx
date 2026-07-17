@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { Radio, Calendar, Volume2, Share2, MessageSquare, AlertTriangle } from 'lucide-react';
-import iedcLogo from '../images/iedc-logo.jpeg';
+import iedcLogo from '../images/iedc-logo.png';
 import ieeeLogo from '../images/ieee-logo.png';
 import bgImage from '../images/bg2.jpeg'; // New deep red poster background
 
@@ -243,21 +243,20 @@ const CslLive: React.FC<CslLiveProps> = ({ onNavigate }) => {
       </div>
 
       {/* Professional Sponsor Bar (Sticky Navbar style at the absolute top of the page - hidden on mobile) */}
-      <nav className="hidden sm:block relative z-20 w-full border-b border-white/10 bg-black/70 backdrop-blur-md px-6 py-3">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+      <nav className="hidden sm:block relative z-20 w-full bg-transparent px-6 py-1.5">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           
           {/* Branding Partner (IEDC CEK) - Enlarged w-16 logo */}
-          <div className="flex items-center gap-4 animate-float-partner-1">
-            <div className="h-16 md:h-20 w-auto flex items-center justify-center shrink-0 drop-shadow-2xl transition-transform hover:scale-105 duration-300">
-              <img 
-                src={iedcLogo} 
-                alt="IEDC CEK Logo" 
-                className="h-full w-auto object-contain"
-              />
-            </div>
+          <div className="flex items-center gap-2 animate-float-partner-1">
             <div className="text-left">
-              <div className="text-[10px] text-red-400 font-extrabold uppercase tracking-widest leading-none">Branding & Ecosystem Partner</div>
-              <div className="text-lg md:text-xl font-black font-bebas uppercase mt-2 partner-text-shimmer leading-none">IEDC CEK</div>
+              <div className="text-[9px] text-red-400 font-extrabold uppercase tracking-widest leading-none mt-1">Branding & Ecosystem Partner</div>
+              <div className="h-10 md:h-10 w-auto flex items-center justify-start shrink-0 drop-shadow-2xl transition-transform hover:scale-105 duration-300">
+                <img 
+                  src={iedcLogo} 
+                  alt="IEDC CEK Logo" 
+                  className="h-full w-auto object-contain"
+                />
+              </div>
             </div>
           </div>
 
@@ -268,22 +267,21 @@ const CslLive: React.FC<CslLiveProps> = ({ onNavigate }) => {
           </div>
 
           {/* Technical Partner (IEEE CEK) - Enlarged w-16 logo */}
-          <div className="flex items-center gap-4 animate-float-partner-2">
-            <div className="text-right sm:text-left order-2 sm:order-1">
-              <div className="text-[10px] text-red-400 font-extrabold uppercase tracking-widest leading-none text-right">Technical Partner</div>
-              <div className="text-lg md:text-xl font-black font-bebas uppercase mt-2 partner-text-shimmer leading-none text-right">IEEE CEK</div>
-            </div>
-            <div className="order-1 sm:order-2 h-6 md:h-5 w-auto flex items-center justify-center shrink-0 drop-shadow-2xl relative transition-transform hover:scale-105 duration-300">
-              {ieeeLogoError ? (
-                <span className="font-black text-xs text-white tracking-widest uppercase">IEEE</span>
-              ) : (
-                <img 
-                  src={ieeeLogo} 
-                  alt="IEEE CEK Logo" 
-                  onError={() => setIeeeLogoError(true)} 
-                  className="h-full w-auto object-contain"
-                />
-              )}
+          <div className="flex items-center gap-2 animate-float-partner-2">
+            <div className="text-right">
+              <div className="text-[9px] text-red-400 font-extrabold uppercase tracking-widest leading-none mt-1">Technical Partner</div>
+              <div className="h-6 md:h-6 mt-1 w-auto flex items-center justify-end shrink-0 drop-shadow-2xl relative transition-transform hover:scale-105 duration-300">
+                {ieeeLogoError ? (
+                  <span className="font-black text-xs text-white tracking-widest uppercase">IEEE</span>
+                ) : (
+                  <img 
+                    src={ieeeLogo} 
+                    alt="IEEE CEK Logo" 
+                    onError={() => setIeeeLogoError(true)} 
+                    className="h-full w-auto object-contain"
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -350,28 +348,22 @@ const CslLive: React.FC<CslLiveProps> = ({ onNavigate }) => {
             
             <div className="flex flex-col items-center gap-8 w-full max-w-sm">
               {/* IEDC CEK */}
-              <div className="flex flex-col items-center text-center gap-2">
-                <div className="h-20 w-auto flex items-center justify-center shrink-0 drop-shadow-2xl">
+              <div className="flex flex-col items-center text-center gap-3">
+                <div className="text-[9px] text-red-400 font-extrabold uppercase tracking-widest leading-none">Branding & Ecosystem Partner</div>
+                <div className="h-28 w-auto flex items-center justify-center shrink-0 drop-shadow-2xl">
                   <img src={iedcLogo} alt="IEDC CEK Logo" className="h-full w-auto object-contain" />
-                </div>
-                <div>
-                  <div className="text-[9px] text-red-400 font-extrabold uppercase tracking-widest leading-none">Branding & Ecosystem Partner</div>
-                  <div className="text-xl font-black font-bebas uppercase mt-1.5 text-white leading-none tracking-wide">IEDC CEK</div>
                 </div>
               </div>
               
               {/* IEEE CEK */}
-              <div className="flex flex-col items-center text-center gap-2">
-                <div className="h-6 w-auto flex items-center justify-center shrink-0 drop-shadow-2xl">
+              <div className="flex flex-col items-center text-center gap-3">
+                <div className="text-[9px] text-red-400 font-extrabold uppercase tracking-widest leading-none">Technical Partner</div>
+                <div className="h-8 w-auto flex items-center justify-center shrink-0 drop-shadow-2xl">
                   {ieeeLogoError ? (
                     <span className="font-black text-xs text-white tracking-widest uppercase">IEEE</span>
                   ) : (
                     <img src={ieeeLogo} alt="IEEE CEK Logo" onError={() => setIeeeLogoError(true)} className="h-full w-auto object-contain" />
                   )}
-                </div>
-                <div>
-                  <div className="text-[9px] text-red-400 font-extrabold uppercase tracking-widest leading-none">Technical Partner</div>
-                  <div className="text-xl font-black font-bebas uppercase mt-1.5 text-white leading-none tracking-wide">IEEE CEK</div>
                 </div>
               </div>
             </div>
