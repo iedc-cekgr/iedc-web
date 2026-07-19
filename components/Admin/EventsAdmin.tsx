@@ -43,7 +43,8 @@ const EventsAdmin: React.FC = () => {
     currentParticipants: 0,
     paymentQrUrl: '',
     feeAmount: 0,
-    customFields: []
+    customFields: [],
+    enableReferralCode: false
   });
 
   const fetchEvents = async () => {
@@ -104,7 +105,8 @@ const EventsAdmin: React.FC = () => {
         currentParticipants: 0,
         paymentQrUrl: '',
         feeAmount: 0,
-        customFields: []
+        customFields: [],
+        enableReferralCode: false
       });
     }
     setIsModalOpen(true);
@@ -381,7 +383,7 @@ const EventsAdmin: React.FC = () => {
               </select>
             </div>
             <button onClick={exportCSV} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-              Export CSV
+              Export Spreadsheet
             </button>
           </div>
           
@@ -393,6 +395,7 @@ const EventsAdmin: React.FC = () => {
                   <th className="p-3 font-semibold text-sm">Name</th>
                   <th className="p-3 font-semibold text-sm">Contact</th>
                   <th className="p-3 font-semibold text-sm">Date</th>
+                  <th className="p-3 font-semibold text-sm">Documents</th>
                   <th className="p-3 font-semibold text-sm text-right">Action</th>
                 </tr>
               </thead>
@@ -408,6 +411,23 @@ const EventsAdmin: React.FC = () => {
                     <td className="p-3 text-sm text-slate-500">
                       {reg.timestamp?.toDate ? reg.timestamp.toDate().toLocaleDateString() : 'N/A'}
                     </td>
+                    <td className="p-3 text-sm">
+                      {reg.paymentScreenshotUrl && (
+                        <a href={reg.paymentScreenshotUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline flex items-center gap-1 text-xs mb-1 font-medium bg-blue-50 w-fit px-2 py-1 rounded">
+                          <Upload className="w-3 h-3" /> Payment Proof
+                        </a>
+                      )}
+                      {reg.customData && Object.entries(reg.customData).map(([key, value]) => {
+                        if (typeof value === 'string' && value.startsWith('http')) {
+                          return (
+                            <a key={key} href={value} target="_blank" rel="noreferrer" className="text-indigo-600 hover:underline flex items-center gap-1 text-xs mb-1 font-medium bg-indigo-50 w-fit px-2 py-1 rounded">
+                              <Upload className="w-3 h-3" /> Custom File
+                            </a>
+                          )
+                        }
+                        return null;
+                      })}
+                    </td>
                     <td className="p-3 text-right">
                       <button onClick={() => deleteRegistration(reg.id)} className="text-red-500 hover:text-red-700 p-1">
                         <Trash2 className="w-4 h-4" />
@@ -416,7 +436,7 @@ const EventsAdmin: React.FC = () => {
                   </tr>
                 ))}
                 {filteredRegs.length === 0 && (
-                  <tr><td colSpan={5} className="p-8 text-center text-slate-500">No registrations found.</td></tr>
+                  <tr><td colSpan={6} className="p-8 text-center text-slate-500">No registrations found.</td></tr>
                 )}
               </tbody>
             </table>
@@ -544,6 +564,11 @@ const EventsAdmin: React.FC = () => {
                       <div className="flex items-center space-x-2 md:col-span-2 bg-white p-3 rounded-lg border border-slate-200">
                         <input type="checkbox" checked={formData.isRegistrationEnabled ?? true} onChange={(e) => setFormData({...formData, isRegistrationEnabled: e.target.checked})} className="w-5 h-5 text-indigo-600 rounded" />
                         <span className="font-bold text-slate-700">Enable Form Now (Master Switch)</span>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2 md:col-span-2 bg-white p-3 rounded-lg border border-slate-200">
+                        <input type="checkbox" checked={formData.enableReferralCode || false} onChange={(e) => setFormData({...formData, enableReferralCode: e.target.checked})} className="w-5 h-5 text-indigo-600 rounded" />
+                        <span className="font-bold text-slate-700">Enable Referral Code Field</span>
                       </div>
                       
                       <div>

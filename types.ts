@@ -40,6 +40,7 @@ export interface Event {
   paymentQrUrl?: string;
   feeAmount?: number;
   customFields?: CustomField[];
+  enableReferralCode?: boolean;
   
   type: string; 
   mode?: 'Online' | 'Offline';

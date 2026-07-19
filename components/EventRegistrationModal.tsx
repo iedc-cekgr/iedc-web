@@ -318,10 +318,12 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                   <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Phone Number *</label>
                   <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" placeholder="+91 98765 43210" />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Referral Code (Optional)</label>
-                  <input type="text" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} placeholder="e.g. REF-AMAL-492" disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" />
-                </div>
+                {event.enableReferralCode && (
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Referral Code (Optional)</label>
+                    <input type="text" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} placeholder="e.g. REF-AMAL-492" disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" />
+                  </div>
+                )}
               </div>
             </div>
 
