@@ -218,7 +218,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
       opacity: 1, 
       scale: 1, 
       y: 0,
-      transition: { type: "spring", bounce: 0.3, duration: 0.5 }
+      transition: { type: "spring" as const, bounce: 0.3, duration: 0.5 }
     },
     exit: { 
       opacity: 0, 
@@ -242,7 +242,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: "spring", bounce: 0.5, duration: 0.6 }}
+              transition={{ type: "spring" as const, bounce: 0.5, duration: 0.6 }}
             >
               <CheckCircle className="w-20 h-20 text-emerald-500 mx-auto mb-6 drop-shadow-lg" />
             </motion.div>
