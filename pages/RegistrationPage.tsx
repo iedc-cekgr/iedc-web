@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, CheckCircle, Image as ImageIcon, ArrowLeft } from 'lucide-react';
+import { Upload, CheckCircle, Image as ImageIcon, ArrowLeft, Info, Trophy } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 import { collection, doc, updateDoc, increment, query, where, getDocs, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -352,6 +352,42 @@ const RegistrationPage: React.FC<Props> = ({ eventId, onNavigate }) => {
               >
                 {error}
               </motion.div>
+            )}
+
+            {event.prizePool && (
+              <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 p-[3px] rounded-2xl shadow-xl shadow-yellow-500/20">
+                <div className="bg-white dark:bg-slate-900 rounded-[14px] p-6 h-full w-full flex items-center justify-between gap-6 overflow-hidden relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  <div className="flex items-center gap-5 z-10">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900/40 dark:to-yellow-800/40 flex items-center justify-center shadow-inner border border-yellow-300 dark:border-yellow-700/50 flex-shrink-0">
+                      <Trophy className="w-8 h-8 text-yellow-600 dark:text-yellow-400 drop-shadow-sm" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Prize Pool</p>
+                      <h3 className="text-2xl sm:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-yellow-600 to-yellow-500 dark:from-yellow-400 dark:to-yellow-300">
+                        {event.prizePool}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {event.guidelines && (
+              <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 p-6 rounded-r-2xl shadow-sm">
+                <div className="flex items-start gap-4">
+                  <div className="bg-amber-100 dark:bg-amber-800/50 p-2 rounded-full text-amber-600 dark:text-amber-400">
+                    <Info className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-amber-800 dark:text-amber-200 mb-2">Guidelines & Rules</h4>
+                    <div className="text-amber-700 dark:text-amber-300 text-sm whitespace-pre-wrap leading-relaxed">
+                      {event.guidelines}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             <div className="space-y-6">

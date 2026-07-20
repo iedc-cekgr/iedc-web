@@ -43,6 +43,8 @@ export interface Event {
   enableReferralCode?: boolean;
   whatsappLink?: string;
   slug?: string;
+  guidelines?: string;
+  prizePool?: string;
   
   type: string; 
   mode?: 'Online' | 'Offline';

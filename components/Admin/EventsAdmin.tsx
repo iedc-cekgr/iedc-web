@@ -29,6 +29,8 @@ const EventsAdmin: React.FC = () => {
     title: '',
     date: '',
     description: '',
+    guidelines: '',
+    prizePool: '',
     image: '',
     type: '',
     mode: 'Offline',
@@ -109,6 +111,8 @@ const EventsAdmin: React.FC = () => {
         title: '',
         date: '',
         description: '',
+        guidelines: '',
+        prizePool: '',
         image: '',
         type: '',
         mode: 'Offline',
@@ -502,7 +506,7 @@ const EventsAdmin: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Date String (Display)</label>
-                    <input type="text" value={formData.date || ''} onChange={(e) => setFormData({...formData, date: e.target.value})} placeholder="e.g. 22 Jun 2025" className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" required />
+                    <input type="text" value={formData.date || ''} onChange={(e) => setFormData({...formData, date: e.target.value})} placeholder="e.g. 22 Jun 2025" className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Event Type Label</label>
@@ -552,6 +556,14 @@ const EventsAdmin: React.FC = () => {
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
                     <textarea value={formData.description || ''} onChange={(e) => setFormData({...formData, description: e.target.value})} className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" rows={3} required></textarea>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Guidelines / Rules (Optional)</label>
+                    <textarea value={formData.guidelines || ''} onChange={(e) => setFormData({...formData, guidelines: e.target.value})} placeholder="Enter any specific rules or guidelines for this event..." className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" rows={3}></textarea>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Prize Pool / Rewards (Optional)</label>
+                    <input type="text" value={formData.prizePool || ''} onChange={(e) => setFormData({...formData, prizePool: e.target.value})} placeholder="e.g. ₹10K Prize Pool or Goodies Worth ₹5000" className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
                   </div>
                 </div>
               </div>
