@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where } from 'firebase/firestore';
+import { collection, collectionGroup, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Event, CustomField } from '../../types';
 import { Edit, Trash2, Plus, X, Upload } from 'lucide-react';
@@ -67,9 +67,25 @@ const EventsAdmin: React.FC = () => {
   const fetchRegistrations = async () => {
     setLoadingRegs(true);
     try {
-      const q = query(collection(db, 'event_registrations'), orderBy('timestamp', 'desc'));
-      const snapshot = await getDocs(q);
-      setRegistrations(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      // Fetch legacy flat registrations
+      const oldQ = query(collection(db, 'event_registrations'));
+      const oldSnapshot = await getDocs(oldQ);
+      const oldRegs = oldSnapshot.docs.map(doc => ({ id: doc.id, refPath: `event_registrations/${doc.id}`, ...doc.data() }));
+
+      // Fetch new subcollection registrations
+      const newQ = query(collectionGroup(db, 'participants'));
+      const newSnapshot = await getDocs(newQ);
+      const newRegs = newSnapshot.docs.map(doc => ({ id: doc.id, refPath: doc.ref.path, ...doc.data() }));
+
+      // Combine, filter out placeholder docs (which have no name), and sort by timestamp
+      const allRegs = [...oldRegs, ...newRegs].filter((r: any) => r.name);
+      allRegs.sort((a: any, b: any) => {
+        const timeA = a.timestamp?.toMillis ? a.timestamp.toMillis() : 0;
+        const timeB = b.timestamp?.toMillis ? b.timestamp.toMillis() : 0;
+        return timeB - timeA;
+      });
+      
+      setRegistrations(allRegs);
     } catch (error) {
       console.error('Error fetching registrations:', error);
     }
@@ -178,10 +194,11 @@ const EventsAdmin: React.FC = () => {
     }
   };
 
-  const deleteRegistration = async (id: string) => {
+  const deleteRegistration = async (id: string, refPath?: string) => {
     if (!window.confirm("Are you sure you want to delete this registration?")) return;
     try {
-      await deleteDoc(doc(db, 'event_registrations', id));
+      const pathToDelete = refPath || `event_registrations/${id}`;
+      await deleteDoc(doc(db, pathToDelete));
       fetchRegistrations();
     } catch (error) {
       console.error("Error deleting registration:", error);
@@ -429,7 +446,7 @@ const EventsAdmin: React.FC = () => {
                       })}
                     </td>
                     <td className="p-3 text-right">
-                      <button onClick={() => deleteRegistration(reg.id)} className="text-red-500 hover:text-red-700 p-1">
+                      <button onClick={() => deleteRegistration(reg.id, reg.refPath)} className="text-red-500 hover:text-red-700 p-1">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </td>

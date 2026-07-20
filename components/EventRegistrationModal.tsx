@@ -34,8 +34,8 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
     if (type === 'checkbox') {
       const current = customData[fieldId] || [];
       const newArray = current.includes(value) 
-        ? current.filter((v: string) => v !== value)
-        : [...current, value];
+        ? [] // deselect if already selected
+        : [value]; // select only this one (replacing any other selection)
       setCustomData({ ...customData, [fieldId]: newArray });
     } else {
       setCustomData({ ...customData, [fieldId]: value });
@@ -151,7 +151,15 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
         timestamp: new Date()
       };
 
-      await addDoc(collection(db, 'event_registrations'), registrationDoc);
+      // Create a parent document for the event to act as a folder in Firebase Console
+      await setDoc(doc(db, 'event_registrations', safeEventTitle), {
+        eventTitle: event.title,
+        eventId: String(event.id),
+        lastUpdated: new Date()
+      }, { merge: true });
+
+      // Add the registration into the 'participants' subcollection
+      await addDoc(collection(db, 'event_registrations', safeEventTitle, 'participants'), registrationDoc);
 
       const eventDocId = (event as any).docId;
       if (eventDocId) {
@@ -308,20 +316,20 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Full Name *</label>
-                  <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" placeholder="John Doe" />
+                  <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Email Address *</label>
-                  <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" placeholder="john@example.com" />
+                  <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Phone Number *</label>
-                  <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" placeholder="+91 98765 43210" />
+                  <input type="tel" required value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" />
                 </div>
                 {event.enableReferralCode && (
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Referral Code (Optional)</label>
-                    <input type="text" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} placeholder="e.g. REF-AMAL-492" disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" />
+                    <input type="text" value={referralCode} onChange={(e) => setReferralCode(e.target.value.toUpperCase())} disabled={loading} className="w-full p-3.5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200" />
                   </div>
                 )}
               </div>
