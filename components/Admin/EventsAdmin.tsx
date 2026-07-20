@@ -44,7 +44,9 @@ const EventsAdmin: React.FC = () => {
     paymentQrUrl: '',
     feeAmount: 0,
     customFields: [],
-    enableReferralCode: false
+    enableReferralCode: false,
+    whatsappLink: '',
+    slug: ''
   });
 
   const fetchEvents = async () => {
@@ -122,7 +124,9 @@ const EventsAdmin: React.FC = () => {
         paymentQrUrl: '',
         feeAmount: 0,
         customFields: [],
-        enableReferralCode: false
+        enableReferralCode: false,
+        whatsappLink: '',
+        slug: ''
       });
     }
     setIsModalOpen(true);
@@ -578,6 +582,15 @@ const EventsAdmin: React.FC = () => {
 
                   {formData.eventType === 'website-form' && (
                     <>
+                      <div className="md:col-span-2 mt-2">
+                        <label className="block text-sm font-medium text-slate-700">Custom Registration Route (Optional)</label>
+                        <div className="flex items-center">
+                          <span className="px-3 py-2 bg-slate-100 border border-r-0 border-slate-200 rounded-l-lg text-slate-500 text-sm">/register/</span>
+                          <input type="text" value={formData.slug || ''} onChange={(e) => setFormData({...formData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-')})} className="flex-1 p-2 bg-white border border-slate-200 rounded-r-lg outline-none focus:border-indigo-500" placeholder="e.g. hackathon-2026" />
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">Leave blank to auto-generate from the event title.</p>
+                      </div>
+
                       <div className="flex items-center space-x-2 md:col-span-2 bg-white p-3 rounded-lg border border-slate-200">
                         <input type="checkbox" checked={formData.isRegistrationEnabled ?? true} onChange={(e) => setFormData({...formData, isRegistrationEnabled: e.target.checked})} className="w-5 h-5 text-indigo-600 rounded" />
                         <span className="font-bold text-slate-700">Enable Form Now (Master Switch)</span>
@@ -586,6 +599,12 @@ const EventsAdmin: React.FC = () => {
                       <div className="flex items-center space-x-2 md:col-span-2 bg-white p-3 rounded-lg border border-slate-200">
                         <input type="checkbox" checked={formData.enableReferralCode || false} onChange={(e) => setFormData({...formData, enableReferralCode: e.target.checked})} className="w-5 h-5 text-indigo-600 rounded" />
                         <span className="font-bold text-slate-700">Enable Referral Code Field</span>
+                      </div>
+                      
+                      <div className="md:col-span-2 mt-2">
+                        <label className="block text-sm font-medium text-slate-700">WhatsApp Group Link (Optional)</label>
+                        <input type="url" value={formData.whatsappLink || ''} onChange={(e) => setFormData({...formData, whatsappLink: e.target.value})} className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg" placeholder="https://chat.whatsapp.com/..." />
+                        <p className="text-xs text-slate-500 mt-1">If provided, participants will see a 'Join WhatsApp Group' button after successful registration.</p>
                       </div>
                       
                       <div>

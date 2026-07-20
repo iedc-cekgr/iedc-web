@@ -13,6 +13,7 @@ import ExultHome from './pages/exult/ExultHome';
 import ExultEvent from './pages/exult/ExultEvent';
 import ExultQuiz from './pages/exult/ExultQuiz';
 import CslLive from './pages/CslLive';
+import RegistrationPage from './pages/RegistrationPage';
 
 
 const App: React.FC = () => {
@@ -72,6 +73,11 @@ const App: React.FC = () => {
     if (currentPath.startsWith('/exult/quiz/')) {
       const regId = currentPath.split('/exult/quiz/')[1];
       return <ExultQuiz registrationId={regId} onNavigate={navigate} />;
+    }
+
+    if (currentPath.startsWith('/register/')) {
+      const eventId = currentPath.split('/register/')[1];
+      return <RegistrationPage eventId={eventId} onNavigate={navigate} />;
     }
 
     switch (currentPath) {

@@ -41,6 +41,8 @@ export interface Event {
   feeAmount?: number;
   customFields?: CustomField[];
   enableReferralCode?: boolean;
+  whatsappLink?: string;
+  slug?: string;
   
   type: string; 
   mode?: 'Online' | 'Offline';

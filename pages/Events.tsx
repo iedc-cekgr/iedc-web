@@ -5,7 +5,6 @@ import { formatImageUrl } from '../constants';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Event } from '../types';
-import EventRegistrationModal from '../components/EventRegistrationModal';
 
 interface EventsProps {
   onNavigate: (path: string) => void;
@@ -15,9 +14,6 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'All' | 'Online' | 'Offline'>('All');
-  
-  // Registration Modal State
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   const fetchEvents = async () => {
     try {
@@ -201,10 +197,13 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
                        );
                      }
                      
-                     // Website Form (Modal)
+                     // Website Form (Standalone Page)
                      return (
                         <button 
-                          onClick={() => setSelectedEvent(event)}
+                          onClick={() => {
+                            const eventSlug = event.slug || event.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                            onNavigate(`/register/${eventSlug}`);
+                          }}
                           className="w-full text-center bg-[#FF00FF] text-white border-[3px] border-black dark:border-white font-black py-4 px-6 uppercase text-lg shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-2"
                         >
                           {regStatus.message}
@@ -228,16 +227,6 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
           </div>
         )}
       </div>
-
-      {selectedEvent && (
-        <EventRegistrationModal 
-          event={selectedEvent} 
-          onClose={() => setSelectedEvent(null)}
-          onSuccess={() => {
-            fetchEvents(); // Refresh data to update participant counts
-          }}
-        />
-      )}
     </div>
   );
 };
