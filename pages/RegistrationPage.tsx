@@ -220,7 +220,6 @@ const RegistrationPage: React.FC<Props> = ({ eventId, onNavigate }) => {
       }
 
       setSuccess(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
       
       if (!event.whatsappLink) {
         setTimeout(() => {

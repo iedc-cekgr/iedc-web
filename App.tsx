@@ -18,6 +18,27 @@ import RegistrationPage from './pages/RegistrationPage';
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
+  const [showAdmin, setShowAdmin] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        setShowAdmin(prev => !prev);
+      }
+    };
+
+    const handleToggleAdmin = () => {
+      setShowAdmin(prev => !prev);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('toggleAdmin', handleToggleAdmin);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('toggleAdmin', handleToggleAdmin);
+    };
+  }, []);
 
   useEffect(() => {
     const handleLocationChange = () => {
@@ -87,7 +108,6 @@ const App: React.FC = () => {
       case '/gallery': return <Gallery />;
       case '/legacy': return <Projects />;
       case '/about': return <About />;
-      case '/admin': return <Admin />;
       case '/leaderboard': return <Leaderboard onNavigate={navigate} />;
       case '/exult': return <ExultHome onNavigate={navigate} />;
       default: return <Home onNavigate={navigate} />;
@@ -102,7 +122,7 @@ const App: React.FC = () => {
     );
   }
 
-  if (currentPath === '/admin') {
+  if (showAdmin) {
     return (
       <main className="animate-in fade-in duration-500">
         <Admin />

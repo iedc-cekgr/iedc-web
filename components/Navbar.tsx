@@ -14,6 +14,25 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
+  const [lastTapTime, setLastTapTime] = useState(0);
+  const [tapCount, setTapCount] = useState(0);
+
+  const handleLogoClick = () => {
+    onNavigate('/');
+    
+    const now = Date.now();
+    if (now - lastTapTime < 500) {
+      const newCount = tapCount + 1;
+      setTapCount(newCount);
+      if (newCount >= 5) {
+        window.dispatchEvent(new CustomEvent('toggleAdmin'));
+        setTapCount(0);
+      }
+    } else {
+      setTapCount(1);
+    }
+    setLastTapTime(now);
+  };
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'config', 'leaderboard_settings'), (docSnap) => {
@@ -33,7 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div 
           className="flex items-center gap-3 cursor-pointer group"
-          onClick={() => onNavigate('/')}
+          onClick={handleLogoClick}
         >
           <div className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-yellow-400/70 shadow-md hover:shadow-lg transition-all duration-300 group-hover:scale-105">
             <img
