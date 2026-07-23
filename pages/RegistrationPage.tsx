@@ -264,6 +264,25 @@ const RegistrationPage: React.FC<Props> = ({ eventId, onNavigate }) => {
     );
   }
 
+  const isRegistrationClosed = 
+    event.isRegistrationEnabled === false || 
+    (event.registrationEndDateTime && new Date(event.registrationEndDateTime) < new Date());
+
+  if (isRegistrationClosed) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center pt-24 bg-slate-50 dark:bg-slate-950">
+        <h2 className="text-3xl font-bold text-slate-800 dark:text-white mb-4">Event Registration Closed</h2>
+        <p className="text-slate-600 dark:text-slate-400 mb-8 text-center max-w-md px-4">
+          Registration for <span className="font-semibold text-slate-800 dark:text-slate-200">{event.title}</span> has closed. 
+          Please check back later for future events.
+        </p>
+        <button onClick={() => onNavigate('/events')} className="text-indigo-600 hover:underline flex items-center gap-2">
+          <ArrowLeft className="w-4 h-4" /> Back to Events
+        </button>
+      </div>
+    );
+  }
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-24 px-4 bg-slate-50 dark:bg-slate-950">
