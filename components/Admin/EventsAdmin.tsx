@@ -97,9 +97,9 @@ const EventsAdmin: React.FC = () => {
   };
 
   useEffect(() => {
-    if (activeTab === 'events') fetchEvents();
-    if (activeTab === 'registrations') fetchRegistrations();
-  }, [activeTab]);
+    fetchEvents();
+    fetchRegistrations();
+  }, []);
 
   const handleOpenModal = (event?: FirestoreEvent) => {
     if (event) {
@@ -349,6 +349,7 @@ const EventsAdmin: React.FC = () => {
                 <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
                   <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Event</th>
                   <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Reg. Type</th>
+                  <th className="p-4 font-semibold text-slate-600 dark:text-slate-300 text-center">Stats</th>
                   <th className="p-4 font-semibold text-slate-600 dark:text-slate-300 text-right">Actions</th>
                 </tr>
               </thead>
@@ -369,6 +370,27 @@ const EventsAdmin: React.FC = () => {
                         {event.eventType ? event.eventType.replace('-', ' ') : 'Legacy / External'}
                       </span>
                     </td>
+                    <td className="p-4 text-center">
+                      {event.eventType === 'website-form' ? (() => {
+                        const eventRegs = registrations.filter(r => String(r.eventId) === String(event.id));
+                        const uniqueUsers = new Set(eventRegs.map(r => (r.email || r.phone || '').toLowerCase().trim()));
+                        const duplicates = eventRegs.length - uniqueUsers.size;
+                        return (
+                          <div className="flex flex-col items-center gap-1">
+                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                              Total: {eventRegs.length}
+                            </span>
+                            {duplicates > 0 && (
+                              <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                                {duplicates} Duplicate{duplicates !== 1 ? 's' : ''}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })() : (
+                        <span className="text-sm text-slate-400">-</span>
+                      )}
+                    </td>
                     <td className="p-4 text-right space-x-2">
                       <button onClick={() => handleOpenModal(event)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
                         <Edit className="w-5 h-5" />
@@ -381,7 +403,7 @@ const EventsAdmin: React.FC = () => {
                 ))}
                 {events.length === 0 && (
                   <tr>
-                    <td colSpan={3} className="p-8 text-center text-slate-500 dark:text-slate-400">
+                    <td colSpan={4} className="p-8 text-center text-slate-500 dark:text-slate-400">
                       No events found.
                     </td>
                   </tr>
@@ -410,6 +432,29 @@ const EventsAdmin: React.FC = () => {
             <button onClick={exportCSV} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
               Export Spreadsheet
             </button>
+          </div>
+          
+          <div className="mb-4 flex items-center gap-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
+            <div className="flex-1">
+              <span className="text-sm text-blue-600 dark:text-blue-400 font-semibold">
+                Total Registrations: {filteredRegs.length}
+              </span>
+            </div>
+            <div>
+              {(() => {
+                const uniqueUsers = new Set(filteredRegs.map(r => (r.email || r.phone || '').toLowerCase().trim()));
+                const duplicates = filteredRegs.length - uniqueUsers.size;
+                return duplicates > 0 ? (
+                  <span className="text-sm text-amber-600 dark:text-amber-500 font-semibold">
+                    Potential Duplicates: {duplicates}
+                  </span>
+                ) : (
+                  <span className="text-sm text-green-600 dark:text-green-500 font-semibold">
+                    No Duplicates
+                  </span>
+                );
+              })()}
+            </div>
           </div>
           
           <div className="overflow-x-auto">
