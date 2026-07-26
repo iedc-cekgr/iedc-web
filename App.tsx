@@ -101,9 +101,14 @@ const App: React.FC = () => {
       return <RegistrationPage eventId={eventId} onNavigate={navigate} />;
     }
 
+    if (currentPath.startsWith('/execom/')) {
+      const memberId = currentPath.split('/execom/')[1];
+      return <Execom memberId={memberId} onNavigate={navigate} />;
+    }
+
     switch (currentPath) {
       case '/': return <Home onNavigate={navigate} />;
-      case '/execom': return <Execom />;
+      case '/execom': return <Execom onNavigate={navigate} />;
       case '/events': return <Events onNavigate={navigate} />;
       case '/gallery': return <Gallery />;
       case '/legacy': return <Projects />;

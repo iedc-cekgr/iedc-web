@@ -137,7 +137,12 @@ const ExecomMemberCard: React.FC<{ member: ExecomMember; onClick: () => void }> 
   );
 };
 
-const Execom: React.FC = () => {
+interface ExecomProps {
+  memberId?: string;
+  onNavigate?: (path: string) => void;
+}
+
+const Execom: React.FC<ExecomProps> = ({ memberId, onNavigate }) => {
   const [selectedMember, setSelectedMember] = useState<ExecomMember | null>(null);
   const [members, setMembers] = useState<ExecomMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,8 +167,34 @@ const Execom: React.FC = () => {
     fetchMembers();
   }, []);
 
+  useEffect(() => {
+    if (members.length > 0) {
+      if (memberId) {
+        const member = members.find(m => {
+          if (m.id.toString() === memberId || m.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === memberId || (m as any).docId === memberId) return true;
+          
+          const slugBase = m.role.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const sameRoleMembers = members.filter(x => x.role === m.role);
+          const index = sameRoleMembers.findIndex(x => x.id === m.id);
+          const expectedSlug = index > 0 ? `${slugBase}-${index + 1}` : slugBase;
+          
+          return expectedSlug === memberId;
+        });
+        if (member) setSelectedMember(member);
+      } else {
+        setSelectedMember(null);
+      }
+    }
+  }, [members, memberId]);
+
   if (selectedMember) {
-    return <ExecomMemberDetail member={selectedMember} onBack={() => setSelectedMember(null)} />;
+    return <ExecomMemberDetail member={selectedMember} onBack={() => {
+      if (onNavigate) {
+        onNavigate('/execom');
+      } else {
+        setSelectedMember(null);
+      }
+    }} />;
   }
 
   if (loading) {
@@ -179,7 +210,18 @@ const Execom: React.FC = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
         {members.map((member) => (
-          <ExecomMemberCard key={member.id} member={member} onClick={() => setSelectedMember(member)} />
+          <ExecomMemberCard key={member.id} member={member} onClick={() => {
+            if (onNavigate) {
+              const slugBase = member.role.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+              const sameRoleMembers = members.filter(x => x.role === member.role);
+              const index = sameRoleMembers.findIndex(x => x.id === member.id);
+              const slug = index > 0 ? `${slugBase}-${index + 1}` : slugBase;
+              
+              onNavigate(`/execom/${slug}`);
+            } else {
+              setSelectedMember(member);
+            }
+          }} />
         ))}
       </div>
     </div>
