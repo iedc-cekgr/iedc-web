@@ -23,7 +23,7 @@ const ExecomAdmin: React.FC = () => {
     role: '',
     image: '',
     order: 0,
-    socials: { linkedin: '', twitter: '', github: '', instagram: '' }
+    socials: { linkedin: '', twitter: '', github: '', instagram: '', email: '', portfolio: '' }
   });
 
   const fetchMembers = async () => {
@@ -59,7 +59,7 @@ const ExecomAdmin: React.FC = () => {
         role: '',
         image: '',
         order: 0,
-        socials: { linkedin: '', twitter: '', github: '', instagram: '' }
+        socials: { linkedin: '', twitter: '', github: '', instagram: '', email: '', portfolio: '' }
       });
     }
     setIsModalOpen(true);
@@ -278,6 +278,30 @@ const ExecomAdmin: React.FC = () => {
                     onChange={(e) => setFormData({
                       ...formData, 
                       socials: { ...formData.socials, instagram: e.target.value }
+                    })}
+                    className="w-full p-2 border border-slate-300 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Email / Gmail</label>
+                  <input
+                    type="email"
+                    value={formData.socials?.email || ''}
+                    onChange={(e) => setFormData({
+                      ...formData, 
+                      socials: { ...formData.socials, email: e.target.value }
+                    })}
+                    className="w-full p-2 border border-slate-300 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Portfolio URL</label>
+                  <input
+                    type="url"
+                    value={formData.socials?.portfolio || ''}
+                    onChange={(e) => setFormData({
+                      ...formData, 
+                      socials: { ...formData.socials, portfolio: e.target.value }
                     })}
                     className="w-full p-2 border border-slate-300 rounded-lg"
                   />

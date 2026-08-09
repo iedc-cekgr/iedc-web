@@ -15,6 +15,8 @@ export interface ExecomMember {
     twitter?: string;
     github?: string;
     instagram?: string;
+    email?: string;
+    portfolio?: string;
   };
 }
 

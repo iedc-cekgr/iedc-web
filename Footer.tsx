@@ -1,9 +1,8 @@
-import logo from './images/logo.jpeg';
+import logo from './images/logo.png';
 import React from 'react';
-import { Mail, MapPin, Instagram, Linkedin } from 'lucide-react';
+import { Mail, MapPin, Instagram, Linkedin, ChevronRight } from 'lucide-react';
 import { NAV_LINKS } from './constants';
 import { NavItem } from './types';
-
 
 const Footer: React.FC = () => {
   const socialLinks = [
@@ -12,70 +11,94 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-[#FFDE03] border-t-[8px] border-black dark:border-white py-20 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
-        <div className="col-span-1 md:col-span-2 space-y-8">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-black dark:bg-white border-[3px] border-black dark:border-white">
-              <img src={logo} alt="logo" className="w-8 h-8 object-contain" />
-            </div>
-            <h3 className="font-display font-black text-4xl">IEDC CEK</h3>
-          </div>
-          <p className="text-xl font-black leading-tight max-w-md">
-            THE ENGINE ROOM OF INNOVATION AT COLLEGE OF ENGINEERING KIDANGOOR.
-          </p>
-          <div className="flex gap-4">
-            {socialLinks.map(({ Icon, href, label }, i) => (
-              <a 
-                key={i} 
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="w-14 h-14 bg-white dark:bg-slate-900 border-[3px] rounded-[10px] border-black dark:border-white flex items-center justify-center hover:bg-black dark:bg-white group transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-none translate-y-0 hover:translate-x-1 hover:translate-y-1"
-              >
-                <Icon size={24} className="group-hover:text-white" />
-              </a>
-            ))}
-          </div>
-        </div>
+    <div className="p-4 md:p-6 pb-6">
+      <footer className="relative bg-[#FFDE03] text-black rounded-[2rem] md:rounded-[3rem] p-8 md:p-16 overflow-hidden z-0 shadow-xl">
+        
+        {/* Decorative Backgrounds removed as requested */}
 
-        <div className="space-y-8">
-          <h4 className="text-2xl font-black uppercase border-b-[4px] border-black dark:border-white inline-block">LINKS</h4>
-          <ul className="space-y-4 font-black uppercase text-lg">
-            {NAV_LINKS.map((item: NavItem) => (
-              <li key={item.path}>
+        <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr] gap-12 md:gap-24">
+          
+          {/* Left Column */}
+          <div className="space-y-6">
+            <img src={logo} alt="logo" className="h-14 md:h-20 w-auto object-contain" />
+            <div className="h-[3px] w-10 bg-black mt-2"></div>
+            <p className="font-bold text-base md:text-lg leading-snug max-w-sm mt-4">
+              The engine room of innovation at College of Engineering Kidangoor.
+            </p>
+            <div className="flex gap-4 pt-4">
+              {socialLinks.map(({ Icon, href, label }, i) => (
                 <a 
-                  href={item.path === '/' ? '#' : `${item.path}`} 
-                  className="hover:bg-black dark:bg-white hover:text-white rounded-[10px] px-2 py-1 transition-colors"
+                  key={i} 
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="w-12 h-12 border-[2px] border-black rounded-xl flex items-center justify-center hover:bg-black hover:text-[#FFDE03] transition-colors"
                 >
-                  {item.label}
+                  <Icon size={24} />
                 </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="space-y-8">
-          <h4 className="text-2xl font-black uppercase border-b-[4px] border-black dark:border-white inline-block">FIND US</h4>
-          <div className="space-y-6 font-bold text-lg">
-            <div className="flex gap-3 items-start">
-              <MapPin size={24} className="shrink-0" />
-              <span>CE KIDANGOOR,<br />KERALA 686572</span>
+              ))}
             </div>
-            <div className="flex gap-3 items-center">
-              <Mail size={24} />
-              <span>iedc@ce-kgr.org</span>
+          </div>
+
+          {/* Middle Column */}
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-black text-lg md:text-xl tracking-wide uppercase">LINKS</h4>
+              <div className="h-[3px] w-8 bg-black mt-1"></div>
+            </div>
+            
+            <ul className="flex flex-col">
+              {NAV_LINKS.map((item: NavItem, index: number) => (
+                <li key={item.path} className={`border-black ${index !== NAV_LINKS.length - 1 ? 'border-b-[1px] border-black/15' : ''}`}>
+                  <a 
+                    href={item.path === '/' ? '#' : `${item.path}`} 
+                    className="flex items-center gap-3 py-3 font-bold uppercase hover:pl-2 transition-all text-sm md:text-base"
+                  >
+                    <ChevronRight size={18} strokeWidth={3} />
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-black text-lg md:text-xl tracking-wide uppercase">FIND US</h4>
+              <div className="h-[3px] w-8 bg-black mt-1"></div>
+            </div>
+            
+            <div className="flex flex-col">
+              <div className="flex gap-4 items-center py-4 border-b-[1px] border-black/15">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-black rounded-xl flex items-center justify-center shrink-0">
+                  <MapPin size={22} strokeWidth={2.5} className="text-[#FFDE03]" />
+                </div>
+                <span className="font-bold text-xs md:text-sm leading-tight">CE KIDANGOOR,<br />KERALA 686572</span>
+              </div>
+              <div className="flex gap-4 items-center py-4 border-b-[1px] border-black/15 md:border-none">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-black rounded-xl flex items-center justify-center shrink-0">
+                  <Mail size={22} strokeWidth={2.5} className="text-[#FFDE03]" />
+                </div>
+                <span className="font-bold text-xs md:text-sm leading-tight">iedc@ce-kgr.org</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="max-w-7xl mx-auto mt-20 pt-10 border-t-[4px] border-black dark:border-white flex flex-col md:flex-row justify-between gap-6 font-black uppercase tracking-tight">
-        <p>© 2025 IEDC CE KIDANGOOR.</p>
-        <p>BUILD BY TECHNICAL WING IEDC</p>
-      </div>
-    </footer>
+        
+        {/* Bottom Bar */}
+        <div className="relative z-10 max-w-7xl mx-auto mt-12 md:mt-16 pt-6 border-t-[2px] border-black flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-2 font-black text-xs md:text-sm">
+            <span className="text-xl leading-none">©</span> 2025 IEDC CE KIDANGOOR.
+          </div>
+          <div className="flex items-center gap-2 md:gap-4 font-black text-[10px] md:text-xs tracking-widest text-center md:text-left">
+            BUILD BY TECHNICAL WING IEDC
+            <span className="text-lg md:text-xl tracking-tighter italic">///////</span>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 };
 

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { NAV_LINKS } from '../constants';
-import logo from '../images/logo.jpeg';
+import logo from '../images/logo.png';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -48,43 +48,44 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
     : NAV_LINKS;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-b-[4px] border-black dark:border-white py-4 px-6">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="absolute top-0 w-full z-50 p-4 md:p-6 pointer-events-none">
+      <nav className="pointer-events-auto max-w-7xl mx-auto bg-white dark:bg-slate-900 border-[2px] border-black dark:border-white py-3 px-6 rounded-xl shadow-xl flex items-center justify-between transition-all">
         <div 
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-4 md:gap-6 cursor-pointer group"
           onClick={handleLogoClick}
         >
-          <div className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-yellow-400/70 shadow-md hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+          <div className="flex items-center gap-3">
             <img
               src={logo}
               alt="logo"
-              className="w-10 h-10 object-contain"
+              className="h-12 md:h-14 w-auto object-contain group-hover:scale-105 transition-transform"
             />
           </div>
-          <div className="flex flex-col">
-            <span className="font-display text-2xl tracking-tighter leading-none">IEDC CEKGR</span>
-             <div className='flex item-center gap-2 mt-1 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-700 dark:text-slate-300'>
-             <span>Ideate</span>
-             <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1"></span>
-             <span>Innovate</span>
-             <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1"></span>
-             <span>Impact</span>
-             </div>
+
+          <div className="h-8 lg:h-10 w-[2px] bg-black/20 dark:bg-white/20"></div>
+
+          <div className='flex flex-col lg:flex-row items-start lg:items-center gap-0.5 lg:gap-2 text-[8px] lg:text-[10px] font-extrabold uppercase tracking-[0.2em] text-black dark:text-white leading-none'>
+            <span className="hidden lg:block w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+            <span>Ideate</span>
+            <span className="hidden lg:block w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+            <span>Innovate</span>
+            <span className="hidden lg:block w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+            <span>Impact</span>
           </div>
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-3">
           {links.map((link) => (
             <button
               key={link.path}
               onClick={() => onNavigate(link.path)}
-              className={`px-5 py-2 border-[3px] rounded-[10px] border-black dark:border-white font-black text-sm uppercase transition-all
+              className={`px-5 py-2 border-[2px] rounded-xl font-black text-xs uppercase transition-all
                 ${link.path === '/leaderboard'
                   ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] active:shadow-none active:translate-x-1 active:translate-y-1'
                   : currentPath === link.path 
-                    ? 'bg-black dark:bg-white text-white dark:text-black' 
-                    : 'bg-white dark:bg-slate-900 text-black dark:text-white hover:bg-[#00FFFF] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] active:shadow-none active:translate-x-1 active:translate-y-1'}`}
+                    ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[4px_4px_0px_0px_#FACC15]' 
+                    : 'bg-white dark:bg-slate-900 text-black dark:text-white border-black dark:border-white hover:bg-gray-100 dark:hover:bg-slate-800 hover:-translate-y-0.5'}`}
             >
               {link.label}
             </button>
@@ -92,14 +93,14 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
         </div>
 
         {/* Mobile Toggle */}
-        <button className="md:hidden p-2 border-[3px] border-black dark:border-white bg-white dark:bg-slate-900" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X /> : <Menu />}
+        <button className="md:hidden p-2 border-[2px] rounded-lg border-black dark:border-white bg-white dark:bg-slate-900 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-      </div>
+      </nav>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-slate-900 border-b-[4px] border-black dark:border-white p-4 space-y-2">
+        <div className="md:hidden absolute top-full left-4 right-4 mt-2 bg-white dark:bg-slate-900 border-[2px] border-black dark:border-white rounded-xl p-3 flex flex-col gap-2 shadow-xl pointer-events-auto">
           {links.map((link) => (
             <button
               key={link.path}
@@ -107,19 +108,19 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 onNavigate(link.path);
                 setIsOpen(false);
               }}
-              className={`w-full text-left px-6 py-4 border-[3px] border-black dark:border-white font-black uppercase
+              className={`w-full text-center px-6 py-3 border-[2px] rounded-lg border-black dark:border-white font-black text-sm uppercase transition-all
                 ${link.path === '/leaderboard'
                   ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
                   : currentPath === link.path 
-                    ? 'bg-black dark:bg-white text-white dark:text-black' 
-                    : 'bg-[#FFDE03] text-black'}`}
+                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-[3px_3px_0px_0px_#FACC15]' 
+                    : 'bg-white dark:bg-slate-900 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800'}`}
             >
               {link.label}
             </button>
           ))}
         </div>
       )}
-    </nav>
+    </div>
   );
 };
 
