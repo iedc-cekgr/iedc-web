@@ -20,6 +20,7 @@ export const NAV_LINKS = [
   { label: 'Events', path: '/events' },
   { label: 'Gallery', path: '/gallery' },
   { label: 'Legacy', path: '/legacy' },
+  { label: 'Submit Idea', path: '/submit-idea' },
 ];
 
 export const EXECOM_MEMBERS: ExecomMember[] = [

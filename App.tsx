@@ -14,6 +14,7 @@ import ExultEvent from './pages/exult/ExultEvent';
 import ExultQuiz from './pages/exult/ExultQuiz';
 import CslLive from './pages/CslLive';
 import RegistrationPage from './pages/RegistrationPage';
+import SubmitIdea from './pages/SubmitIdea';
 
 
 const App: React.FC = () => {
@@ -115,6 +116,7 @@ const App: React.FC = () => {
       case '/about': return <About />;
       case '/leaderboard': return <Leaderboard onNavigate={navigate} />;
       case '/exult': return <ExultHome onNavigate={navigate} />;
+      case '/submit-idea': return <SubmitIdea onNavigate={navigate} />;
       default: return <Home onNavigate={navigate} />;
     }
   };

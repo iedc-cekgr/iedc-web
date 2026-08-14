@@ -117,4 +117,23 @@ export interface Promoter {
   totalReferrals: number;
   isActive: boolean;
   createdAt?: any;
+}
+
+export interface IdeaSubmission {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  department: string;
+  semester: string;
+  title: string;
+  category: string;
+  problemStatement: string;
+  solutionDescription: string;
+  targetAudience: string;
+  teamSize: string;
+  teamMembers?: string;
+  supportNeeded: string[];
+  pitchDeckUrl?: string;
+  timestamp: any;
 }
