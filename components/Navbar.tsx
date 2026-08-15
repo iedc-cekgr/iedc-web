@@ -81,7 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
               key={link.path}
               onClick={() => onNavigate(link.path)}
               className={`px-5 py-2 border-[2px] rounded-xl font-black text-xs uppercase transition-all
-                ${link.path === '/leaderboard'
+                ${link.path === '/leaderboard' || link.path === '/submit-idea'
                   ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] active:shadow-none active:translate-x-1 active:translate-y-1'
                   : currentPath === link.path 
                     ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[4px_4px_0px_0px_#FACC15]' 
@@ -109,7 +109,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 setIsOpen(false);
               }}
               className={`w-full text-center px-6 py-3 border-[2px] rounded-lg border-black dark:border-white font-black text-sm uppercase transition-all
-                ${link.path === '/leaderboard'
+                ${link.path === '/leaderboard' || link.path === '/submit-idea'
                   ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
                   : currentPath === link.path 
                     ? 'bg-black dark:bg-white text-white dark:text-black shadow-[3px_3px_0px_0px_#FACC15]' 
