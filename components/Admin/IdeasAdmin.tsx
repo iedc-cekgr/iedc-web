@@ -9,6 +9,43 @@ interface FirestoreIdea extends IdeaSubmission {
   docId: string;
 }
 
+// Helper to safely format Firestore timestamp or other date values
+const formatTimestamp = (timestamp: any) => {
+  if (!timestamp) return 'N/A';
+  if (typeof timestamp.toDate === 'function') {
+    try {
+      return timestamp.toDate().toLocaleString();
+    } catch (e) {
+      console.error("Error converting timestamp via toDate:", e);
+    }
+  }
+  const date = new Date(timestamp);
+  return isNaN(date.getTime()) ? 'N/A' : date.toLocaleString();
+};
+
+const formatTimestampDate = (timestamp: any) => {
+  if (!timestamp) return 'Unknown';
+  if (typeof timestamp.toDate === 'function') {
+    try {
+      return timestamp.toDate().toLocaleDateString();
+    } catch (e) {
+      console.error("Error converting timestamp via toDate:", e);
+    }
+  }
+  const date = new Date(timestamp);
+  return isNaN(date.getTime()) ? 'Unknown' : date.toLocaleDateString();
+};
+
+// Helper to convert Cloudinary URL to direct download URL using fl_attachment
+const getCloudinaryDownloadUrl = (url: string | undefined | null) => {
+  if (!url) return '';
+  if (url.includes('cloudinary.com') && url.includes('/upload/')) {
+    return url.replace('/upload/', '/upload/fl_attachment/');
+  }
+  return url;
+};
+
+
 const IdeasAdmin: React.FC = () => {
   const [ideas, setIdeas] = useState<FirestoreIdea[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,21 +96,21 @@ const IdeasAdmin: React.FC = () => {
       return;
     }
     const dataToExport = ideas.map(idea => ({
-      'Submitter Name': idea.name,
-      'Email': idea.email,
-      'Phone': idea.phone,
-      'Branch/Department': idea.department,
-      'Semester': idea.semester,
-      'Idea Title': idea.title,
-      'Category': idea.category,
-      'Problem Statement': idea.problemStatement,
-      'Solution Description': idea.solutionDescription,
+      'Submitter Name': idea.name || 'N/A',
+      'Email': idea.email || 'N/A',
+      'Phone': idea.phone || 'N/A',
+      'Branch/Department': idea.department || 'N/A',
+      'Semester': idea.semester || 'N/A',
+      'Idea Title': idea.title || 'N/A',
+      'Category': idea.category || 'N/A',
+      'Problem Statement': idea.problemStatement || 'N/A',
+      'Solution Description': idea.solutionDescription || 'N/A',
       'Target Audience': idea.targetAudience || 'N/A',
-      'Team Size': idea.teamSize,
+      'Team Size': idea.teamSize || 'N/A',
       'Team Members': idea.teamMembers || 'N/A',
       'Support Needed': idea.supportNeeded ? idea.supportNeeded.join(', ') : 'N/A',
       'Pitch Deck Link': idea.pitchDeckUrl || 'None',
-      'Submitted On': idea.timestamp?.toDate ? idea.timestamp.toDate().toLocaleString() : new Date(idea.timestamp).toLocaleString()
+      'Submitted On': formatTimestamp(idea.timestamp)
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -84,11 +121,16 @@ const IdeasAdmin: React.FC = () => {
 
   // Filter ideas based on search term & category filter
   const filteredIdeas = ideas.filter(idea => {
+    const name = idea.name || '';
+    const email = idea.email || '';
+    const title = idea.title || '';
+    const department = idea.department || '';
+
     const matchesSearch = 
-      idea.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      idea.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      idea.department.toLowerCase().includes(searchTerm.toLowerCase());
+      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      department.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCategory = categoryFilter === '' || idea.category === categoryFilter;
 
@@ -161,9 +203,7 @@ const IdeasAdmin: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {filteredIdeas.map((idea) => {
-            const formattedDate = idea.timestamp?.toDate
-              ? idea.timestamp.toDate().toLocaleDateString()
-              : idea.timestamp ? new Date(idea.timestamp).toLocaleDateString() : 'Unknown';
+            const formattedDate = formatTimestampDate(idea.timestamp);
 
             return (
               <div 
@@ -247,7 +287,7 @@ const IdeasAdmin: React.FC = () => {
               </span>
               <h3 className="text-3xl font-black leading-tight text-black dark:text-white mb-2">{selectedIdea.title}</h3>
               <p className="text-sm font-bold text-slate-500 flex items-center gap-1">
-                Submitted on: {selectedIdea.timestamp?.toDate ? selectedIdea.timestamp.toDate().toLocaleString() : new Date(selectedIdea.timestamp).toLocaleString()}
+                Submitted on: {formatTimestamp(selectedIdea.timestamp)}
               </p>
             </div>
 
@@ -328,17 +368,28 @@ const IdeasAdmin: React.FC = () => {
 
               {/* Pitch Deck Link */}
               {selectedIdea.pitchDeckUrl && (
-                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <span className="text-sm font-bold text-slate-600 dark:text-slate-400">Pitch Deck / Attachment is attached:</span>
-                  <a
-                    href={selectedIdea.pitchDeckUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 border-[2px] border-black rounded-xl bg-[#00FF00] hover:bg-[#00e000] text-black font-black uppercase text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 transition-all"
-                  >
-                    <span>View Pitch Deck</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
+                  <div className="flex flex-wrap gap-3">
+                    <a
+                      href={selectedIdea.pitchDeckUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 border-[2px] border-black rounded-xl bg-[#00FFFF] hover:bg-[#00e000] text-black font-black uppercase text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 transition-all"
+                    >
+                      <span>View Pitch Deck</span>
+                      <ExternalLink className="w-4.5 h-4.5" />
+                    </a>
+                    <a
+                      href={getCloudinaryDownloadUrl(selectedIdea.pitchDeckUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 border-[2px] border-black rounded-xl bg-[#00FF00] hover:bg-[#00e000] text-black font-black uppercase text-xs shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 transition-all"
+                    >
+                      <span>Download File</span>
+                      <Download className="w-4.5 h-4.5" />
+                    </a>
+                  </div>
                 </div>
               )}
             </div>
