@@ -48,7 +48,9 @@ const EventsAdmin: React.FC = () => {
     customFields: [],
     enableReferralCode: false,
     whatsappLink: '',
-    slug: ''
+    slug: '',
+    speakerName: '',
+    isVisible: true
   });
 
   const fetchEvents = async () => {
@@ -130,7 +132,9 @@ const EventsAdmin: React.FC = () => {
         customFields: [],
         enableReferralCode: false,
         whatsappLink: '',
-        slug: ''
+        slug: '',
+        speakerName: '',
+        isVisible: true
       });
     }
     setIsModalOpen(true);
@@ -610,6 +614,10 @@ const EventsAdmin: React.FC = () => {
                     <label className="block text-sm font-medium text-slate-700 mb-1">Prize Pool / Rewards (Optional)</label>
                     <input type="text" value={formData.prizePool || ''} onChange={(e) => setFormData({...formData, prizePool: e.target.value})} placeholder="e.g. ₹10K Prize Pool or Goodies Worth ₹5000" className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
                   </div>
+                  <div className="md:col-span-2 flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <input type="checkbox" checked={formData.isVisible ?? true} onChange={(e) => setFormData({...formData, isVisible: e.target.checked})} className="w-5 h-5 text-blue-600 rounded" />
+                    <span className="font-bold text-slate-700">Make Event Visible on Website (Master Switch)</span>
+                  </div>
                 </div>
               </div>
 
@@ -631,10 +639,16 @@ const EventsAdmin: React.FC = () => {
                   </div>
 
                   {formData.eventType === 'google-form' && (
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Google Form URL *</label>
-                      <input type="url" value={formData.googleFormLink || ''} onChange={(e) => setFormData({...formData, googleFormLink: e.target.value})} className="w-full p-2 border border-slate-300 rounded-lg" required={formData.eventType === 'google-form'} />
-                    </div>
+                    <>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Google Form URL *</label>
+                        <input type="url" value={formData.googleFormLink || ''} onChange={(e) => setFormData({...formData, googleFormLink: e.target.value})} className="w-full p-2 border border-slate-300 rounded-lg" required={formData.eventType === 'google-form'} />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Speaker Name (Optional)</label>
+                        <input type="text" value={formData.speakerName || ''} onChange={(e) => setFormData({...formData, speakerName: e.target.value})} placeholder="e.g. John Doe" className="w-full p-2 border border-slate-300 rounded-lg" />
+                      </div>
+                    </>
                   )}
 
                   {formData.eventType === 'website-form' && (

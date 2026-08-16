@@ -39,6 +39,11 @@ const formatTimestampDate = (timestamp: any) => {
 // Helper to convert Cloudinary URL to direct download URL using fl_attachment
 const getCloudinaryDownloadUrl = (url: string | undefined | null) => {
   if (!url) return '';
+  // Cloudinary often blocks transformations (like fl_attachment) on PDFs for security reasons,
+  // which results in an ERR_INVALID_RESPONSE. For PDFs, we'll return the original URL.
+  if (url.toLowerCase().endsWith('.pdf')) {
+    return url;
+  }
   if (url.includes('cloudinary.com') && url.includes('/upload/')) {
     return url.replace('/upload/', '/upload/fl_attachment/');
   }

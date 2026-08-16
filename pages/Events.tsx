@@ -41,6 +41,7 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
   }
 
   const filteredEvents = events.filter(event => {
+    if (event.isVisible === false) return false;
     if (activeTab === 'All') return true;
     return event.mode === activeTab || (!event.mode && activeTab === 'Offline');
   });
@@ -159,6 +160,9 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
                   )}
                 </div>
                 <h3 className="text-3xl font-black uppercase leading-none">{event.title}</h3>
+                {event.speakerName && (
+                  <p className="text-lg font-bold text-[#FF00FF] uppercase mt-1">Speaker: {event.speakerName}</p>
+                )}
                 <p className="font-bold text-gray-700 leading-tight">{event.description}</p>
                 {event.maxParticipants && event.currentParticipants !== undefined && (
                    <p className="text-xs font-bold text-pink-600 uppercase bg-pink-100 inline-block px-2 py-1 rounded">

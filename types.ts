@@ -47,6 +47,8 @@ export interface Event {
   slug?: string;
   guidelines?: string;
   prizePool?: string;
+  speakerName?: string;
+  isVisible?: boolean;
   
   type: string; 
   mode?: 'Online' | 'Offline';
