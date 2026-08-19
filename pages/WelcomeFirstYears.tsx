@@ -68,7 +68,7 @@ const WelcomeFirstYears: React.FC<Props> = ({ onNavigate }) => {
 
   const fadeUp = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as any } }
   };
 
   if (success) {
@@ -77,7 +77,7 @@ const WelcomeFirstYears: React.FC<Props> = ({ onNavigate }) => {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as any }}
           className="max-w-md w-full text-center"
         >
           <CheckCircle className="w-16 h-16 text-stone-900 dark:text-stone-100 mx-auto mb-8" strokeWidth={1} />
@@ -208,7 +208,7 @@ const WelcomeFirstYears: React.FC<Props> = ({ onNavigate }) => {
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as any, delay: 0.3 }}
           className="w-full max-w-md lg:w-[400px]"
         >
           <div className="bg-stone-100 dark:bg-stone-900/90 p-10 md:p-12 shadow-[0_40px_100px_-10px_rgba(0,0,0,0.4)] dark:shadow-[0_40px_100px_-10px_rgba(0,0,0,0.8)] rounded-3xl border border-stone-200/50 dark:border-stone-800 relative z-10">
