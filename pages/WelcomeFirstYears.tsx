@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, ChevronDown, Lightbulb, Settings, Star } from 'lucide-react';
+import { ArrowRight, CheckCircle, ChevronDown, Lightbulb, Settings, Star, MessageCircle } from 'lucide-react';
 import { collection, addDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import iedcLogo from '../images/iedc-logo.png';
@@ -75,32 +75,38 @@ const WelcomeFirstYears: React.FC<Props> = ({ onNavigate }) => {
     return (
       <div className="min-h-screen bg-stone-50 dark:bg-[#0a0a0a] flex items-center justify-center p-4">
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as any }}
-          className="max-w-md w-full text-center"
+          className="max-w-xl w-full text-center bg-white dark:bg-stone-900/90 p-12 rounded-[2.5rem] shadow-[0_30px_100px_-15px_rgba(0,0,0,0.15)] dark:shadow-[0_30px_100px_-15px_rgba(0,0,0,0.7)] border border-stone-200/50 dark:border-stone-800"
         >
-          <CheckCircle className="w-16 h-16 text-stone-900 dark:text-stone-100 mx-auto mb-8" strokeWidth={1} />
-          <h2 className="text-3xl font-light text-stone-900 dark:text-white mb-4 tracking-tight">
-            Registration Complete
+          <div className="w-24 h-24 bg-green-50 dark:bg-green-950/30 rounded-full flex items-center justify-center mx-auto mb-8">
+            <CheckCircle className="w-12 h-12 text-green-500" strokeWidth={1.5} />
+          </div>
+          
+          <h2 className="text-3xl md:text-4xl font-extrabold text-stone-900 dark:text-white mb-6 tracking-tight leading-tight">
+            Welcome to the IEDC Community
           </h2>
-          <p className="text-stone-500 dark:text-stone-400 mb-10 font-light">
-            Welcome to the Innovation and Entrepreneurship Development Centre. We'll be in touch soon.
+          
+          <p className="text-stone-500 dark:text-stone-400 mb-12 font-medium leading-relaxed text-lg">
+            You’re now part of a community driven by innovation, ideas, and entrepreneurship. Stay connected with us for upcoming events, opportunities, and updates.
           </p>
-          <div className="flex flex-col gap-4 max-w-xs mx-auto">
+          
+          <div className="flex flex-col gap-4 max-w-sm mx-auto">
             {settings.whatsappLink && (
               <a 
                 href={settings.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full px-6 py-3 bg-[#25D366] text-white font-bold hover:bg-[#128C7E] transition-all duration-300 text-sm tracking-wider uppercase rounded-xl shadow-[0_4px_14px_0_rgb(37,211,102,0.39)] hover:shadow-[0_6px_20px_rgba(37,211,102,0.23)] hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                className="w-full px-8 py-4 bg-[#25D366] text-white font-extrabold hover:bg-[#1DA851] transition-all duration-300 text-sm tracking-widest uppercase rounded-full shadow-[0_10px_30px_-5px_rgb(37,211,102,0.4)] hover:shadow-[0_15px_40px_-5px_rgba(37,211,102,0.5)] hover:-translate-y-1 flex items-center justify-center gap-3 group"
               >
+                <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 Join WhatsApp Group
               </a>
             )}
             <button 
               onClick={() => onNavigate('/')}
-              className="w-full px-6 py-3 border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-white hover:bg-stone-100 dark:hover:bg-stone-900 transition-all duration-300 text-sm tracking-wider uppercase rounded-xl"
+              className="w-full px-8 py-4 bg-transparent border-2 border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300 font-bold hover:bg-stone-50 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-white transition-all duration-300 text-sm tracking-widest uppercase rounded-full"
             >
               Return Home
             </button>
@@ -114,18 +120,27 @@ const WelcomeFirstYears: React.FC<Props> = ({ onNavigate }) => {
     <div className="min-h-screen bg-stone-50 dark:bg-[#0a0a0a] font-sans selection:bg-stone-200 dark:selection:bg-stone-800 selection:text-stone-900 dark:selection:text-white relative overflow-hidden">
       {/* Top Logo: Right on Mobile, Left on Desktop */}
       <div className="absolute top-6 right-6 md:right-auto md:left-12 z-50">
-        <img src={logo} alt="Logo" className="h-10 md:h-12 w-auto object-contain" />
+        <img src={logo} alt="Logo" className="h-14 md:h-20 w-auto object-contain" />
       </div>
 
       {/* Background Pattern (Circuit/Lines) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.04] dark:opacity-10 overflow-hidden" aria-hidden="true">
-        <svg className="w-full h-full max-w-5xl" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" strokeWidth="0.2">
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0 opacity-[0.08] md:opacity-[0.04] dark:opacity-[0.15] dark:md:opacity-[0.08] overflow-hidden" aria-hidden="true">
+        <svg className="w-[150vw] h-full md:w-full md:h-full md:max-w-5xl" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" strokeWidth="0.2">
+          {/* Original paths */}
           <path d="M0,50 L30,50 L40,40 L60,40 L70,50 L100,50 M30,50 L30,60 L50,80 L80,80 M70,50 L70,30 L90,10 M10,30 L20,30 L30,40 L30,50" />
           <path d="M20,70 L30,80 L60,80 L70,70 L100,70" />
-          <circle cx="30" cy="50" r="0.5" fill="currentColor"/><circle cx="70" cy="50" r="0.5" fill="currentColor"/>
-          <circle cx="40" cy="40" r="0.5" fill="currentColor"/><circle cx="60" cy="40" r="0.5" fill="currentColor"/>
-          <circle cx="90" cy="10" r="0.5" fill="currentColor"/><circle cx="50" cy="80" r="0.5" fill="currentColor"/>
-          <circle cx="20" cy="30" r="0.5" fill="currentColor"/><circle cx="70" cy="70" r="0.5" fill="currentColor"/>
+          {/* Vertical fill paths for mobile */}
+          <path d="M50,0 L50,20 L70,40 M30,0 L40,10 L40,30 M80,10 L90,20 M10,10 L20,20 M50,100 L50,80 L30,60 M70,90 L60,80 L60,60 M20,90 L10,80 M90,90 L80,80" />
+          
+          {/* Original circles */}
+          <circle cx="30" cy="50" r="0.4" fill="currentColor"/><circle cx="70" cy="50" r="0.4" fill="currentColor"/>
+          <circle cx="40" cy="40" r="0.4" fill="currentColor"/><circle cx="60" cy="40" r="0.4" fill="currentColor"/>
+          <circle cx="90" cy="10" r="0.4" fill="currentColor"/><circle cx="50" cy="80" r="0.4" fill="currentColor"/>
+          <circle cx="20" cy="30" r="0.4" fill="currentColor"/><circle cx="70" cy="70" r="0.4" fill="currentColor"/>
+          
+          {/* Additional mobile circles */}
+          <circle cx="50" cy="20" r="0.4" fill="currentColor"/><circle cx="40" cy="10" r="0.4" fill="currentColor"/>
+          <circle cx="50" cy="80" r="0.4" fill="currentColor"/><circle cx="60" cy="80" r="0.4" fill="currentColor"/>
         </svg>
       </div>
 
@@ -288,6 +303,38 @@ const WelcomeFirstYears: React.FC<Props> = ({ onNavigate }) => {
                       <label htmlFor={field.id} className="absolute left-5 top-2 text-[10px] text-stone-500 font-medium uppercase tracking-widest pointer-events-none transition-all">{field.label}</label>
                       <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
                     </>
+                  ) : field.type === 'textarea' ? (
+                    <>
+                      <textarea 
+                        required={field.required} 
+                        value={formData[field.id] || ''} 
+                        onChange={e => setFormData({...formData, [field.id]: e.target.value})}
+                        className="peer w-full bg-white/50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800 rounded-xl px-5 pt-6 pb-2 text-stone-900 dark:text-white focus:outline-none focus:border-stone-400 dark:focus:border-stone-600 transition-colors placeholder-transparent shadow-sm shadow-stone-200/50 dark:shadow-black/50 min-h-[100px] resize-y"
+                        placeholder={field.label}
+                        id={field.id}
+                      />
+                      <label htmlFor={field.id} className="absolute left-5 top-2 text-[10px] text-stone-500 font-medium transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-stone-400 peer-placeholder-shown:top-4 peer-focus:top-2 peer-focus:text-[10px] peer-focus:text-stone-900 dark:peer-focus:text-white uppercase tracking-widest pointer-events-none">{field.label}</label>
+                    </>
+                  ) : field.type === 'radio' ? (
+                    <div className="bg-white/50 dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800 rounded-xl p-5 shadow-sm shadow-stone-200/50 dark:shadow-black/50">
+                      <label className="block text-[10px] text-stone-500 font-medium uppercase tracking-widest mb-3">{field.label}</label>
+                      <div className="flex flex-col gap-3">
+                        {field.options.split(',').map((opt: string) => (
+                          <label key={opt.trim()} className="flex items-center gap-3 cursor-pointer group">
+                            <input 
+                              type="radio"
+                              name={field.id}
+                              value={opt.trim()}
+                              checked={formData[field.id] === opt.trim()}
+                              onChange={e => setFormData({...formData, [field.id]: e.target.value})}
+                              required={field.required}
+                              className="w-4 h-4 text-stone-900 dark:text-stone-100 bg-stone-100 border-stone-300 focus:ring-stone-900 dark:focus:ring-stone-100 dark:bg-stone-800 dark:border-stone-600"
+                            />
+                            <span className="text-sm font-medium text-stone-700 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">{opt.trim()}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   ) : (
                     <>
                       <input 

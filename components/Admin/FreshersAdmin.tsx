@@ -17,8 +17,8 @@ interface FirestoreFresher {
 export interface CustomField {
   id: string;
   label: string;
-  type: 'text' | 'select';
-  options: string; // comma separated for select
+  type: 'text' | 'textarea' | 'select' | 'radio';
+  options: string; // comma separated for select/radio
   required: boolean;
 }
 
@@ -156,7 +156,7 @@ const FreshersAdmin: React.FC = () => {
         'Email Address': f.email || 'N/A',
         'Phone Number': f.phone || 'N/A',
         'Branch': f.branch || 'N/A',
-        'Registered On': formatTimestampDate(f.timestamp)
+        'Submitted On': formatTimestampDate(f.timestamp)
       };
 
       // Add dynamic fields
@@ -407,19 +407,21 @@ const FreshersAdmin: React.FC = () => {
                           onChange={(e) => handleUpdateCustomField(index, 'type', e.target.value)}
                           className="w-full border-2 border-slate-300 dark:border-slate-700 rounded-lg p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm font-medium focus:outline-none focus:border-blue-500"
                         >
-                          <option value="text">Short Text Answer</option>
-                          <option value="select">Dropdown Select</option>
+                          <option value="text">Short Answer</option>
+                          <option value="textarea">Long Answer (Paragraph)</option>
+                          <option value="select">Dropdown</option>
+                          <option value="radio">Multiple Choice (Radio)</option>
                         </select>
                       </div>
 
-                      {field.type === 'select' && (
+                      {(field.type === 'select' || field.type === 'radio') && (
                         <div className="md:col-span-2">
-                          <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Dropdown Options (Comma separated)</label>
+                          <label className="block text-xs font-bold uppercase text-slate-500 mb-1">Options (Comma separated)</label>
                           <input
                             type="text"
                             value={field.options}
                             onChange={(e) => handleUpdateCustomField(index, 'options', e.target.value)}
-                            placeholder="e.g. Hosteller, Day Scholar"
+                            placeholder="e.g. Option 1, Option 2, Option 3"
                             className="w-full border-2 border-slate-300 dark:border-slate-700 rounded-lg p-2 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm font-medium focus:outline-none focus:border-blue-500"
                           />
                         </div>

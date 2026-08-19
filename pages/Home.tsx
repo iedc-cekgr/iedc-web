@@ -69,12 +69,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             The Innovation and Entrepreneurship Development Cell at CE Kidangoor. No fluff. Just raw creation and startups.
           </p>
           <div className="flex flex-wrap gap-4">
-            <button 
-              onClick={() => onNavigate('/welcome')}
-              className="px-8 py-5 bg-[#00FFFF] text-black border-[4px] rounded-[20px] border-black dark:border-white text-xl font-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center gap-3 animate-pulse"
-            >
-              🚀 FIRST YEARS JOIN HERE
-            </button>
+
             <button 
               onClick={() => onNavigate('/about')}
               className="px-8 py-5 bg-black dark:bg-white text-white dark:text-black border-[4px] rounded-[20px] border-black dark:border-white text-xl font-black shadow-[8px_8px_0px_0px_rgba(255,222,3,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center gap-3"
