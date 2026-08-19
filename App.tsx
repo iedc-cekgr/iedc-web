@@ -15,6 +15,7 @@ import ExultQuiz from './pages/exult/ExultQuiz';
 import CslLive from './pages/CslLive';
 import RegistrationPage from './pages/RegistrationPage';
 import SubmitIdea from './pages/SubmitIdea';
+import WelcomeFirstYears from './pages/WelcomeFirstYears';
 
 
 const App: React.FC = () => {
@@ -117,6 +118,7 @@ const App: React.FC = () => {
       case '/leaderboard': return <Leaderboard onNavigate={navigate} />;
       case '/exult': return <ExultHome onNavigate={navigate} />;
       case '/submit-idea': return <SubmitIdea onNavigate={navigate} />;
+      case '/welcome': return <WelcomeFirstYears onNavigate={navigate} />;
       default: return <Home onNavigate={navigate} />;
     }
   };
@@ -148,6 +150,14 @@ const App: React.FC = () => {
   if (currentPath.startsWith('/exult')) {
     return (
       <main className="animate-in fade-in duration-500 bg-[#050B08]">
+        {renderContent()}
+      </main>
+    );
+  }
+
+  if (currentPath === '/welcome') {
+    return (
+      <main className="animate-in fade-in duration-500">
         {renderContent()}
       </main>
     );
