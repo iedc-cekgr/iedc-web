@@ -236,7 +236,7 @@ const IdeasAdmin: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-2 gap-x-6 text-sm text-slate-600 dark:text-slate-400 font-bold">
                     <div className="flex items-center gap-2">
                       <User className="w-4 h-4 text-slate-400" />
-                      <span>{idea.name} ({idea.semester}, {idea.department.split(' ')[0]})</span>
+                      <span>{idea.name}{idea.department ? ` (${idea.semester ? `${idea.semester}, ` : ''}${idea.department.split(' ')[0]})` : ''}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-slate-400" />
@@ -307,7 +307,9 @@ const IdeasAdmin: React.FC = () => {
                   <div>Name: <span className="font-black text-blue-600 dark:text-blue-400">{selectedIdea.name}</span></div>
                   <div>Email: <span>{selectedIdea.email}</span></div>
                   <div>Phone: <span>{selectedIdea.phone}</span></div>
-                  <div>Year/Dept: <span>{selectedIdea.semester} - {selectedIdea.department}</span></div>
+                  {(selectedIdea.department || selectedIdea.semester) && (
+                    <div>Year/Dept: <span>{[selectedIdea.semester, selectedIdea.department].filter(Boolean).join(' - ')}</span></div>
+                  )}
                 </div>
               </div>
 

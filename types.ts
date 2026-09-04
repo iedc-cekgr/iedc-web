@@ -126,8 +126,8 @@ export interface IdeaSubmission {
   name: string;
   email: string;
   phone: string;
-  department: string;
-  semester: string;
+  department?: string;
+  semester?: string;
   title: string;
   category: string;
   problemStatement: string;

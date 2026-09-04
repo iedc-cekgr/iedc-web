@@ -13,17 +13,6 @@ interface Props {
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
 
-const BRANCHES = [
-  'Computer Science & Engineering',
-  'Electronics & Communication Engineering',
-  'Electrical & Electronics Engineering',
-  'Mechanical Engineering',
-  'Civil Engineering',
-  'Other'
-];
-
-const SEMESTERS = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'];
-
 const CATEGORIES = [
   'Software / Web / Mobile App',
   'AI / ML / Data Science',
@@ -56,8 +45,6 @@ const SubmitIdea: React.FC<Props> = ({ onNavigate }) => {
     name: '',
     email: '',
     phone: '',
-    branch: '',
-    semester: '',
     title: '',
     category: '',
     problemStatement: '',
@@ -130,7 +117,7 @@ const SubmitIdea: React.FC<Props> = ({ onNavigate }) => {
 
     try {
       // Basic Validation
-      if (!formData.name || !formData.email || !formData.phone || !formData.branch || !formData.semester) {
+      if (!formData.name || !formData.email || !formData.phone) {
         throw new Error("Please complete all personal details.");
       }
       if (!formData.title || !formData.category || !formData.problemStatement || !formData.solutionDescription) {
@@ -146,8 +133,6 @@ const SubmitIdea: React.FC<Props> = ({ onNavigate }) => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        department: formData.branch,
-        semester: formData.semester,
         title: formData.title,
         category: formData.category,
         problemStatement: formData.problemStatement,
@@ -246,7 +231,7 @@ const SubmitIdea: React.FC<Props> = ({ onNavigate }) => {
               <h2 className="text-3xl font-black uppercase">1. Contributor Details</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-xs font-black uppercase mb-2 tracking-wider">Full Name *</label>
                 <input 
@@ -284,35 +269,6 @@ const SubmitIdea: React.FC<Props> = ({ onNavigate }) => {
                   placeholder="e.g. +91 9876543210"
                   className="w-full p-4 border-[3px] border-black rounded-xl font-bold bg-white dark:bg-slate-950 text-black dark:text-white placeholder-slate-400 focus:outline-none focus:bg-yellow-50 dark:focus:bg-slate-900 transition-colors"
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-black uppercase mb-2 tracking-wider">Branch *</label>
-                  <select 
-                    name="branch"
-                    value={formData.branch}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full p-4 border-[3px] border-black rounded-xl font-bold bg-white dark:bg-slate-950 text-black dark:text-white focus:outline-none focus:bg-yellow-50 dark:focus:bg-slate-900 transition-colors"
-                  >
-                    <option value="">Select Branch</option>
-                    {BRANCHES.map(b => <option key={b} value={b}>{b}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-black uppercase mb-2 tracking-wider">Semester *</label>
-                  <select 
-                    name="semester"
-                    value={formData.semester}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full p-4 border-[3px] border-black rounded-xl font-bold bg-white dark:bg-slate-950 text-black dark:text-white focus:outline-none focus:bg-yellow-50 dark:focus:bg-slate-900 transition-colors"
-                  >
-                    <option value="">Semester</option>
-                    {SEMESTERS.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
               </div>
             </div>
           </GlassCard>
