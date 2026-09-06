@@ -3,6 +3,7 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase
 import { db } from '../../firebase';
 import { ExecomMember } from '../../types';
 import { Edit, Trash2, Plus, X, Upload } from 'lucide-react';
+import RethinkModal from './RethinkModal';
 
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
@@ -17,6 +18,8 @@ const ExecomAdmin: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<FirestoreMember | null>(null);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [deleteMember, setDeleteMember] = useState<FirestoreMember | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [formData, setFormData] = useState<Partial<ExecomMember>>({
     name: '',
@@ -117,14 +120,18 @@ const ExecomAdmin: React.FC = () => {
     }
   };
 
-  const handleDelete = async (docId: string) => {
-    if (!window.confirm("Are you sure you want to delete this member?")) return;
+  const confirmDeleteMember = async () => {
+    if (!deleteMember) return;
+    setIsDeleting(true);
     try {
-      await deleteDoc(doc(db, 'execom', docId));
-      fetchMembers();
+      await deleteDoc(doc(db, 'execom', deleteMember.docId));
+      await fetchMembers();
     } catch (error) {
       console.error("Error deleting member:", error);
       alert("Failed to delete member");
+    } finally {
+      setIsDeleting(false);
+      setDeleteMember(null);
     }
   };
 
@@ -155,7 +162,7 @@ const ExecomAdmin: React.FC = () => {
               <button onClick={() => handleOpenModal(member)} className="p-2 text-slate-400 hover:text-blue-600 bg-slate-50 dark:bg-slate-950 rounded-lg">
                 <Edit className="w-4 h-4" />
               </button>
-              <button onClick={() => handleDelete(member.docId)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 dark:bg-slate-950 rounded-lg">
+              <button onClick={() => setDeleteMember(member)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 dark:bg-slate-950 rounded-lg">
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
@@ -319,6 +326,18 @@ const ExecomAdmin: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Rethink Delete Warning Modal */}
+      <RethinkModal
+        isOpen={!!deleteMember}
+        title="Rethink Member Deletion"
+        description="Are you sure you want to delete this officer from the Execom directory?"
+        itemName={deleteMember ? `${deleteMember.name} (${deleteMember.role})` : undefined}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Officer"
+        onConfirm={confirmDeleteMember}
+        onCancel={() => setDeleteMember(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

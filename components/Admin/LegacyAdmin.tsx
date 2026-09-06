@@ -3,6 +3,7 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase
 import { db } from '../../firebase';
 import { TimelineEvent, Achievement, PastLeader } from '../../types';
 import { Edit, Trash2, Plus, X, Upload } from 'lucide-react';
+import RethinkModal from './RethinkModal';
 
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
@@ -10,7 +11,6 @@ const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
 const LegacyAdmin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'timeline' | 'achievements' | 'past_leaders'>('timeline');
 
-  // Common UI shell, we will define separate components or render functions for each tab
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6">Manage Legacy Page</h2>
@@ -48,6 +48,9 @@ const TimelineAdmin = () => {
   const [editingItem, setEditingItem] = useState<(TimelineEvent & { docId: string }) | null>(null);
   const [formData, setFormData] = useState<Partial<TimelineEvent>>({ year: '', title: '', description: '' });
 
+  const [deleteItem, setDeleteItem] = useState<(TimelineEvent & { docId: string }) | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const fetchItems = async () => {
     setLoading(true);
     try {
@@ -77,13 +80,21 @@ const TimelineAdmin = () => {
     } catch (error) { alert("Failed to save"); }
   };
 
-  const handleDelete = async (docId: string) => {
-    if (!window.confirm("Delete?")) return;
-    await deleteDoc(doc(db, 'timeline', docId));
-    fetchItems();
+  const confirmDelete = async () => {
+    if (!deleteItem) return;
+    setIsDeleting(true);
+    try {
+      await deleteDoc(doc(db, 'timeline', deleteItem.docId));
+      await fetchItems();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsDeleting(false);
+      setDeleteItem(null);
+    }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading timeline...</div>;
 
   return (
     <div>
@@ -91,23 +102,25 @@ const TimelineAdmin = () => {
         <h3 className="text-xl font-semibold">Timeline Events</h3>
         <button onClick={() => handleOpenModal()} className="bg-blue-600 text-white px-3 py-2 rounded flex items-center gap-2"><Plus className="w-4 h-4"/> Add</button>
       </div>
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Year</th><th className="p-3">Title</th><th className="p-3 text-right">Actions</th></tr>
-        </thead>
-        <tbody>
-          {items.map(item => (
-            <tr key={item.docId} className="border-b">
-              <td className="p-3 font-medium">{item.year}</td>
-              <td className="p-3">{item.title}</td>
-              <td className="p-3 text-right">
-                <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600"><Edit className="w-4 h-4" /></button>
-                <button onClick={() => handleDelete(item.docId)} className="p-2 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Year</th><th className="p-3">Title</th><th className="p-3 text-right">Actions</th></tr>
+          </thead>
+          <tbody>
+            {items.map(item => (
+              <tr key={item.docId} className="border-b">
+                <td className="p-3 font-medium">{item.year}</td>
+                <td className="p-3">{item.title}</td>
+                <td className="p-3 text-right">
+                  <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600"><Edit className="w-4 h-4" /></button>
+                  <button onClick={() => setDeleteItem(item)} className="p-2 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
@@ -125,6 +138,18 @@ const TimelineAdmin = () => {
           </div>
         </div>
       )}
+
+      <RethinkModal
+        isOpen={!!deleteItem}
+        title="Rethink Timeline Deletion"
+        description="Are you sure you want to delete this historical timeline record?"
+        itemName={deleteItem ? `${deleteItem.year} - ${deleteItem.title}` : undefined}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Item"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteItem(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };
@@ -137,6 +162,9 @@ const AchievementsAdmin = () => {
   const [editingItem, setEditingItem] = useState<(Achievement & { docId: string }) | null>(null);
   const [formData, setFormData] = useState<Partial<Achievement>>({ title: '', year: '', description: '', icon: 'Award', image: '' });
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+
+  const [deleteItem, setDeleteItem] = useState<(Achievement & { docId: string }) | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -196,13 +224,21 @@ const AchievementsAdmin = () => {
     } catch (error) { alert("Failed to save"); }
   };
 
-  const handleDelete = async (docId: string) => {
-    if (!window.confirm("Delete?")) return;
-    await deleteDoc(doc(db, 'achievements', docId));
-    fetchItems();
+  const confirmDelete = async () => {
+    if (!deleteItem) return;
+    setIsDeleting(true);
+    try {
+      await deleteDoc(doc(db, 'achievements', deleteItem.docId));
+      await fetchItems();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsDeleting(false);
+      setDeleteItem(null);
+    }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading achievements...</div>;
 
   return (
     <div>
@@ -210,23 +246,25 @@ const AchievementsAdmin = () => {
         <h3 className="text-xl font-semibold">Achievements</h3>
         <button onClick={() => handleOpenModal()} className="bg-blue-600 text-white px-3 py-2 rounded flex items-center gap-2"><Plus className="w-4 h-4"/> Add</button>
       </div>
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Year</th><th className="p-3">Title</th><th className="p-3 text-right">Actions</th></tr>
-        </thead>
-        <tbody>
-          {items.map(item => (
-            <tr key={item.docId} className="border-b">
-              <td className="p-3 font-medium">{item.year}</td>
-              <td className="p-3">{item.title}</td>
-              <td className="p-3 text-right">
-                <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600"><Edit className="w-4 h-4" /></button>
-                <button onClick={() => handleDelete(item.docId)} className="p-2 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Year</th><th className="p-3">Title</th><th className="p-3 text-right">Actions</th></tr>
+          </thead>
+          <tbody>
+            {items.map(item => (
+              <tr key={item.docId} className="border-b">
+                <td className="p-3 font-medium">{item.year}</td>
+                <td className="p-3">{item.title}</td>
+                <td className="p-3 text-right">
+                  <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600"><Edit className="w-4 h-4" /></button>
+                  <button onClick={() => setDeleteItem(item)} className="p-2 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
@@ -258,6 +296,18 @@ const AchievementsAdmin = () => {
           </div>
         </div>
       )}
+
+      <RethinkModal
+        isOpen={!!deleteItem}
+        title="Rethink Achievement Deletion"
+        description="Are you sure you want to delete this achievement record?"
+        itemName={deleteItem ? `${deleteItem.year} - ${deleteItem.title}` : undefined}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Item"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteItem(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };
@@ -270,6 +320,9 @@ const PastLeadersAdmin = () => {
   const [editingItem, setEditingItem] = useState<(PastLeader & { docId: string }) | null>(null);
   const [formData, setFormData] = useState<Partial<PastLeader>>({ year: '', nodalOfficer: '', nodalOfficerImage: '', ceo: '', ceoImage: '' });
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+
+  const [deleteItem, setDeleteItem] = useState<(PastLeader & { docId: string }) | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -329,13 +382,21 @@ const PastLeadersAdmin = () => {
     } catch (error) { alert("Failed to save"); }
   };
 
-  const handleDelete = async (docId: string) => {
-    if (!window.confirm("Delete?")) return;
-    await deleteDoc(doc(db, 'past_leaders', docId));
-    fetchItems();
+  const confirmDelete = async () => {
+    if (!deleteItem) return;
+    setIsDeleting(true);
+    try {
+      await deleteDoc(doc(db, 'past_leaders', deleteItem.docId));
+      await fetchItems();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsDeleting(false);
+      setDeleteItem(null);
+    }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>Loading pioneers...</div>;
 
   return (
     <div>
@@ -343,24 +404,26 @@ const PastLeadersAdmin = () => {
         <h3 className="text-xl font-semibold">The Pioneers</h3>
         <button onClick={() => handleOpenModal()} className="bg-blue-600 text-white px-3 py-2 rounded flex items-center gap-2"><Plus className="w-4 h-4"/> Add</button>
       </div>
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Tenure</th><th className="p-3">Nodal Officer</th><th className="p-3">CEO</th><th className="p-3 text-right">Actions</th></tr>
-        </thead>
-        <tbody>
-          {items.map(item => (
-            <tr key={item.docId} className="border-b">
-              <td className="p-3 font-medium">{item.year}</td>
-              <td className="p-3">{item.nodalOfficer}</td>
-              <td className="p-3">{item.ceo}</td>
-              <td className="p-3 text-right">
-                <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600"><Edit className="w-4 h-4" /></button>
-                <button onClick={() => handleDelete(item.docId)} className="p-2 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-50 dark:bg-slate-950 border-b"><th className="p-3">Tenure</th><th className="p-3">Nodal Officer</th><th className="p-3">CEO</th><th className="p-3 text-right">Actions</th></tr>
+          </thead>
+          <tbody>
+            {items.map(item => (
+              <tr key={item.docId} className="border-b">
+                <td className="p-3 font-medium">{item.year}</td>
+                <td className="p-3">{item.nodalOfficer}</td>
+                <td className="p-3">{item.ceo}</td>
+                <td className="p-3 text-right">
+                  <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600"><Edit className="w-4 h-4" /></button>
+                  <button onClick={() => setDeleteItem(item)} className="p-2 text-slate-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
@@ -404,6 +467,18 @@ const PastLeadersAdmin = () => {
           </div>
         </div>
       )}
+
+      <RethinkModal
+        isOpen={!!deleteItem}
+        title="Rethink Pioneer Leadership Record Deletion"
+        description="Are you sure you want to delete this pioneer leadership entry?"
+        itemName={deleteItem ? `${deleteItem.year} (CEO: ${deleteItem.ceo})` : undefined}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Item"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteItem(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

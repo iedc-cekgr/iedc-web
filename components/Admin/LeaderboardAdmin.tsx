@@ -3,6 +3,7 @@ import { db } from '../../firebase';
 import { doc, getDoc, setDoc, updateDoc, collection, getDocs, addDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { Promoter } from '../../types';
 import { ToggleLeft, ToggleRight, Trash2, Plus, Download, Save, Check, RefreshCw, Calendar } from 'lucide-react';
+import RethinkModal from './RethinkModal';
 
 const LeaderboardAdmin: React.FC = () => {
   const [promoters, setPromoters] = useState<Promoter[]>([]);
@@ -12,21 +13,20 @@ const LeaderboardAdmin: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  // Settings state
   const [isVisible, setIsVisible] = useState(false);
   const [settingsLoading, setSettingsLoading] = useState(false);
   
-  // Add promoter form state
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [addLoading, setAddLoading] = useState(false);
 
-  // Local state for manually typed GForm referral inputs (holds event-specific or global counts depending on mode)
   const [gformValues, setGformValues] = useState<Record<string, number>>({});
   const [savingGformId, setSavingGformId] = useState<string | null>(null);
 
-  // Map to hold event-specific site/gform stats for the selected event
   const [eventStats, setEventStats] = useState<Record<string, { site: number, gform: number }>>({});
+
+  const [deleteTarget, setDeleteTarget] = useState<{ id?: string; type: 'promoter' | 'reset'; name?: string } | null>(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -282,73 +282,51 @@ const LeaderboardAdmin: React.FC = () => {
     }
   };
 
-  const handleDeletePromoter = async (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete promoter "${name}"? This action cannot be undone.`)) return;
-
+  const confirmAction = async () => {
+    if (!deleteTarget) return;
+    setIsActionLoading(true);
     try {
-      await deleteDoc(doc(db, 'promoters', id));
-      // Delete any associated event referrals
-      const querySnapshot = await getDocs(query(collection(db, 'event_referrals'), where('promoterId', '==', id)));
-      const deletePromises = querySnapshot.docs.map(document => deleteDoc(doc(db, 'event_referrals', document.id)));
-      await Promise.all(deletePromises);
-
-      fetchPromotersAndStats();
-    } catch (err) {
-      console.error("Error deleting promoter:", err);
-      alert("Failed to delete promoter.");
-    }
-  };
-
-  const handleResetLeaderboard = async () => {
-    const targetLabel = selectedEventId 
-      ? `Event: ${events.find(e => e.docId === selectedEventId)?.title || 'Selected Event'}`
-      : 'All Events Combined (Lifetime)';
-
-    if (!window.confirm(`WARNING: This will permanently reset all referral counts to 0 for "${targetLabel}". This action cannot be undone. Are you sure you want to proceed?`)) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (selectedEventId) {
-        // Reset specific event referrals
-        const q = query(collection(db, 'event_referrals'), where('eventId', '==', selectedEventId));
-        const querySnap = await getDocs(q);
-        
-        const deletePromises = querySnap.docs.map(docSnapshot => deleteDoc(doc(db, 'event_referrals', docSnapshot.id)));
+      if (deleteTarget.type === 'promoter' && deleteTarget.id) {
+        await deleteDoc(doc(db, 'promoters', deleteTarget.id));
+        const querySnapshot = await getDocs(query(collection(db, 'event_referrals'), where('promoterId', '==', deleteTarget.id)));
+        const deletePromises = querySnapshot.docs.map(document => deleteDoc(doc(db, 'event_referrals', document.id)));
         await Promise.all(deletePromises);
+        await fetchPromotersAndStats();
+      } else if (deleteTarget.type === 'reset') {
+        if (selectedEventId) {
+          const q = query(collection(db, 'event_referrals'), where('eventId', '==', selectedEventId));
+          const querySnap = await getDocs(q);
+          const deletePromises = querySnap.docs.map(docSnapshot => deleteDoc(doc(db, 'event_referrals', docSnapshot.id)));
+          await Promise.all(deletePromises);
 
-        // Recalculate global scores for all promoters
-        const promotersSnap = await getDocs(collection(db, 'promoters'));
-        const updatePromises = promotersSnap.docs.map(async (pDoc) => {
-          await updateGlobalReferrals(pDoc.id);
-        });
-        await Promise.all(updatePromises);
-      } else {
-        // Reset all event referrals
-        const referralsSnap = await getDocs(collection(db, 'event_referrals'));
-        const deletePromises = referralsSnap.docs.map(docSnapshot => deleteDoc(doc(db, 'event_referrals', docSnapshot.id)));
-        await Promise.all(deletePromises);
-
-        // Reset main promoter global scores to 0
-        const promotersSnap = await getDocs(collection(db, 'promoters'));
-        const updatePromises = promotersSnap.docs.map(async (pDoc) => {
-          await updateDoc(doc(db, 'promoters', pDoc.id), {
-            siteReferrals: 0,
-            gformReferrals: 0,
-            totalReferrals: 0
+          const promotersSnap = await getDocs(collection(db, 'promoters'));
+          const updatePromises = promotersSnap.docs.map(async (pDoc) => {
+            await updateGlobalReferrals(pDoc.id);
           });
-        });
-        await Promise.all(updatePromises);
-      }
+          await Promise.all(updatePromises);
+        } else {
+          const referralsSnap = await getDocs(collection(db, 'event_referrals'));
+          const deletePromises = referralsSnap.docs.map(docSnapshot => deleteDoc(doc(db, 'event_referrals', docSnapshot.id)));
+          await Promise.all(deletePromises);
 
-      alert("Referrals successfully reset to 0!");
-      await fetchPromotersAndStats();
+          const promotersSnap = await getDocs(collection(db, 'promoters'));
+          const updatePromises = promotersSnap.docs.map(async (pDoc) => {
+            await updateDoc(doc(db, 'promoters', pDoc.id), {
+              siteReferrals: 0,
+              gformReferrals: 0,
+              totalReferrals: 0
+            });
+          });
+          await Promise.all(updatePromises);
+        }
+        await fetchPromotersAndStats();
+      }
     } catch (err) {
-      console.error("Error resetting stats:", err);
-      alert("Failed to reset leaderboard statistics.");
+      console.error("Error executing action:", err);
+      alert("Failed to complete action.");
     } finally {
-      setLoading(false);
+      setIsActionLoading(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -520,7 +498,7 @@ const LeaderboardAdmin: React.FC = () => {
                 <Download className="w-4 h-4" /> Export CSV
               </button>
               <button
-                onClick={handleResetLeaderboard}
+                onClick={() => setDeleteTarget({ type: 'reset', name: selectedEventId ? `Event Referrals` : `All Lifetime Referrals` })}
                 disabled={promoters.length === 0}
                 className="flex items-center gap-2 bg-red-500 text-white border-2 border-black font-black px-4 py-2 text-xs uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50"
               >
@@ -621,7 +599,7 @@ const LeaderboardAdmin: React.FC = () => {
                         </td>
                         <td className="py-4 text-right">
                           <button
-                            onClick={() => handleDeletePromoter(promoter.id!, promoter.name)}
+                            onClick={() => setDeleteTarget({ id: promoter.id, type: 'promoter', name: promoter.name })}
                             className="p-2 border-2 border-black bg-red-100 hover:bg-red-200 text-red-600 rounded transition-colors"
                             title="Delete Promoter"
                           >
@@ -637,6 +615,22 @@ const LeaderboardAdmin: React.FC = () => {
           )}
         </div>
       </div>
+      {/* Rethink Delete Warning Modal */}
+      <RethinkModal
+        isOpen={!!deleteTarget}
+        title={deleteTarget?.type === 'promoter' ? "Rethink Promoter Deletion" : "Rethink Leaderboard Reset"}
+        description={
+          deleteTarget?.type === 'promoter' 
+            ? "Are you sure you want to delete this promoter and all their associated referral records?" 
+            : "WARNING: This will permanently reset all referral counts to 0 for the selected scope. This action cannot be undone."
+        }
+        itemName={deleteTarget?.name}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Data"
+        onConfirm={confirmAction}
+        onCancel={() => setDeleteTarget(null)}
+        isLoading={isActionLoading}
+      />
     </div>
   );
 };

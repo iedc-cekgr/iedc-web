@@ -4,6 +4,7 @@ import { db } from '../../firebase';
 import { Plus, Edit2, Trash2, Save, X, Download, Filter, Search, ChevronDown, ChevronUp, AlertTriangle, Trophy, Upload, FileText } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import RethinkModal from './RethinkModal';
 
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
@@ -107,6 +108,8 @@ const ExultAdmin: React.FC = () => {
   const [regFilterEvent, setRegFilterEvent] = useState('all');
   const [allQuizAnswers, setAllQuizAnswers] = useState<Record<string, any[]>>({});
   const [selectedRegResults, setSelectedRegResults] = useState<ExultRegistration | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; type: 'event' | 'registration'; name?: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Event Form State
   const [eventForm, setEventForm] = useState<Partial<ExultEvent>>(() => {
@@ -308,32 +311,26 @@ const ExultAdmin: React.FC = () => {
     }
   };
 
-  const deleteEvent = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this event AND all its registrations? This cannot be undone.")) {
-      try {
-        await deleteDoc(doc(db, 'exult_events', id));
-        
-        // Cascade delete registrations
-        const regQuery = query(collection(db, 'exult_registrations'), where('eventId', '==', id));
+  const confirmDeleteTarget = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      if (deleteTarget.type === 'event') {
+        await deleteDoc(doc(db, 'exult_events', deleteTarget.id));
+        const regQuery = query(collection(db, 'exult_registrations'), where('eventId', '==', deleteTarget.id));
         const regSnapshot = await getDocs(regQuery);
         const deletePromises = regSnapshot.docs.map(document => deleteDoc(doc(db, 'exult_registrations', document.id)));
         await Promise.all(deletePromises);
-        
         fetchEvents();
-      } catch (error) {
-        console.error("Error deleting event:", error);
-      }
-    }
-  };
-
-  const deleteRegistration = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this registration?")) {
-      try {
-        await deleteDoc(doc(db, 'exult_registrations', id));
+      } else {
+        await deleteDoc(doc(db, 'exult_registrations', deleteTarget.id));
         fetchRegistrations();
-      } catch (error) {
-        console.error("Error deleting registration:", error);
       }
+    } catch (error) {
+      console.error("Error deleting target:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -1082,7 +1079,7 @@ const ExultAdmin: React.FC = () => {
                             </td>
                             <td className="p-4 flex items-center gap-3">
                               <button onClick={() => editEvent(event)} className="text-blue-600 hover:text-blue-800 p-1"><Edit2 className="w-4 h-4" /></button>
-                              <button onClick={() => deleteEvent(event.id)} className="text-red-600 hover:text-red-800 p-1"><Trash2 className="w-4 h-4" /></button>
+                              <button onClick={() => setDeleteTarget({ id: event.id, type: 'event', name: event.title })} className="text-red-600 hover:text-red-800 p-1"><Trash2 className="w-4 h-4" /></button>
                             </td>
                           </tr>
                         ))
@@ -1213,7 +1210,7 @@ const ExultAdmin: React.FC = () => {
                                 View Results
                               </button>
                             )}
-                            <button onClick={() => deleteRegistration(reg.id)} className="text-red-500 hover:text-red-700 p-1.5 bg-red-50 hover:bg-red-100 rounded transition-colors border border-red-200">
+                            <button onClick={() => setDeleteTarget({ id: reg.id, type: 'registration', name: `${reg.name} (${reg.eventTitle || 'Exult Registration'})` })} className="text-red-500 hover:text-red-700 p-1.5 bg-red-50 hover:bg-red-100 rounded transition-colors border border-red-200">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
@@ -1305,6 +1302,22 @@ const ExultAdmin: React.FC = () => {
         </div>
       )}
 
+      {/* Rethink Delete Warning Modal */}
+      <RethinkModal
+        isOpen={!!deleteTarget}
+        title={deleteTarget?.type === 'event' ? "Rethink Exult Event Deletion" : "Rethink Registration Deletion"}
+        description={
+          deleteTarget?.type === 'event' 
+            ? "Are you sure you want to delete this Exult fest event AND all associated registrations? This cannot be undone."
+            : "Are you sure you want to delete this Exult fest registration?"
+        }
+        itemName={deleteTarget?.name}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Item"
+        onConfirm={confirmDeleteTarget}
+        onCancel={() => setDeleteTarget(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

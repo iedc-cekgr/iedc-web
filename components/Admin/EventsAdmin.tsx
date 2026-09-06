@@ -5,6 +5,7 @@ import { Event, CustomField } from '../../types';
 import { Edit, Trash2, Plus, X, Upload } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import RethinkModal from './RethinkModal';
 
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
@@ -23,6 +24,8 @@ const EventsAdmin: React.FC = () => {
   const [editingEvent, setEditingEvent] = useState<FirestoreEvent | null>(null);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [regFilterEvent, setRegFilterEvent] = useState('all');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; type: 'event' | 'registration'; title?: string; refPath?: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<Partial<Event>>({
@@ -195,25 +198,24 @@ const EventsAdmin: React.FC = () => {
     }
   };
 
-  const handleDelete = async (docId: string) => {
-    if (!window.confirm("Are you sure you want to delete this event AND all its registrations?")) return;
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
     try {
-      await deleteDoc(doc(db, 'events', docId));
-      fetchEvents();
+      if (deleteTarget.type === 'event') {
+        await deleteDoc(doc(db, 'events', deleteTarget.id));
+        await fetchEvents();
+      } else {
+        const pathToDelete = deleteTarget.refPath || `event_registrations/${deleteTarget.id}`;
+        await deleteDoc(doc(db, pathToDelete));
+        await fetchRegistrations();
+      }
     } catch (error) {
-      console.error("Error deleting event:", error);
-      alert("Failed to delete event");
-    }
-  };
-
-  const deleteRegistration = async (id: string, refPath?: string) => {
-    if (!window.confirm("Are you sure you want to delete this registration?")) return;
-    try {
-      const pathToDelete = refPath || `event_registrations/${id}`;
-      await deleteDoc(doc(db, pathToDelete));
-      fetchRegistrations();
-    } catch (error) {
-      console.error("Error deleting registration:", error);
+      console.error("Error performing delete:", error);
+      alert("Failed to delete item.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -399,7 +401,7 @@ const EventsAdmin: React.FC = () => {
                       <button onClick={() => handleOpenModal(event)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
                         <Edit className="w-5 h-5" />
                       </button>
-                      <button onClick={() => handleDelete(event.docId)} className="p-2 text-slate-400 hover:text-red-600 transition-colors">
+                      <button onClick={() => setDeleteTarget({ id: event.docId, type: 'event', title: event.title })} className="p-2 text-slate-400 hover:text-red-600 transition-colors">
                         <Trash2 className="w-5 h-5" />
                       </button>
                     </td>
@@ -503,7 +505,7 @@ const EventsAdmin: React.FC = () => {
                       })}
                     </td>
                     <td className="p-3 text-right">
-                      <button onClick={() => deleteRegistration(reg.id, reg.refPath)} className="text-red-500 hover:text-red-700 p-1">
+                      <button onClick={() => setDeleteTarget({ id: reg.id, type: 'registration', title: `${reg.name} (${reg.eventTitle || 'Registration'})`, refPath: reg.refPath })} className="text-red-500 hover:text-red-700 p-1">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
@@ -775,6 +777,22 @@ const EventsAdmin: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Rethink Delete Warning Modal */}
+      <RethinkModal
+        isOpen={!!deleteTarget}
+        title={deleteTarget?.type === 'event' ? "Rethink Event Deletion" : "Rethink Registration Deletion"}
+        description={
+          deleteTarget?.type === 'event' 
+            ? "Deleting this event will also remove its associated details. Are you sure you want to proceed?"
+            : "Deleting this student registration will remove their record permanently."
+        }
+        itemName={deleteTarget?.title}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Record"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

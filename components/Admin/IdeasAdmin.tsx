@@ -5,11 +5,12 @@ import { IdeaSubmission } from '../../types';
 import { Search, Eye, Trash2, X, Download, ExternalLink, Calendar, User, Mail, Phone, BookOpen, FileSpreadsheet, Layers, ShieldQuestion } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
+import RethinkModal from './RethinkModal';
+
 interface FirestoreIdea extends IdeaSubmission {
   docId: string;
 }
 
-// Helper to safely format Firestore timestamp or other date values
 const formatTimestamp = (timestamp: any) => {
   if (!timestamp) return 'N/A';
   if (typeof timestamp.toDate === 'function') {
@@ -36,11 +37,8 @@ const formatTimestampDate = (timestamp: any) => {
   return isNaN(date.getTime()) ? 'Unknown' : date.toLocaleDateString();
 };
 
-// Helper to convert Cloudinary URL to direct download URL using fl_attachment
 const getCloudinaryDownloadUrl = (url: string | undefined | null) => {
   if (!url) return '';
-  // Cloudinary often blocks transformations (like fl_attachment) on PDFs for security reasons,
-  // which results in an ERR_INVALID_RESPONSE. For PDFs, we'll return the original URL.
   if (url.toLowerCase().endsWith('.pdf')) {
     return url;
   }
@@ -50,13 +48,14 @@ const getCloudinaryDownloadUrl = (url: string | undefined | null) => {
   return url;
 };
 
-
 const IdeasAdmin: React.FC = () => {
   const [ideas, setIdeas] = useState<FirestoreIdea[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [selectedIdea, setSelectedIdea] = useState<FirestoreIdea | null>(null);
+  const [deleteIdea, setDeleteIdea] = useState<FirestoreIdea | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchIdeas = async () => {
     setLoading(false);
@@ -81,17 +80,21 @@ const IdeasAdmin: React.FC = () => {
     fetchIdeas();
   }, []);
 
-  const handleDelete = async (docId: string, title: string) => {
-    if (!window.confirm(`Are you sure you want to delete the idea "${title}"? This action cannot be undone.`)) return;
+  const confirmDeleteIdea = async () => {
+    if (!deleteIdea) return;
+    setIsDeleting(true);
     try {
-      await deleteDoc(doc(db, 'ideas', docId));
-      setIdeas(prev => prev.filter(idea => idea.docId !== docId));
-      if (selectedIdea?.docId === docId) {
+      await deleteDoc(doc(db, 'ideas', deleteIdea.docId));
+      setIdeas(prev => prev.filter(idea => idea.docId !== deleteIdea.docId));
+      if (selectedIdea?.docId === deleteIdea.docId) {
         setSelectedIdea(null);
       }
     } catch (error) {
       console.error("Error deleting idea:", error);
       alert("Failed to delete the submission.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteIdea(null);
     }
   };
 
@@ -259,7 +262,7 @@ const IdeasAdmin: React.FC = () => {
                     <span>View Details</span>
                   </button>
                   <button
-                    onClick={() => handleDelete(idea.docId, idea.title)}
+                    onClick={() => setDeleteIdea(idea)}
                     className="p-2 border-[2px] border-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950 text-red-600 dark:text-red-400 transition-all"
                     title="Delete Idea"
                   >
@@ -403,6 +406,18 @@ const IdeasAdmin: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Rethink Delete Warning Modal */}
+      <RethinkModal
+        isOpen={!!deleteIdea}
+        title="Rethink Idea Submission Deletion"
+        description="Are you sure you want to delete this student idea proposal? This action cannot be undone."
+        itemName={deleteIdea ? `"${deleteIdea.title}" by ${deleteIdea.name}` : undefined}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Proposal"
+        onConfirm={confirmDeleteIdea}
+        onCancel={() => setDeleteIdea(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

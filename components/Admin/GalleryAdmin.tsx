@@ -3,6 +3,7 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase
 import { db } from '../../firebase';
 import { GalleryItem } from '../../types';
 import { Edit, Trash2, Plus, X, Upload } from 'lucide-react';
+import RethinkModal from './RethinkModal';
 
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
@@ -17,6 +18,8 @@ const GalleryAdmin: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FirestoreGalleryItem | null>(null);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [deleteItem, setDeleteItem] = useState<FirestoreGalleryItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<Partial<GalleryItem>>({
@@ -114,14 +117,18 @@ const GalleryAdmin: React.FC = () => {
     }
   };
 
-  const handleDelete = async (docId: string) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
+  const confirmDeleteGalleryItem = async () => {
+    if (!deleteItem) return;
+    setIsDeleting(true);
     try {
-      await deleteDoc(doc(db, 'gallery', docId));
-      fetchItems();
+      await deleteDoc(doc(db, 'gallery', deleteItem.docId));
+      await fetchItems();
     } catch (error) {
       console.error("Error deleting gallery item:", error);
       alert("Failed to delete gallery item");
+    } finally {
+      setIsDeleting(false);
+      setDeleteItem(null);
     }
   };
 
@@ -140,8 +147,8 @@ const GalleryAdmin: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <table className="w-full text-left border-collapse">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-x-auto">
+        <table className="w-full text-left border-collapse min-w-[500px]">
           <thead>
             <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
               <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Image</th>
@@ -170,7 +177,7 @@ const GalleryAdmin: React.FC = () => {
                   <button onClick={() => handleOpenModal(item)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
                     <Edit className="w-5 h-5" />
                   </button>
-                  <button onClick={() => handleDelete(item.docId)} className="p-2 text-slate-400 hover:text-red-600 transition-colors">
+                  <button onClick={() => setDeleteItem(item)} className="p-2 text-slate-400 hover:text-red-600 transition-colors">
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </td>
@@ -262,6 +269,18 @@ const GalleryAdmin: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Rethink Delete Warning Modal */}
+      <RethinkModal
+        isOpen={!!deleteItem}
+        title="Rethink Gallery Image Deletion"
+        description="Are you sure you want to delete this media item from the gallery?"
+        itemName={deleteItem ? `${deleteItem.title} (${deleteItem.category})` : undefined}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Image"
+        onConfirm={confirmDeleteGalleryItem}
+        onCancel={() => setDeleteItem(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

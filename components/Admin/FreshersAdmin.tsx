@@ -4,6 +4,8 @@ import { db } from '../../firebase';
 import { Search, Trash2, FileSpreadsheet, Mail, Phone, Calendar, Settings, Users, Plus, Save, X } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
+import RethinkModal from './RethinkModal';
+
 interface FirestoreFresher {
   docId: string;
   name: string;
@@ -11,14 +13,14 @@ interface FirestoreFresher {
   phone: string;
   branch: string;
   timestamp: any;
-  [key: string]: any; // Allow for dynamic fields
+  [key: string]: any;
 }
 
 export interface CustomField {
   id: string;
   label: string;
   type: 'text' | 'textarea' | 'select' | 'radio';
-  options: string; // comma separated for select/radio
+  options: string;
   required: boolean;
 }
 
@@ -43,19 +45,20 @@ const formatTimestampDate = (timestamp: any) => {
 const FreshersAdmin: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'registrations' | 'settings'>('registrations');
   
-  // Data state
   const [freshers, setFreshers] = useState<FirestoreFresher[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [branchFilter, setBranchFilter] = useState('');
 
-  // Settings state
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settings, setSettings] = useState<FreshersSettings>({
     whatsappLink: '',
     customFields: []
   });
   const [isSaving, setIsSaving] = useState(false);
+
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string | number; type: 'fresher' | 'field'; name?: string; index?: number } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchFreshers();
@@ -86,7 +89,6 @@ const FreshersAdmin: React.FC = () => {
       if (docSnap.exists()) {
         setSettings(docSnap.data() as FreshersSettings);
       } else {
-        // Initialize if not exists
         await setDoc(docRef, settings);
       }
     } catch (error) {
@@ -126,20 +128,23 @@ const FreshersAdmin: React.FC = () => {
     setSettings({ ...settings, customFields: updatedFields });
   };
 
-  const handleRemoveCustomField = (index: number) => {
-    if (!window.confirm("Remove this custom field? Existing data in registrations will not be deleted, but the field will no longer appear on the form.")) return;
-    const updatedFields = settings.customFields.filter((_, i) => i !== index);
-    setSettings({ ...settings, customFields: updatedFields });
-  };
-
-  const handleDelete = async (docId: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete registration for "${name}"?`)) return;
+  const confirmDeleteTarget = async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
     try {
-      await deleteDoc(doc(db, 'first_year_registrations', docId));
-      setFreshers(prev => prev.filter(f => f.docId !== docId));
+      if (deleteTarget.type === 'fresher') {
+        await deleteDoc(doc(db, 'first_year_registrations', String(deleteTarget.id)));
+        setFreshers(prev => prev.filter(f => f.docId !== deleteTarget.id));
+      } else if (deleteTarget.type === 'field' && typeof deleteTarget.index === 'number') {
+        const updatedFields = settings.customFields.filter((_, i) => i !== deleteTarget.index);
+        setSettings({ ...settings, customFields: updatedFields });
+      }
     } catch (error) {
-      console.error("Error deleting registration:", error);
-      alert("Failed to delete the registration.");
+      console.error("Error deleting target:", error);
+      alert("Failed to delete.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -321,7 +326,7 @@ const FreshersAdmin: React.FC = () => {
 
                   <div className="flex items-center gap-3 w-full md:w-auto border-t md:border-t-0 pt-4 md:pt-0 border-slate-100 dark:border-slate-800 justify-end">
                     <button
-                      onClick={() => handleDelete(fresher.docId, fresher.name)}
+                      onClick={() => setDeleteTarget({ id: fresher.docId, type: 'fresher', name: fresher.name })}
                       className="p-2 border-[2px] border-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-950 text-red-600 dark:text-red-400 transition-all"
                       title="Delete Registration"
                     >
@@ -383,7 +388,7 @@ const FreshersAdmin: React.FC = () => {
                 settings.customFields.map((field, index) => (
                   <div key={field.id} className="relative bg-slate-50 dark:bg-slate-950 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 md:p-6 shadow-sm">
                     <button
-                      onClick={() => handleRemoveCustomField(index)}
+                      onClick={() => setDeleteTarget({ id: field.id, type: 'field', name: field.label, index })}
                       className="absolute -top-3 -right-3 bg-red-500 text-white p-1 rounded-full border-2 border-black hover:scale-110 transition-transform"
                     >
                       <X className="w-4 h-4" />
@@ -463,6 +468,22 @@ const FreshersAdmin: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Rethink Delete Warning Modal */}
+      <RethinkModal
+        isOpen={!!deleteTarget}
+        title={deleteTarget?.type === 'fresher' ? "Rethink Registration Deletion" : "Rethink Field Removal"}
+        description={
+          deleteTarget?.type === 'fresher' 
+            ? "Are you sure you want to delete this first-year registration record?" 
+            : "Remove this custom field? Existing data in registrations will not be deleted, but the field will no longer appear on the registration form."
+        }
+        itemName={deleteTarget?.name}
+        confirmText="Yes, Rethink & Delete"
+        cancelText="Keep Item"
+        onConfirm={confirmDeleteTarget}
+        onCancel={() => setDeleteTarget(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };
