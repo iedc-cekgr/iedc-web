@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from './firebase';
+import { SubWebsite } from './types';
 import Navbar from './components/Navbar';
 import Footer from './Footer';
 import Home from './pages/Home';
@@ -16,11 +19,28 @@ import CslLive from './pages/CslLive';
 import RegistrationPage from './pages/RegistrationPage';
 import SubmitIdea from './pages/SubmitIdea';
 import WelcomeFirstYears from './pages/WelcomeFirstYears';
+import SubWebsiteViewer from './pages/SubWebsiteViewer';
 
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
   const [showAdmin, setShowAdmin] = useState(false);
+  const [subWebsites, setSubWebsites] = useState<SubWebsite[]>([]);
+
+  // Listen to active linked sub-websites from Firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'websites'), (snapshot) => {
+      const sites = snapshot.docs.map(doc => ({
+        docId: doc.id,
+        ...doc.data()
+      })) as SubWebsite[];
+      setSubWebsites(sites);
+    }, (error) => {
+      console.error("Error subscribing to websites collection:", error);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -83,6 +103,12 @@ const App: React.FC = () => {
     currentPath === '/auction' || 
     (isCustomEventDomain && currentPath === '/');
 
+  // Match custom sub-website slug (e.g. /name)
+  const cleanPath = currentPath.replace(/^\/+|\/+$/g, '').toLowerCase();
+  const matchedSubWebsite = cleanPath 
+    ? subWebsites.find(site => site.isActive !== false && site.slug.toLowerCase() === cleanPath)
+    : undefined;
+
   const renderContent = () => {
     if (isCslRoute) {
       return <CslLive onNavigate={navigate} />;
@@ -119,9 +145,27 @@ const App: React.FC = () => {
       case '/exult': return <ExultHome onNavigate={navigate} />;
       case '/submit-idea': return <SubmitIdea onNavigate={navigate} />;
       case '/welcome': return <WelcomeFirstYears onNavigate={navigate} />;
-      default: return <Home onNavigate={navigate} />;
+      default: 
+        if (matchedSubWebsite) {
+          if (matchedSubWebsite.displayMode === 'redirect') {
+            window.location.href = matchedSubWebsite.targetUrl;
+            return (
+              <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white p-4">
+                <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mb-3" />
+                <p className="text-sm font-semibold">Redirecting to {matchedSubWebsite.name}...</p>
+                <p className="text-xs text-slate-400 mt-1 font-mono">{matchedSubWebsite.targetUrl}</p>
+              </div>
+            );
+          }
+          return <SubWebsiteViewer website={matchedSubWebsite} onNavigate={navigate} />;
+        }
+        return <Home onNavigate={navigate} />;
     }
   };
+
+  if (matchedSubWebsite && matchedSubWebsite.displayMode === 'iframe' && !showAdmin && !isCslRoute) {
+    return <SubWebsiteViewer website={matchedSubWebsite} onNavigate={navigate} />;
+  }
 
   if (isCslRoute) {
     return (
@@ -179,4 +223,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default App;

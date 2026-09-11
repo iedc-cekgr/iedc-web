@@ -13,6 +13,7 @@ import LeaderboardAdmin from '../components/Admin/LeaderboardAdmin';
 import LiveStreamAdmin from '../components/Admin/LiveStreamAdmin';
 import IdeasAdmin from '../components/Admin/IdeasAdmin';
 import FreshersAdmin from '../components/Admin/FreshersAdmin';
+import WebsitesAdmin from '../components/Admin/WebsitesAdmin';
 
 import logo from '../images/logo.png';
 
@@ -28,6 +29,7 @@ import {
   Radio, 
   Lightbulb, 
   UserPlus, 
+  Globe,
   Menu, 
   X, 
   ShieldCheck, 
@@ -127,6 +129,7 @@ const Admin: React.FC = () => {
     { id: 'live_stream', label: 'Live Stream', icon: Radio },
     { id: 'ideas', label: 'Idea Proposals', icon: Lightbulb },
     { id: 'freshers', label: 'Freshers Hub', icon: UserPlus },
+    { id: 'websites', label: 'Websites Manager', icon: Globe },
   ];
 
   const currentTabLabel = navItems.find(i => i.id === activeTab)?.label || 'Dashboard';
@@ -162,6 +165,8 @@ const Admin: React.FC = () => {
         return <IdeasAdmin />;
       case 'freshers':
         return <FreshersAdmin />;
+      case 'websites':
+        return <WebsitesAdmin />;
       default:
         return null;
     }

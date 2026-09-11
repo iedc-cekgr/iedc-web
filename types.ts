@@ -138,4 +138,17 @@ export interface IdeaSubmission {
   supportNeeded: string[];
   pitchDeckUrl?: string;
   timestamp: any;
-}
+}
+
+export interface SubWebsite {
+  id?: string;
+  docId?: string;
+  name: string;
+  slug: string;
+  targetUrl: string;
+  description?: string;
+  displayMode: 'iframe' | 'redirect';
+  isActive: boolean;
+  createdAt?: any;
+}
+
