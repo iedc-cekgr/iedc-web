@@ -148,14 +148,8 @@ const App: React.FC = () => {
       default: 
         if (matchedSubWebsite) {
           if (matchedSubWebsite.displayMode === 'redirect') {
-            window.location.href = matchedSubWebsite.targetUrl;
-            return (
-              <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white p-4">
-                <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mb-3" />
-                <p className="text-sm font-semibold">Redirecting to {matchedSubWebsite.name}...</p>
-                <p className="text-xs text-slate-400 mt-1 font-mono">{matchedSubWebsite.targetUrl}</p>
-              </div>
-            );
+            window.location.replace(matchedSubWebsite.targetUrl);
+            return null;
           }
           return <SubWebsiteViewer website={matchedSubWebsite} onNavigate={navigate} />;
         }
