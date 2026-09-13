@@ -14,6 +14,8 @@ import LiveStreamAdmin from '../components/Admin/LiveStreamAdmin';
 import IdeasAdmin from '../components/Admin/IdeasAdmin';
 import FreshersAdmin from '../components/Admin/FreshersAdmin';
 import WebsitesAdmin from '../components/Admin/WebsitesAdmin';
+import NodalOfficerAdmin from '../components/Admin/NodalOfficerAdmin';
+import ApprovalLogsAdmin from '../components/Admin/ApprovalLogsAdmin';
 
 import logo from '../images/logo.png';
 
@@ -33,16 +35,28 @@ import {
   Menu, 
   X, 
   ShieldCheck, 
+  UserCheck,
+  FileSpreadsheet,
   ChevronRight 
 } from 'lucide-react';
 
 import { EVENTS, EXECOM_MEMBERS, GALLERY_ITEMS, TIMELINE_EVENTS, ACHIEVEMENTS, PAST_LEADERS } from '../constants';
 
-const Admin: React.FC = () => {
+interface AdminProps {
+  initialTab?: string;
+}
+
+const Admin: React.FC<AdminProps> = ({ initialTab = 'dashboard' }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -121,6 +135,7 @@ const Admin: React.FC = () => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'events', label: 'Events Manager', icon: Calendar },
+    { id: 'approval_logs', label: 'Approval Audit Logs', icon: FileSpreadsheet },
     { id: 'execom', label: 'Execom Officers', icon: Users },
     { id: 'gallery', label: 'Gallery Photos', icon: ImageIcon },
     { id: 'legacy', label: 'Legacy Page', icon: History },
@@ -149,6 +164,8 @@ const Admin: React.FC = () => {
         );
       case 'events':
         return <EventsAdmin />;
+      case 'approval_logs':
+        return <ApprovalLogsAdmin />;
       case 'execom':
         return <ExecomAdmin />;
       case 'gallery':
@@ -242,7 +259,7 @@ const Admin: React.FC = () => {
                   Logged in as
                 </span>
                 <p className="text-xs font-bold text-slate-800 truncate">
-                  iedc@ce-kgr.org
+                  {user?.email || 'Admin'}
                 </p>
               </div>
               <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />

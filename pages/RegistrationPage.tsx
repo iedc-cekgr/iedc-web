@@ -266,6 +266,7 @@ const RegistrationPage: React.FC<Props> = ({ eventId, onNavigate }) => {
 
   const isRegistrationClosed = 
     event.isRegistrationEnabled === false || 
+    (event.approvalStatus && event.approvalStatus !== 'approved') ||
     (event.registrationEndDateTime && new Date(event.registrationEndDateTime) < new Date());
 
   if (isRegistrationClosed) {

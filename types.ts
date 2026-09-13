@@ -50,10 +50,34 @@ export interface Event {
   speakerName?: string;
   isVisible?: boolean;
   
+  // Approval Workflow Fields
+  approvalStatus?: 'pending' | 'approved' | 'rejected';
+  createdAt?: string;
+  createdBy?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+  reviewedBy?: string;
+  rejectionReason?: string;
+  nodalOfficerEmail?: string;
+  docId?: string;
+
   type: string; 
   mode?: 'Online' | 'Offline';
   startDateTime?: string;
   endDateTime?: string;
+}
+
+export interface EventApprovalLog {
+  id?: string;
+  eventId: number | string;
+  eventTitle: string;
+  eventType?: string;
+  action: 'CREATED' | 'APPROVED' | 'REJECTED' | 'RESUBMITTED';
+  actionDate: string;
+  actorEmail: string;
+  actorRole: 'ADMIN' | 'NODAL_OFFICER';
+  rejectionReason?: string;
+  notes?: string;
 }
 
 export interface CustomField {

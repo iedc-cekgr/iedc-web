@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { collection, collectionGroup, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db, auth } from '../../firebase';
 import { Event, CustomField } from '../../types';
-import { Edit, Trash2, Plus, X, Upload } from 'lucide-react';
+import { Edit, Trash2, Plus, X, Upload, CheckCircle, Clock, AlertTriangle, RefreshCw, Eye } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import RethinkModal from './RethinkModal';
+import { sendGoogleScriptPayload, logApprovalAction } from '../../utils/googleScript';
 
 const CLOUDINARY_CLOUD_NAME = 'dvntu7mui';
 const CLOUDINARY_UPLOAD_PRESET = 'IEDCimages';
@@ -24,6 +25,8 @@ const EventsAdmin: React.FC = () => {
   const [editingEvent, setEditingEvent] = useState<FirestoreEvent | null>(null);
   const [uploadingField, setUploadingField] = useState<string | null>(null);
   const [regFilterEvent, setRegFilterEvent] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [viewingReasonEvent, setViewingReasonEvent] = useState<FirestoreEvent | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; type: 'event' | 'registration'; title?: string; refPath?: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -180,21 +183,96 @@ const EventsAdmin: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Clean up undefined values
+      // Clean up undefined values & strip docId from document body
       const cleanData = JSON.parse(JSON.stringify(formData));
-      
+      delete cleanData.docId;
+
+      const nowIso = new Date().toISOString();
+      const currentAdminEmail = auth.currentUser?.email || 'Admin';
+
       if (editingEvent) {
+        const isResubmitting = editingEvent.approvalStatus === 'rejected';
+        const updatedData = {
+          ...cleanData,
+          ...(isResubmitting ? {
+            approvalStatus: 'pending',
+            rejectionReason: null,
+            createdAt: nowIso
+          } : {})
+        };
+
         const eventRef = doc(db, 'events', editingEvent.docId);
-        await updateDoc(eventRef, cleanData);
+        await updateDoc(eventRef, updatedData);
+
+        if (isResubmitting) {
+          // Trigger Webhook & Audit log for Resubmission in background
+          sendGoogleScriptPayload({
+            action: 'EVENT_RESUBMITTED',
+            eventId: editingEvent.id,
+            eventTitle: updatedData.title || editingEvent.title,
+            eventType: updatedData.type || editingEvent.type,
+            eventDate: updatedData.date || editingEvent.date,
+            eventDescription: updatedData.description || editingEvent.description,
+            eventImage: updatedData.image || editingEvent.image,
+            actorEmail: currentAdminEmail,
+            actorRole: 'ADMIN',
+            timestamp: nowIso
+          }).catch(err => console.error("Webhook error:", err));
+
+          logApprovalAction({
+            eventId: editingEvent.id,
+            eventTitle: updatedData.title || editingEvent.title,
+            eventType: updatedData.type || editingEvent.type,
+            action: 'RESUBMITTED',
+            actionDate: nowIso,
+            actorEmail: currentAdminEmail,
+            actorRole: 'ADMIN',
+            notes: 'Event edited and resubmitted for Nodal Officer approval'
+          }).catch(err => console.error("Log error:", err));
+        }
       } else {
-        const newEvent = { ...cleanData, id: Date.now(), currentParticipants: 0 };
+        const newEventId = Date.now();
+        const newEvent = { 
+          ...cleanData, 
+          id: newEventId, 
+          currentParticipants: 0,
+          approvalStatus: 'pending',
+          createdAt: nowIso,
+          createdBy: currentAdminEmail
+        };
         await addDoc(collection(db, 'events'), newEvent);
+
+        // Trigger Google Script Notification for Nodal Officer Approval Request in background
+        sendGoogleScriptPayload({
+          action: 'EVENT_CREATED',
+          eventId: newEventId,
+          eventTitle: newEvent.title,
+          eventType: newEvent.type,
+          eventDate: newEvent.date,
+          eventDescription: newEvent.description,
+          eventImage: newEvent.image,
+          actorEmail: currentAdminEmail,
+          actorRole: 'ADMIN',
+          timestamp: nowIso
+        }).catch(err => console.error("Webhook error:", err));
+
+        // Record in Firestore Audit Log in background
+        logApprovalAction({
+          eventId: newEventId,
+          eventTitle: newEvent.title,
+          eventType: newEvent.type,
+          action: 'CREATED',
+          actionDate: nowIso,
+          actorEmail: currentAdminEmail,
+          actorRole: 'ADMIN',
+          notes: 'Submitted for Nodal Officer approval'
+        }).catch(err => console.error("Log error:", err));
       }
       handleCloseModal();
       fetchEvents();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving event:", error);
-      alert("Failed to save event");
+      alert(`Failed to save event: ${error?.message || 'Please check console for details.'}`);
     }
   };
 
@@ -340,76 +418,156 @@ const EventsAdmin: React.FC = () => {
 
       {activeTab === 'events' && (
         <>
-          <div className="flex justify-end mb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            {/* Status Filter Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setStatusFilter('all')}
+                className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors ${statusFilter === 'all' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              >
+                All ({events.length})
+              </button>
+              <button
+                onClick={() => setStatusFilter('approved')}
+                className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors ${statusFilter === 'approved' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}`}
+              >
+                Approved ({events.filter(e => e.approvalStatus === 'approved' || !e.approvalStatus).length})
+              </button>
+              <button
+                onClick={() => setStatusFilter('pending')}
+                className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors ${statusFilter === 'pending' ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-700 hover:bg-amber-100'}`}
+              >
+                Pending ({events.filter(e => e.approvalStatus === 'pending').length})
+              </button>
+              <button
+                onClick={() => setStatusFilter('rejected')}
+                className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors ${statusFilter === 'rejected' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-700 hover:bg-red-100'}`}
+              >
+                Rejected ({events.filter(e => e.approvalStatus === 'rejected').length})
+              </button>
+            </div>
+
             <button
               onClick={() => handleOpenModal()}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-semibold text-sm shrink-0"
             >
               <Plus className="w-5 h-5" />
               Add New Event
             </button>
           </div>
+
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-700">
                   <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Event</th>
+                  <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Approval Status</th>
                   <th className="p-4 font-semibold text-slate-600 dark:text-slate-300">Reg. Type</th>
                   <th className="p-4 font-semibold text-slate-600 dark:text-slate-300 text-center">Stats</th>
                   <th className="p-4 font-semibold text-slate-600 dark:text-slate-300 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {events.map((event) => (
-                  <tr key={event.docId} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-950 transition-colors">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <img src={event.image || 'https://via.placeholder.com/150'} alt={event.title} className="w-12 h-12 rounded-lg object-cover" />
-                        <div>
-                          <p className="font-semibold text-slate-800 dark:text-slate-200">{event.title}</p>
-                          <p className="text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">{event.type}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${event.eventType === 'website-form' ? 'bg-indigo-100 text-indigo-700' : event.eventType === 'google-form' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}`}>
-                        {event.eventType ? event.eventType.replace('-', ' ') : 'Legacy / External'}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      {event.eventType === 'website-form' ? (() => {
-                        const eventRegs = registrations.filter(r => String(r.eventId) === String(event.id));
-                        const uniqueUsers = new Set(eventRegs.map(r => (r.email || r.phone || '').toLowerCase().trim()));
-                        const duplicates = eventRegs.length - uniqueUsers.size;
-                        return (
-                          <div className="flex flex-col items-center gap-1">
-                            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                              Total: {eventRegs.length}
-                            </span>
-                            {duplicates > 0 && (
-                              <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
-                                {duplicates} Duplicate{duplicates !== 1 ? 's' : ''}
-                              </span>
-                            )}
+                {events
+                  .filter(event => {
+                    if (statusFilter === 'approved') return event.approvalStatus === 'approved' || !event.approvalStatus;
+                    if (statusFilter === 'pending') return event.approvalStatus === 'pending';
+                    if (statusFilter === 'rejected') return event.approvalStatus === 'rejected';
+                    return true;
+                  })
+                  .map((event) => (
+                    <tr key={event.docId} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-950 transition-colors">
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <img src={event.image || 'https://via.placeholder.com/150'} alt={event.title} className="w-12 h-12 rounded-lg object-cover" />
+                          <div>
+                            <p className="font-semibold text-slate-800 dark:text-slate-200">{event.title}</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 truncate max-w-xs">{event.type}</p>
                           </div>
-                        );
-                      })() : (
-                        <span className="text-sm text-slate-400">-</span>
-                      )}
-                    </td>
-                    <td className="p-4 text-right space-x-2">
-                      <button onClick={() => handleOpenModal(event)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
-                        <Edit className="w-5 h-5" />
-                      </button>
-                      <button onClick={() => setDeleteTarget({ id: event.docId, type: 'event', title: event.title })} className="p-2 text-slate-400 hover:text-red-600 transition-colors">
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        </div>
+                      </td>
+
+                      {/* Approval Status Column */}
+                      <td className="p-4">
+                        {event.approvalStatus === 'pending' && (
+                          <div className="flex flex-col items-start gap-1">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 font-bold rounded-full text-xs border border-amber-200">
+                              <Clock className="w-3.5 h-3.5" /> Pending Approval
+                            </span>
+                            <span className="text-[10px] text-slate-400">Waiting for Nodal Officer</span>
+                          </div>
+                        )}
+
+                        {(event.approvalStatus === 'approved' || !event.approvalStatus) && (
+                          <div className="flex flex-col items-start gap-1">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 font-bold rounded-full text-xs border border-emerald-200">
+                              <CheckCircle className="w-3.5 h-3.5" /> Approved
+                            </span>
+                            <span className="text-[10px] text-emerald-600 font-medium">Live on Website</span>
+                          </div>
+                        )}
+
+                        {event.approvalStatus === 'rejected' && (
+                          <div className="flex flex-col items-start gap-1">
+                            <button
+                              onClick={() => setViewingReasonEvent(event)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-50 text-red-700 hover:bg-red-100 font-bold rounded-full text-xs border border-red-200 transition-colors"
+                            >
+                              <AlertTriangle className="w-3.5 h-3.5" /> Rejected (Reason)
+                            </button>
+                            <span className="text-[10px] text-red-500 font-medium">Click to view reason & edit</span>
+                          </div>
+                        )}
+                      </td>
+
+                      <td className="p-4">
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${event.eventType === 'website-form' ? 'bg-indigo-100 text-indigo-700' : event.eventType === 'google-form' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-700'}`}>
+                          {event.eventType ? event.eventType.replace('-', ' ') : 'Legacy / External'}
+                        </span>
+                      </td>
+                      <td className="p-4 text-center">
+                        {event.eventType === 'website-form' ? (() => {
+                          const eventRegs = registrations.filter(r => String(r.eventId) === String(event.id));
+                          const uniqueUsers = new Set(eventRegs.map(r => (r.email || r.phone || '').toLowerCase().trim()));
+                          const duplicates = eventRegs.length - uniqueUsers.size;
+                          return (
+                            <div className="flex flex-col items-center gap-1">
+                              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                Total: {eventRegs.length}
+                              </span>
+                              {duplicates > 0 && (
+                                <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                                  {duplicates} Duplicate{duplicates !== 1 ? 's' : ''}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })() : (
+                          <span className="text-sm text-slate-400">-</span>
+                        )}
+                      </td>
+                      <td className="p-4 text-right space-x-2">
+                        {event.approvalStatus === 'rejected' && (
+                          <button 
+                            onClick={() => handleOpenModal(event)} 
+                            className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-lg transition-colors inline-flex items-center gap-1"
+                            title="Edit & Resubmit for Approval"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" /> Resubmit
+                          </button>
+                        )}
+                        <button onClick={() => handleOpenModal(event)} className="p-2 text-slate-400 hover:text-blue-600 transition-colors">
+                          <Edit className="w-5 h-5" />
+                        </button>
+                        <button onClick={() => setDeleteTarget({ id: event.docId, type: 'event', title: event.title })} className="p-2 text-slate-400 hover:text-red-600 transition-colors">
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
                 {events.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="p-8 text-center text-slate-500 dark:text-slate-400">
+                    <td colSpan={5} className="p-8 text-center text-slate-500 dark:text-slate-400">
                       No events found.
                     </td>
                   </tr>
@@ -793,6 +951,55 @@ const EventsAdmin: React.FC = () => {
         onCancel={() => setDeleteTarget(null)}
         isLoading={isDeleting}
       />
+
+      {/* Rejection Reason Modal */}
+      {viewingReasonEvent && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4 border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2 text-red-600 font-bold">
+                <AlertTriangle className="w-5 h-5" />
+                <span>Rejection Reason</span>
+              </div>
+              <button onClick={() => setViewingReasonEvent(null)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">{viewingReasonEvent.title}</p>
+              <p className="text-xs text-slate-500">Rejected by: {viewingReasonEvent.reviewedBy || 'Nodal Officer'}</p>
+              {viewingReasonEvent.rejectedAt && (
+                <p className="text-xs text-slate-400">Date: {new Date(viewingReasonEvent.rejectedAt).toLocaleString()}</p>
+              )}
+
+              <div className="bg-red-50 dark:bg-red-950/40 p-4 rounded-xl border border-red-200 dark:border-red-800 text-xs text-red-800 dark:text-red-300 font-medium whitespace-pre-wrap leading-relaxed mt-2">
+                {viewingReasonEvent.rejectionReason || 'No specific reason provided by Nodal Officer.'}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-3">
+              <button
+                onClick={() => setViewingReasonEvent(null)}
+                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-bold text-xs"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  const evToEdit = viewingReasonEvent;
+                  setViewingReasonEvent(null);
+                  handleOpenModal(evToEdit);
+                }}
+                className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Edit & Resubmit</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

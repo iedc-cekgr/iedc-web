@@ -20,6 +20,7 @@ import RegistrationPage from './pages/RegistrationPage';
 import SubmitIdea from './pages/SubmitIdea';
 import WelcomeFirstYears from './pages/WelcomeFirstYears';
 import SubWebsiteViewer from './pages/SubWebsiteViewer';
+import NodalOfficerPage from './pages/NodalOfficerPage';
 
 
 const App: React.FC = () => {
@@ -169,7 +170,20 @@ const App: React.FC = () => {
     );
   }
 
-  if (showAdmin) {
+  const isNodalOfficerRoute = 
+    currentPath === '/nodal-officer' || 
+    currentPath === '/nodal-officer-portal' || 
+    currentPath === '/nodal';
+
+  if (isNodalOfficerRoute) {
+    return (
+      <main className="animate-in fade-in duration-500">
+        <NodalOfficerPage onNavigate={navigate} />
+      </main>
+    );
+  }
+
+  if (showAdmin || currentPath === '/admin') {
     return (
       <main className="animate-in fade-in duration-500">
         <Admin />

@@ -41,7 +41,11 @@ const Events: React.FC<EventsProps> = ({ onNavigate }) => {
   }
 
   const filteredEvents = events.filter(event => {
+    // Hide explicitly invisible events
     if (event.isVisible === false) return false;
+    // Hide unapproved/rejected events (only allow 'approved' or legacy events where approvalStatus is undefined)
+    if (event.approvalStatus && event.approvalStatus !== 'approved') return false;
+
     if (activeTab === 'All') return true;
     return event.mode === activeTab || (!event.mode && activeTab === 'Offline');
   });
