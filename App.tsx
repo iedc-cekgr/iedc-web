@@ -26,9 +26,17 @@ import NodalOfficerPage from './pages/NodalOfficerPage';
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.pathname || '/');
   const [showAdmin, setShowAdmin] = useState(false);
-  const [subWebsites, setSubWebsites] = useState<SubWebsite[]>([]);
+  const [subWebsites, setSubWebsites] = useState<SubWebsite[]>(() => {
+    try {
+      const cached = localStorage.getItem('iedc_sub_websites');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isWebsitesLoaded, setIsWebsitesLoaded] = useState(false);
 
-  // Listen to active linked sub-websites from Firestore
+  // Listen to active linked sub-websites from Firestore & keep cache updated
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'websites'), (snapshot) => {
       const sites = snapshot.docs.map(doc => ({
@@ -36,8 +44,15 @@ const App: React.FC = () => {
         ...doc.data()
       })) as SubWebsite[];
       setSubWebsites(sites);
+      setIsWebsitesLoaded(true);
+      try {
+        localStorage.setItem('iedc_sub_websites', JSON.stringify(sites));
+      } catch (e) {
+        console.error("Error saving websites cache:", e);
+      }
     }, (error) => {
       console.error("Error subscribing to websites collection:", error);
+      setIsWebsitesLoaded(true);
     });
 
     return () => unsubscribe();
@@ -110,6 +125,38 @@ const App: React.FC = () => {
     ? subWebsites.find(site => site.isActive !== false && site.slug.toLowerCase() === cleanPath)
     : undefined;
 
+  // Handle custom sub-website link immediately before rendering App layout
+  if (matchedSubWebsite && !showAdmin && !isCslRoute) {
+    if (matchedSubWebsite.displayMode === 'redirect') {
+      window.location.replace(matchedSubWebsite.targetUrl);
+      return (
+        <div className="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center text-white p-4">
+          <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="text-sm font-medium text-slate-300">Forwarding to {matchedSubWebsite.name}...</p>
+        </div>
+      );
+    }
+    return <SubWebsiteViewer website={matchedSubWebsite} onNavigate={navigate} />;
+  }
+
+  // Check if current route is a standard built-in route or dynamic system route
+  const isStandardRoute = 
+    !cleanPath || 
+    ['events', 'execom', 'gallery', 'legacy', 'about', 'leaderboard', 'exult', 'submit-idea', 'welcome', 'admin', 'csl', 'live', 'auction', 'nodal-officer', 'nodal-officer-portal', 'nodal'].includes(cleanPath) ||
+    cleanPath.startsWith('register/') ||
+    cleanPath.startsWith('execom/') ||
+    cleanPath.startsWith('exult/');
+
+  // If path is a potential custom sub-website link and we are still loading initial data from Firestore:
+  if (!isStandardRoute && !isWebsitesLoaded && !matchedSubWebsite) {
+    return (
+      <div className="fixed inset-0 bg-slate-950 flex flex-col items-center justify-center text-white p-4">
+        <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mb-3" />
+        <p className="text-sm font-medium text-slate-300">Connecting link...</p>
+      </div>
+    );
+  }
+
   const renderContent = () => {
     if (isCslRoute) {
       return <CslLive onNavigate={navigate} />;
@@ -147,20 +194,9 @@ const App: React.FC = () => {
       case '/submit-idea': return <SubmitIdea onNavigate={navigate} />;
       case '/welcome': return <WelcomeFirstYears onNavigate={navigate} />;
       default: 
-        if (matchedSubWebsite) {
-          if (matchedSubWebsite.displayMode === 'redirect') {
-            window.location.replace(matchedSubWebsite.targetUrl);
-            return null;
-          }
-          return <SubWebsiteViewer website={matchedSubWebsite} onNavigate={navigate} />;
-        }
         return <Home onNavigate={navigate} />;
     }
   };
-
-  if (matchedSubWebsite && matchedSubWebsite.displayMode === 'iframe' && !showAdmin && !isCslRoute) {
-    return <SubWebsiteViewer website={matchedSubWebsite} onNavigate={navigate} />;
-  }
 
   if (isCslRoute) {
     return (
