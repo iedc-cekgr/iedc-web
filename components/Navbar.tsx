@@ -100,7 +100,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 onClick={() => onNavigate(link.path)}
                 className={`px-5 py-2 border-[2px] rounded-xl font-black text-xs uppercase transition-all
                   ${link.path === '/leaderboard'
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] active:shadow-none active:translate-x-1 active:translate-y-1'
+                    ? currentPath === '/leaderboard'
+                      ? 'bg-[#FFDE03] text-black border-black dark:border-white shadow-[4px_4px_0px_0px_#000000] dark:shadow-[4px_4px_0px_0px_#FFFFFF] scale-105'
+                      : 'bg-[#FFDE03] text-black border-black dark:border-white hover:bg-[#ffe633] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-0.5 active:shadow-none active:translate-x-1 active:translate-y-1'
                     : currentPath === link.path 
                       ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[4px_4px_0px_0px_#FACC15]' 
                       : 'bg-white dark:bg-slate-900 text-black dark:text-white border-black dark:border-white hover:bg-gray-100 dark:hover:bg-slate-800 hover:-translate-y-0.5'}`}
@@ -146,7 +148,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 }}
                 className={`w-full text-center px-6 py-3 border-[2px] rounded-lg border-black dark:border-white font-black text-sm uppercase transition-all
                   ${link.path === '/leaderboard'
-                    ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white'
+                    ? 'bg-[#FFDE03] text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]'
                     : currentPath === link.path 
                       ? 'bg-black dark:bg-white text-white dark:text-black shadow-[3px_3px_0px_0px_#FACC15]' 
                       : 'bg-white dark:bg-slate-900 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-slate-800'}`}

@@ -15,8 +15,6 @@ import {
   Cell,
   PieChart,
   Pie,
-  AreaChart,
-  Area,
   CartesianGrid
 } from 'recharts';
 
@@ -73,9 +71,9 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#070114] flex flex-col items-center justify-center gap-4 text-white">
+      <div className="min-h-screen bg-[#0a0a0c] flex flex-col items-center justify-center gap-4 text-white">
         <Loading />
-        <p className="font-black uppercase tracking-widest text-indigo-400 animate-pulse">Synchronizing Cosmos...</p>
+        <p className="font-black uppercase tracking-widest text-[#f5c211] animate-pulse">Loading Leaderboard...</p>
       </div>
     );
   }
@@ -83,13 +81,12 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
   // Fallback if leaderboard is disabled
   if (isVisible === false) {
     return (
-      <div className="min-h-screen bg-[#060112] text-white flex items-center justify-center px-4 py-20 relative overflow-hidden">
-        {/* Glowing background highlights */}
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/20 blur-[120px] pointer-events-none"></div>
+      <div className="min-h-screen bg-[#0a0a0c] text-white flex items-center justify-center px-4 py-20 relative overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#f5c211]/10 blur-[120px] pointer-events-none"></div>
         
-        <div className="max-w-md w-full bg-slate-950/70 backdrop-blur-xl border-2 border-red-500/50 shadow-[0_0_50px_rgba(239,68,68,0.15)] rounded-2xl p-8 text-center relative z-10">
-          <div className="w-20 h-20 bg-red-950/40 border-2 border-red-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
-            <EyeOff className="w-10 h-10 text-red-400 animate-pulse" />
+        <div className="max-w-md w-full bg-[#111115] backdrop-blur-xl border border-[#f5c211]/30 shadow-[0_0_50px_rgba(245,194,17,0.1)] rounded-2xl p-8 text-center relative z-10">
+          <div className="w-20 h-20 bg-[#16161c] border border-[#f5c211]/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(245,194,17,0.2)]">
+            <EyeOff className="w-10 h-10 text-[#f5c211] animate-pulse" />
           </div>
           <h2 className="text-3xl font-black uppercase text-white tracking-tight">Leaderboard Offline</h2>
           <p className="mt-4 text-slate-400 font-bold uppercase text-xs leading-relaxed">
@@ -100,9 +97,9 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
           </p>
           <button
             onClick={() => onNavigate && onNavigate('/')}
-            className="mt-8 w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-black py-4 uppercase rounded-xl border border-red-400/30 transition-all shadow-lg hover:shadow-red-500/20"
+            className="mt-8 w-full bg-[#f5c211] hover:bg-[#ffcf25] text-black font-black py-3.5 uppercase rounded-xl transition-all shadow-lg shadow-[#f5c211]/20 tracking-wider text-xs"
           >
-            Return to Headquarters
+            Return to Website
           </button>
         </div>
       </div>
@@ -123,18 +120,6 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
   const totalPromoters = promoters.length;
   const topPerformerName = promoters[0]?.name || 'N/A';
 
-  // Podium positioning mapping [2nd, 1st, 3rd]
-  const podiumLayout = [];
-  if (podium[1]) podiumLayout.push({ item: podium[1], rank: 2 });
-  if (podium[0]) podiumLayout.push({ item: podium[0], rank: 1 });
-  if (podium[2]) podiumLayout.push({ item: podium[2], rank: 3 });
-
-  const finalPodiumLayout = podium.length === 1 
-    ? [{ item: podium[0], rank: 1 }]
-    : podium.length === 2
-    ? [{ item: podium[1], rank: 2 }, { item: podium[0], rank: 1 }]
-    : podiumLayout;
-
   // Chart Data preparation for Recharts
   const barChartData = filteredPromoters.slice(0, 10).map(p => ({
     name: p.name.split(' ')[0].toUpperCase(),
@@ -144,201 +129,233 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
   }));
 
   const pieChartData = [
-    { name: 'Website Registrations', value: totalSite, color: '#00FFFF' },
-    { name: 'Google Form Entries', value: totalGForm, color: '#FF00FF' }
-  ].filter(d => d.value > 0); // only show if there are records
+    { name: 'Website Registrations', value: totalSite, color: '#f5c211' },
+    { name: 'Google Form Entries', value: totalGForm, color: '#ffffff' }
+  ].filter(d => d.value > 0);
 
-  // Fallback if pie chart data is empty
   const hasChartData = totalReferrals > 0;
 
-  return (
-    <div className="min-h-screen bg-[#060112] text-white font-sans relative overflow-hidden selection:bg-[#FF00FF] selection:text-white">
-      {/* Mesh Glow Background */}
-      <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[50%] rounded-full bg-purple-900/30 blur-[130px] pointer-events-none"></div>
-      <div className="absolute bottom-[20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-950/20 blur-[130px] pointer-events-none"></div>
-      <div className="absolute top-[30%] left-[25%] w-[40%] h-[40%] rounded-full bg-pink-950/15 blur-[130px] pointer-events-none"></div>
-      
-      {/* Scanline pattern overlay */}
-      <div className="fixed inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_4px,6px_100%] opacity-20"></div>
+  // Render Podium card helper
+  const renderPodiumCard = (promoter: Promoter, rank: number) => {
+    const isGold = rank === 1;
+    const isSilver = rank === 2;
+    const isBronze = rank === 3;
 
-      <div className="relative z-10 py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
-        
-        {/* Navigation Back Link */}
-        <div>
-          <button
-            onClick={() => onNavigate && onNavigate('/')}
-            className="inline-flex items-center gap-2 text-indigo-400 hover:text-white font-black uppercase text-xs tracking-wider transition-colors bg-indigo-950/40 border border-indigo-500/20 rounded-lg px-4 py-2 hover:border-indigo-400/50"
-          >
-            <ArrowLeft className="w-4 h-4" /> Return to Website
-          </button>
+    const formattedRank = rank < 10 ? `0${rank}` : `${rank}`;
+
+    return (
+      <div 
+        key={promoter.id || promoter.code}
+        className={`bg-[#16161c] rounded-xl overflow-hidden flex flex-col justify-between ${
+          isGold 
+            ? 'border-2 border-[#f5c211] shadow-[0_0_25px_rgba(245,194,17,0.18)]' 
+            : 'border border-white/10 shadow-lg'
+        }`}
+      >
+        <div className="p-6 flex items-center justify-between min-h-[110px]">
+          {/* Rank number */}
+          <div className={`text-4xl md:text-5xl font-black pr-5 border-r select-none ${
+            isGold 
+              ? 'text-[#f5c211] border-[#f5c211]/30' 
+              : isSilver 
+              ? 'text-slate-600 border-slate-700/50' 
+              : 'text-amber-700/60 border-slate-700/50'
+          }`}>
+            {formattedRank}
+          </div>
+
+          {/* User detail */}
+          <div className="flex-1 pl-5 text-left">
+            <h4 className="text-sm md:text-base font-black text-white uppercase tracking-wide truncate max-w-[170px]" title={promoter.name}>
+              {promoter.name}
+            </h4>
+            <div className="mt-2">
+              <span className="text-2xl md:text-3xl font-black text-white leading-none block">
+                {promoter.totalReferrals || 0}
+              </span>
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mt-0.5">
+                REFERRALS
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Dynamic Glowing Header */}
-        <div className="text-center space-y-5">
-          <div className="inline-flex items-center gap-2 px-4 py-2 border border-[#00FFFF]/30 bg-[#00FFFF]/10 text-[#00FFFF] font-black uppercase text-xs rounded-full shadow-[0_0_15px_rgba(0,255,255,0.15)]">
-            <Sparkles className="w-4 h-4 animate-spin-slow" /> IEDC PROMOTION HUB
+        {/* Bottom Banner Strip */}
+        <div className={`py-1.5 px-4 text-right ${
+          isGold
+            ? 'bg-[#f5c211] text-black font-black'
+            : isSilver
+            ? 'bg-gradient-to-r from-slate-700/50 via-slate-600/30 to-slate-800/80 text-slate-300 border-t border-slate-700/40 font-bold'
+            : 'bg-gradient-to-r from-amber-950/60 via-amber-800/40 to-amber-900/60 text-amber-200/90 border-t border-amber-800/30 font-bold'
+        }`}>
+          <code className="text-[10px] font-mono tracking-widest uppercase">{promoter.code}</code>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0c] text-white font-sans relative overflow-hidden selection:bg-[#f5c211] selection:text-black">
+      {/* Golden Radial Glow Overlay (Left) */}
+      <div className="absolute top-[-10%] left-[-15%] w-[55%] h-[55%] rounded-full bg-[#f5c211]/10 blur-[130px] pointer-events-none"></div>
+
+      {/* Decorative Geometric Angled Lines (Top Right with Smooth Gradient Mask) */}
+      <div 
+        className="absolute top-0 right-0 w-full h-[650px] pointer-events-none opacity-15"
+        style={{
+          backgroundImage: `repeating-linear-gradient(-45deg, #f5c211, #f5c211 1px, transparent 1px, transparent 18px)`,
+          WebkitMaskImage: `radial-gradient(ellipse at top right, rgba(0,0,0,1) 10%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 80%)`,
+          maskImage: `radial-gradient(ellipse at top right, rgba(0,0,0,1) 10%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 80%)`
+        }}
+      ></div>
+
+      <div className="relative z-10 py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+        
+        {/* Navigation & Center Hub Tag */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <button
+            onClick={() => onNavigate && onNavigate('/')}
+            className="inline-flex items-center gap-2 border border-[#f5c211]/80 hover:bg-[#f5c211]/10 text-white font-bold text-xs uppercase tracking-wider px-4 py-2 rounded-lg transition-all"
+          >
+            <ArrowLeft className="w-4 h-4 text-[#f5c211]" /> Return to Website
+          </button>
+
+          <div className="inline-flex items-center gap-2 border border-[#f5c211]/50 bg-[#121216] text-white text-xs font-semibold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-[0_0_15px_rgba(245,194,17,0.1)]">
+            <span className="w-2 h-2 rounded-full bg-[#f5c211] shadow-[0_0_8px_#f5c211] animate-pulse"></span>
+            IEDC PROMOTION HUB
           </div>
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-[#00FFFF] via-[#FF00FF] to-[#FFDE03] drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
-            REFERRAL COSMOS
+          
+          <div className="hidden sm:block w-36"></div>
+        </div>
+
+        {/* Main Title */}
+        <div className="text-center space-y-2 pt-2">
+          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight">
+            <span className="text-white">REFERRAL </span>
+            <span className="text-[#f5c211]">RANK</span>
           </h1>
-          <p className="max-w-2xl mx-auto text-sm font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
-            Real-time standings and visual analytics for the event promotion campaign.
+          <p className="text-slate-400 font-semibold text-xs md:text-sm uppercase tracking-[0.2em]">
+            REAL-TIME REFERRAL LEADERBOARD &amp; CAMPAIGN STANDINGS
           </p>
         </div>
 
-        {/* Cosmic Metrics dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 bg-slate-950/60 backdrop-blur-xl border border-indigo-500/20 rounded-2xl shadow-[0_4px_30px_rgba(0,0,0,0.4)] flex items-center gap-5 hover:border-indigo-400/40 transition-colors">
-            <div className="p-4 bg-purple-950/40 border border-purple-500/30 rounded-xl text-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
-              <Flame className="w-8 h-8 animate-pulse" />
-            </div>
+        {/* Top 3 Stat Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-[#121216] border border-white/10 rounded-xl p-5 flex items-center gap-4 shadow-lg">
+            <div className="w-1.5 h-8 bg-[#f5c211] rounded-full"></div>
             <div>
-              <div className="text-[10px] font-black uppercase tracking-wider text-slate-500">Total Campaign Referrals</div>
-              <div className="text-3xl font-black uppercase text-white tracking-tight">{totalReferrals}</div>
-            </div>
-          </div>
-          
-          <div className="p-6 bg-slate-950/60 backdrop-blur-xl border border-indigo-500/20 rounded-2xl shadow-[0_4px_30px_rgba(0,0,0,0.4)] flex items-center gap-5 hover:border-indigo-400/40 transition-colors">
-            <div className="p-4 bg-cyan-950/40 border border-cyan-500/30 rounded-xl text-[#00FFFF] shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-              <User className="w-8 h-8" />
-            </div>
-            <div>
-              <div className="text-[10px] font-black uppercase tracking-wider text-slate-500">Active Campaigners</div>
-              <div className="text-3xl font-black uppercase text-white tracking-tight">{totalPromoters}</div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Campaign Referrals</div>
+              <div className="text-3xl font-black text-white mt-0.5">{totalReferrals}</div>
             </div>
           </div>
 
-          <div className="p-6 bg-slate-950/60 backdrop-blur-xl border border-indigo-500/20 rounded-2xl shadow-[0_4px_30px_rgba(0,0,0,0.4)] flex items-center gap-5 hover:border-indigo-400/40 transition-colors">
-            <div className="p-4 bg-pink-950/40 border border-pink-500/30 rounded-xl text-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.2)]">
-              <Trophy className="w-8 h-8" />
-            </div>
+          <div className="bg-[#121216] border border-white/10 rounded-xl p-5 flex items-center gap-4 shadow-lg">
+            <div className="w-1.5 h-8 bg-[#f5c211] rounded-full"></div>
             <div>
-              <div className="text-[10px] font-black uppercase tracking-wider text-slate-500">Leading Star</div>
-              <div className="text-lg font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 truncate max-w-[200px]" title={topPerformerName}>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Campaigners</div>
+              <div className="text-3xl font-black text-white mt-0.5">{totalPromoters}</div>
+            </div>
+          </div>
+
+          <div className="bg-[#121216] border border-white/10 rounded-xl p-5 flex items-center gap-4 shadow-lg">
+            <div className="w-1.5 h-8 bg-[#f5c211] rounded-full"></div>
+            <div className="overflow-hidden">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Leading Star</div>
+              <div className="text-xl font-black text-[#f5c211] uppercase tracking-wider truncate mt-0.5" title={topPerformerName}>
                 {topPerformerName}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Podium section for top 3 */}
-        {podium.length > 0 && (
-          <div className="bg-slate-950/50 backdrop-blur-xl border border-indigo-500/20 rounded-3xl p-6 md:p-10 space-y-8 shadow-[0_10px_40px_rgba(0,0,0,0.6)]">
-            <h2 className="text-2xl font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-amber-500 flex items-center gap-2 justify-center tracking-wider">
-              <Award className="w-6 h-6 text-yellow-400" /> Champions Podium
-            </h2>
-            
-            <div className="flex flex-col md:flex-row items-end justify-center gap-6 pt-10 pb-6">
-              {finalPodiumLayout.map(({ item, rank }) => {
-                const styles = {
-                  1: { 
-                    bg: 'bg-gradient-to-b from-yellow-500/20 via-yellow-600/10 to-transparent', 
-                    border: 'border-yellow-400/50', 
-                    height: 'h-64 md:h-72', 
-                    shadow: 'shadow-[0_0_40px_rgba(234,179,8,0.15)]',
-                    accentText: 'text-yellow-400',
-                    badgeBg: 'bg-yellow-400 text-black'
-                  },
-                  2: { 
-                    bg: 'bg-gradient-to-b from-slate-400/20 via-slate-500/10 to-transparent', 
-                    border: 'border-slate-400/50', 
-                    height: 'h-48 md:h-56', 
-                    shadow: 'shadow-[0_0_30px_rgba(148,163,184,0.1)]',
-                    accentText: 'text-slate-300',
-                    badgeBg: 'bg-slate-300 text-black'
-                  },
-                  3: { 
-                    bg: 'bg-gradient-to-b from-amber-700/25 via-amber-800/10 to-transparent', 
-                    border: 'border-amber-600/50', 
-                    height: 'h-36 md:h-44', 
-                    shadow: 'shadow-[0_0_20px_rgba(180,83,9,0.08)]',
-                    accentText: 'text-amber-500',
-                    badgeBg: 'bg-amber-600 text-white'
-                  }
-                }[rank as 1 | 2 | 3] || { bg: 'bg-slate-900', border: 'border-slate-800', height: 'h-32', shadow: '', accentText: 'text-white', badgeBg: 'bg-white text-black' };
-
-                return (
-                  <div key={item.id} className="flex flex-col items-center w-full md:w-56">
-                    {/* Floating crown for Gold medalist */}
-                    {rank === 1 && (
-                      <Crown className="w-12 h-12 text-yellow-400 fill-yellow-400/30 animate-bounce mb-2" />
-                    )}
-                    
-                    {/* Glassmorphic Podium Pillar */}
-                    <div className={`w-full ${styles.bg} ${styles.border} ${styles.shadow} border-[2px] backdrop-blur-md flex flex-col justify-between items-center p-6 text-center ${styles.height} rounded-t-2xl relative overflow-hidden group`}>
-                      <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
-                      <div className="space-y-1 relative z-10">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-sm mx-auto shadow-md ${styles.badgeBg}`}>
-                          {rank}
-                        </div>
-                        <div className="font-black text-sm md:text-base uppercase tracking-wider text-white line-clamp-2 max-h-12 leading-tight pt-3">
-                          {item.name}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-1 relative z-10">
-                        <div className={`text-4xl font-black tracking-tighter ${styles.accentText} filter drop-shadow-[0_0_8px_rgba(0,0,0,0.5)]`}>
-                          {item.totalReferrals}
-                        </div>
-                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 bg-slate-950/40 px-2.5 py-1 rounded-md border border-white/5">
-                          REFERRALS
-                        </div>
-                      </div>
-                    </div>
-                    {/* Glowing bottom footer containing referral code */}
-                    <div className="w-full bg-slate-950 border-x-2 border-b-2 border-indigo-500/10 rounded-b-2xl py-2 px-3 text-center">
-                      <code className="text-[9px] font-black tracking-widest text-[#00FFFF] uppercase">{item.code}</code>
-                    </div>
-                  </div>
-                );
-              })}
+        {/* CHAMPIONS PODIUM Container */}
+        <div className="bg-[#111115]/90 border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base md:text-lg font-black uppercase tracking-wider text-white">
+              CHAMPIONS PODIUM
+            </h3>
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400 uppercase tracking-widest">
+              <span>TOP 3 CAMPAIGNERS</span>
+              <span className="w-6 h-[2px] bg-[#f5c211] inline-block"></span>
             </div>
           </div>
-        )}
 
-        {/* Visual Charts and Analytics Section */}
-        {hasChartData ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Standing Graph (Bar Chart) */}
-            <div className="lg:col-span-2 p-6 bg-slate-950/50 backdrop-blur-xl border border-indigo-500/20 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col justify-between">
-              <div className="border-b border-slate-800 pb-4 mb-4 flex items-center gap-2">
-                <BarChart2 className="w-5 h-5 text-[#00FFFF]" />
-                <h3 className="text-lg font-black uppercase tracking-wider">Top 10 Campaign Analytics</h3>
+          {podium.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {/* Rank 02 (Left) */}
+              {podium[1] ? (
+                renderPodiumCard(podium[1], 2)
+              ) : (
+                <div className="bg-[#16161c]/40 border border-dashed border-slate-800 rounded-xl p-6 text-center text-slate-600 text-xs font-bold uppercase flex items-center justify-center min-h-[110px]">
+                  Slot 02 Open
+                </div>
+              )}
+
+              {/* Rank 01 (Center - Gold) */}
+              {podium[0] ? (
+                renderPodiumCard(podium[0], 1)
+              ) : (
+                <div className="bg-[#16161c]/40 border border-dashed border-slate-800 rounded-xl p-6 text-center text-slate-600 text-xs font-bold uppercase flex items-center justify-center min-h-[110px]">
+                  Slot 01 Open
+                </div>
+              )}
+
+              {/* Rank 03 (Right) */}
+              {podium[2] ? (
+                renderPodiumCard(podium[2], 3)
+              ) : (
+                <div className="bg-[#16161c]/40 border border-dashed border-slate-800 rounded-xl p-6 text-center text-slate-600 text-xs font-bold uppercase flex items-center justify-center min-h-[110px]">
+                  Slot 03 Open
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-slate-500 font-bold text-xs uppercase">
+              No campaigners on podium yet.
+            </div>
+          )}
+        </div>
+
+        {/* Visual Analytics section (If data exists) */}
+        {hasChartData && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 p-6 bg-[#111115]/90 border border-white/10 rounded-2xl shadow-xl">
+              <div className="border-b border-white/10 pb-3 mb-4 flex items-center gap-2">
+                <BarChart2 className="w-4 h-4 text-[#f5c211]" />
+                <h3 className="text-sm font-black uppercase tracking-wider text-white">Top Campaigners Analytics</h3>
               </div>
-              <div className="h-80 w-full text-slate-300 font-semibold text-xs mt-4">
+              <div className="h-64 w-full text-slate-300 text-xs">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={barChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" opacity={0.3} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#26262e" />
                     <XAxis dataKey="name" stroke="#64748b" tickLine={false} />
                     <YAxis stroke="#64748b" tickLine={false} />
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#070114', borderColor: '#334155', borderRadius: '12px' }} 
-                      labelStyle={{ color: '#00FFFF', fontWeight: 'bold' }}
+                      contentStyle={{ backgroundColor: '#121216', borderColor: '#f5c211', borderRadius: '8px' }} 
+                      labelStyle={{ color: '#f5c211', fontWeight: 'bold' }}
                     />
                     <Legend iconType="circle" />
-                    <Bar dataKey="Website Auto" fill="#00FFFF" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Google Form Manual" fill="#FF00FF" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Website Auto" fill="#f5c211" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Google Form Manual" fill="#ffffff" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Distribution Graph (Pie Chart) */}
-            <div className="lg:col-span-1 p-6 bg-slate-950/50 backdrop-blur-xl border border-indigo-500/20 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col justify-between">
-              <div className="border-b border-slate-800 pb-4 mb-4 flex items-center gap-2">
-                <PieIcon className="w-5 h-5 text-[#FF00FF]" />
-                <h3 className="text-lg font-black uppercase tracking-wider">Source Distribution</h3>
+            <div className="lg:col-span-1 p-6 bg-[#111115]/90 border border-white/10 rounded-2xl shadow-xl flex flex-col justify-between">
+              <div className="border-b border-white/10 pb-3 mb-4 flex items-center gap-2">
+                <PieIcon className="w-4 h-4 text-[#f5c211]" />
+                <h3 className="text-sm font-black uppercase tracking-wider text-white">Source Breakdown</h3>
               </div>
-              <div className="h-64 w-full flex items-center justify-center">
+              <div className="h-48 w-full flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={pieChartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
+                      innerRadius={45}
+                      outerRadius={65}
                       paddingAngle={5}
                       dataKey="value"
                     >
@@ -347,100 +364,90 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
                       ))}
                     </Pie>
                     <Tooltip 
-                      contentStyle={{ backgroundColor: '#070114', borderColor: '#334155', borderRadius: '12px' }} 
+                      contentStyle={{ backgroundColor: '#121216', borderColor: '#f5c211', borderRadius: '8px' }} 
                     />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              
-              {/* Legend split list */}
-              <div className="space-y-2 mt-4 text-xs">
+              <div className="space-y-2 mt-2 text-xs">
                 {pieChartData.map((d, index) => (
                   <div key={index} className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }}></span>
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }}></span>
                       <span className="font-bold text-slate-400 uppercase">{d.name}</span>
                     </div>
-                    <span className="font-black text-white text-sm">{d.value}</span>
+                    <span className="font-black text-white">{d.value}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        ) : (
-          <div className="p-12 text-center bg-slate-950/40 border border-slate-800 rounded-2xl">
-            <BarChart2 className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-            <p className="font-black uppercase text-slate-500 tracking-wider">Analytics charts will display here once registrations begin.</p>
-          </div>
         )}
 
-        {/* Dynamic Standing Table */}
-        <div className="p-6 md:p-8 bg-slate-950/50 backdrop-blur-xl border border-indigo-500/20 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-6 gap-4">
-            <h3 className="text-xl md:text-2xl font-black uppercase tracking-wider">Standing Roster</h3>
+        {/* STANDING ROSTER Table Container */}
+        <div className="bg-[#111115]/90 border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h3 className="text-xl md:text-2xl font-black uppercase tracking-wider">
+              <span className="text-white">STANDING </span>
+              <span className="text-[#f5c211]">ROSTER</span>
+            </h3>
             
-            {/* Live Search Input */}
-            <div className="relative w-full md:w-80">
+            {/* Search Input */}
+            <div className="relative w-full sm:w-72">
               <input
                 type="text"
                 placeholder="Search name or referral code..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-indigo-500/20 rounded-xl bg-slate-900/60 text-white font-bold outline-none focus:border-[#FF00FF] transition-all placeholder-slate-500"
+                className="w-full pl-9 pr-4 py-2 border border-white/10 rounded-lg bg-[#181820] text-white text-xs font-semibold outline-none focus:border-[#f5c211] transition-all placeholder-slate-500"
               />
-              <Search className="absolute left-3 top-3.5 text-slate-500 w-5 h-5" />
+              <Search className="absolute left-3 top-2.5 text-slate-500 w-4 h-4" />
             </div>
           </div>
 
           {filteredPromoters.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="font-black uppercase text-slate-500 text-lg">No matches discovered</p>
-              <p className="text-xs text-slate-600 font-bold uppercase mt-1">Refine your keyword queries.</p>
+            <div className="text-center py-12">
+              <p className="font-black uppercase text-slate-500 text-sm">No match found</p>
+              <p className="text-xs text-slate-600 font-semibold uppercase mt-1">Try another search term.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse mt-6">
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800 text-slate-500 uppercase text-[10px] font-black tracking-widest">
-                    <th className="pb-3 w-16 text-center">Rank</th>
-                    <th className="pb-3 px-4">Campaigner</th>
-                    <th className="pb-3 px-4">Code</th>
-                    <th className="pb-3 px-4 text-center">Website referrals</th>
-                    <th className="pb-3 px-4 text-center">GForm referrals</th>
-                    <th className="pb-3 text-right">Referral Count</th>
+                  <tr className="border-b border-white/10 text-slate-400 uppercase text-[10px] font-bold tracking-wider">
+                    <th className="pb-3 w-16 text-left">RANK</th>
+                    <th className="pb-3 px-4">CAMPAIGNER</th>
+                    <th className="pb-3 px-4">CODE</th>
+                    <th className="pb-3 px-4 text-center">WEBSITE REFERRALS</th>
+                    <th className="pb-3 px-4 text-center">GFORM REFERRALS</th>
+                    <th className="pb-3 text-right">TOTAL REFERRALS</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-900/50">
+                <tbody className="divide-y divide-white/5">
                   {filteredPromoters.map((promoter, index) => {
                     const rank = index + 1;
-                    
-                    let rankBg = 'bg-slate-900 border border-slate-800 text-slate-400';
-                    if (rank === 1) rankBg = 'bg-yellow-400 text-black border border-yellow-500 font-black shadow-[0_0_10px_rgba(234,179,8,0.2)]';
-                    else if (rank === 2) rankBg = 'bg-slate-300 text-black border border-slate-400 font-black';
-                    else if (rank === 3) rankBg = 'bg-amber-600 text-white border border-amber-700 font-black';
+                    const formattedRank = rank < 10 ? `0${rank}` : `${rank}`;
 
                     return (
-                      <tr key={promoter.id} className="font-bold text-slate-300 hover:bg-white/[0.02] transition-colors">
-                        <td className="py-4 text-center">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${rankBg}`}>
-                            {rank}
-                          </div>
+                      <tr key={promoter.id || promoter.code} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="py-4 text-left font-black text-sm text-[#f5c211]">
+                          {formattedRank}
                         </td>
-                        <td className="py-4 px-4 font-black uppercase text-white text-sm">
+                        <td className="py-4 px-4 font-bold uppercase text-white text-sm">
                           {promoter.name}
                         </td>
                         <td className="py-4 px-4">
-                          <code className="bg-slate-900 border border-slate-850 px-3 py-1 rounded text-xs font-black text-pink-400 uppercase tracking-widest">
+                          <code className="bg-[#181820] border border-slate-700/60 text-slate-300 text-xs font-mono font-bold px-3 py-1 rounded-md inline-block uppercase">
                             {promoter.code}
                           </code>
                         </td>
-                        <td className="py-4 px-4 text-center text-slate-500">
+                        <td className="py-4 px-4 text-center text-slate-400 font-semibold text-xs">
                           {promoter.siteReferrals || 0}
                         </td>
-                        <td className="py-4 px-4 text-center text-slate-500">
+                        <td className="py-4 px-4 text-center text-slate-400 font-semibold text-xs">
                           {promoter.gformReferrals || 0}
                         </td>
-                        <td className="py-4 text-right text-lg font-black text-white">
+                        <td className="py-4 text-right text-base font-black text-[#f5c211]">
                           {promoter.totalReferrals || 0}
                         </td>
                       </tr>
@@ -457,3 +464,4 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
 };
 
 export default Leaderboard;
+
