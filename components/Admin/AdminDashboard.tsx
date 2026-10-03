@@ -212,7 +212,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {/* Total Events */}
           <div 
             onClick={() => onNavigateTab('events')}
@@ -222,7 +222,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
                 <Calendar size={20} />
               </div>
-              <span className="text-xs font-semibold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">
+              <span className="text-xs font-semibold px-2.5 py-0.5 bg-slate-100 text-slate-600 rounded-md">
                 Total
               </span>
             </div>
@@ -305,25 +305,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div>
               <span className="text-3xl font-bold text-slate-900">{stats.totalIdeas}</span>
               <p className="text-xs font-medium text-slate-500 mt-1">Student Startup Ideas</p>
-            </div>
-          </div>
-
-          {/* Freshers Registrations */}
-          <div 
-            onClick={() => onNavigateTab('freshers')}
-            className="cursor-pointer bg-white border border-slate-200/80 hover:border-pink-300 shadow-xs hover:shadow-md rounded-2xl p-5 transition-all space-y-3 group"
-          >
-            <div className="flex items-center justify-between">
-              <div className="p-2.5 bg-pink-50 text-pink-600 rounded-xl">
-                <UserPlus size={20} />
-              </div>
-              <span className="text-xs font-semibold px-2.5 py-0.5 bg-pink-100 text-pink-700 rounded-md">
-                Freshers
-              </span>
-            </div>
-            <div>
-              <span className="text-3xl font-bold text-slate-900">{stats.totalFreshers}</span>
-              <p className="text-xs font-medium text-slate-500 mt-1">First Year Registrations</p>
             </div>
           </div>
 
