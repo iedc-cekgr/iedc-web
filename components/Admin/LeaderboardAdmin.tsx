@@ -475,6 +475,32 @@ const LeaderboardAdmin: React.FC = () => {
     document.body.removeChild(link);
   };
 
+  const totalSite = promoters.reduce((sum, p) => sum + (selectedEventId ? (eventStats[p.id!]?.site || 0) : (p.siteReferrals || 0)), 0);
+  const totalGForm = promoters.reduce((sum, p) => sum + (selectedEventId ? (eventStats[p.id!]?.gform || 0) : (p.gformReferrals || 0)), 0);
+
+  const selectedEventObj = selectedEventId ? events.find(e => e.docId === selectedEventId) : null;
+
+  let showWebsiteCol = true;
+  let showGFormCol = true;
+
+  if (selectedEventId) {
+    if (selectedEventObj?.eventType === 'google-form') {
+      showGFormCol = true;
+      showWebsiteCol = totalSite > 0;
+    } else if (selectedEventObj?.eventType === 'website-form') {
+      showWebsiteCol = true;
+      showGFormCol = totalGForm > 0;
+    } else {
+      if (totalSite === 0 && totalGForm > 0) {
+        showWebsiteCol = false;
+        showGFormCol = true;
+      } else if (totalGForm === 0 && totalSite > 0) {
+        showWebsiteCol = true;
+        showGFormCol = false;
+      }
+    }
+  }
+
   const filteredPromoters = promoters.filter(p =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.code.toLowerCase().includes(searchQuery.toLowerCase())
@@ -794,8 +820,8 @@ const LeaderboardAdmin: React.FC = () => {
                     <tr className="border-b-4 border-black dark:border-slate-800 text-slate-500 uppercase text-xs font-black">
                       <th className="pb-3">Promoter</th>
                       <th className="pb-3 px-2">Referral Code</th>
-                      <th className="pb-3 px-2 text-center">Site Auto</th>
-                      <th className="pb-3 px-2 text-center w-40">GForm Manual</th>
+                      {showWebsiteCol && <th className="pb-3 px-2 text-center">Site Auto</th>}
+                      {showGFormCol && <th className="pb-3 px-2 text-center w-40">GForm Manual</th>}
                       <th className="pb-3 px-2 text-center">Total</th>
                       <th className="pb-3 px-2 text-center">Status</th>
                       <th className="pb-3 text-right">Actions</th>
@@ -817,62 +843,66 @@ const LeaderboardAdmin: React.FC = () => {
                               {promoter.code}
                             </code>
                           </td>
-                          <td className="py-4 px-2 text-center text-slate-600 dark:text-slate-400">
-                            {site}
-                          </td>
-                          <td className="py-4 px-2 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <button
-                                type="button"
-                                disabled={!selectedEventId}
-                                onClick={() => {
-                                  const curr = gformValues[promoter.id!] || 0;
-                                  setGformValues({ ...gformValues, [promoter.id!]: Math.max(0, curr - 1) });
-                                }}
-                                className="p-1 border border-black dark:border-slate-700 bg-slate-200 dark:bg-slate-700 font-bold rounded disabled:opacity-40 text-xs"
-                              >
-                                <Minus className="w-3 h-3" />
-                              </button>
-                              <input
-                                type="number"
-                                min="0"
-                                disabled={!selectedEventId}
-                                placeholder={!selectedEventId ? "Select event" : "0"}
-                                value={gformValues[promoter.id!] === undefined ? 0 : gformValues[promoter.id!]}
-                                onChange={(e) => {
-                                  const v = parseInt(e.target.value) || 0;
-                                  setGformValues({ ...gformValues, [promoter.id!]: v < 0 ? 0 : v });
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') handleUpdateGFormReferrals(promoter.id!, promoter);
-                                }}
-                                className="w-14 p-1 border-2 border-black dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-center font-bold text-xs rounded disabled:opacity-50"
-                              />
-                              <button
-                                type="button"
-                                disabled={!selectedEventId}
-                                onClick={() => {
-                                  const curr = gformValues[promoter.id!] || 0;
-                                  setGformValues({ ...gformValues, [promoter.id!]: curr + 1 });
-                                }}
-                                className="p-1 border border-black dark:border-slate-700 bg-slate-200 dark:bg-slate-700 font-bold rounded disabled:opacity-40 text-xs"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </button>
-                              <button
-                                onClick={() => handleUpdateGFormReferrals(promoter.id!, promoter)}
-                                disabled={!selectedEventId}
-                                className="p-1.5 border border-black dark:border-slate-700 bg-green-400 text-black hover:bg-green-500 rounded disabled:opacity-50"
-                                title={selectedEventId ? "Save Manual Count" : "Select an event to update counts"}
-                              >
-                                {savingGformId === promoter.id ? (
-                                  <Check className="w-3.5 h-3.5" />
-                                ) : (
-                                  <Save className="w-3.5 h-3.5" />
-                                )}
-                              </button>
-                            </div>
-                          </td>
+                          {showWebsiteCol && (
+                            <td className="py-4 px-2 text-center text-slate-600 dark:text-slate-400">
+                              {site}
+                            </td>
+                          )}
+                          {showGFormCol && (
+                            <td className="py-4 px-2 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <button
+                                  type="button"
+                                  disabled={!selectedEventId}
+                                  onClick={() => {
+                                    const curr = gformValues[promoter.id!] || 0;
+                                    setGformValues({ ...gformValues, [promoter.id!]: Math.max(0, curr - 1) });
+                                  }}
+                                  className="p-1 border border-black dark:border-slate-700 bg-slate-200 dark:bg-slate-700 font-bold rounded disabled:opacity-40 text-xs"
+                                >
+                                  <Minus className="w-3 h-3" />
+                                </button>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  disabled={!selectedEventId}
+                                  placeholder={!selectedEventId ? "Select event" : "0"}
+                                  value={gformValues[promoter.id!] === undefined ? 0 : gformValues[promoter.id!]}
+                                  onChange={(e) => {
+                                    const v = parseInt(e.target.value) || 0;
+                                    setGformValues({ ...gformValues, [promoter.id!]: v < 0 ? 0 : v });
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleUpdateGFormReferrals(promoter.id!, promoter);
+                                  }}
+                                  className="w-14 p-1 border-2 border-black dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-center font-bold text-xs rounded disabled:opacity-50"
+                                />
+                                <button
+                                  type="button"
+                                  disabled={!selectedEventId}
+                                  onClick={() => {
+                                    const curr = gformValues[promoter.id!] || 0;
+                                    setGformValues({ ...gformValues, [promoter.id!]: curr + 1 });
+                                  }}
+                                  className="p-1 border border-black dark:border-slate-700 bg-slate-200 dark:bg-slate-700 font-bold rounded disabled:opacity-40 text-xs"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={() => handleUpdateGFormReferrals(promoter.id!, promoter)}
+                                  disabled={!selectedEventId}
+                                  className="p-1.5 border border-black dark:border-slate-700 bg-green-400 text-black hover:bg-green-500 rounded disabled:opacity-50"
+                                  title={selectedEventId ? "Save Manual Count" : "Select an event to update counts"}
+                                >
+                                  {savingGformId === promoter.id ? (
+                                    <Check className="w-3.5 h-3.5" />
+                                  ) : (
+                                    <Save className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                          )}
                           <td className="py-4 px-2 text-center font-black text-black dark:text-white text-base">
                             {total}
                           </td>
