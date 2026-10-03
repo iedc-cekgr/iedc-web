@@ -182,12 +182,26 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
   const selectedEventObj = selectedEventId ? events.find(e => e.docId === selectedEventId) : null;
   const selectedEventTitle = selectedEventObj ? selectedEventObj.title : 'All Events Overall Standings';
 
-  // Check if referral tracking is explicitly disabled for the selected event
-  const isReferralDisabledForEvent = Boolean(
-    selectedEventId && 
-    selectedEventObj && 
-    selectedEventObj.enableReferralCode === false
+  // Determine if referral tracking is active/used for the selected event
+  const hasEventReferrals = Boolean(
+    selectedEventId &&
+    Object.keys(eventStats).length > 0 &&
+    Object.values(eventStats).some(s => (s.site || 0) + (s.gform || 0) > 0)
   );
+
+  const isYIEvent = Boolean(
+    selectedEventObj &&
+    selectedEventObj.title &&
+    /\b(yi|yip|youth|young)\b/i.test(selectedEventObj.title)
+  );
+
+  const isReferralActiveForEvent = selectedEventId ? (
+    selectedEventObj?.enableReferralCode === true ||
+    hasEventReferrals ||
+    isYIEvent
+  ) : true;
+
+  const isReferralDisabledForEvent = selectedEventId ? !isReferralActiveForEvent : false;
 
   // Determine Column Visibility for Event Type
   let showWebsiteCol = true;

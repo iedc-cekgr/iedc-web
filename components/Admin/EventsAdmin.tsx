@@ -798,6 +798,11 @@ const EventsAdmin: React.FC = () => {
                     <input type="datetime-local" value={formData.registrationEndDateTime || ''} onChange={(e) => setFormData({...formData, registrationEndDateTime: e.target.value})} className="w-full p-2 border border-slate-300 rounded-lg" />
                   </div>
 
+                  <div className="flex items-center space-x-2 md:col-span-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                    <input type="checkbox" checked={formData.enableReferralCode || false} onChange={(e) => setFormData({...formData, enableReferralCode: e.target.checked})} className="w-5 h-5 text-indigo-600 rounded" />
+                    <span className="font-bold text-slate-800">Enable Promoter Referral Code Tracking</span>
+                  </div>
+
                   {formData.eventType === 'google-form' && (
                     <>
                       <div className="md:col-span-2">
@@ -825,11 +830,6 @@ const EventsAdmin: React.FC = () => {
                       <div className="flex items-center space-x-2 md:col-span-2 bg-white p-3 rounded-lg border border-slate-200">
                         <input type="checkbox" checked={formData.isRegistrationEnabled ?? true} onChange={(e) => setFormData({...formData, isRegistrationEnabled: e.target.checked})} className="w-5 h-5 text-indigo-600 rounded" />
                         <span className="font-bold text-slate-700">Enable Form Now (Master Switch)</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2 md:col-span-2 bg-white p-3 rounded-lg border border-slate-200">
-                        <input type="checkbox" checked={formData.enableReferralCode || false} onChange={(e) => setFormData({...formData, enableReferralCode: e.target.checked})} className="w-5 h-5 text-indigo-600 rounded" />
-                        <span className="font-bold text-slate-700">Enable Referral Code Field</span>
                       </div>
                       
                       <div className="md:col-span-2 mt-2">
