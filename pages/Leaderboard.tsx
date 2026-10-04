@@ -46,24 +46,31 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
     setLoading(true);
     try {
       // 1. Fetch visibility settings
-      const settingsRef = doc(db, 'config', 'leaderboard_settings');
-      const settingsSnap = await getDoc(settingsRef);
-      
-      let visible = false;
-      if (settingsSnap.exists()) {
-        visible = settingsSnap.data().isVisible || false;
+      let visible = true;
+      try {
+        const settingsRef = doc(db, 'config', 'leaderboard_settings');
+        const settingsSnap = await getDoc(settingsRef);
+        if (settingsSnap.exists()) {
+          visible = settingsSnap.data().isVisible !== false;
+        }
+      } catch (e) {
+        console.error("Error fetching leaderboard settings:", e);
       }
       setIsVisible(visible);
 
       if (visible) {
         // 2. Fetch all events for event-based selector
-        const eventsSnap = await getDocs(collection(db, 'events'));
-        const eventsList: any[] = [];
-        eventsSnap.forEach((doc) => {
-          eventsList.push({ docId: doc.id, ...doc.data() });
-        });
-        eventsList.sort((a, b) => new Date(b.date || '').getTime() - new Date(a.date || '').getTime());
-        setEvents(eventsList);
+        try {
+          const eventsSnap = await getDocs(collection(db, 'events'));
+          const eventsList: any[] = [];
+          eventsSnap.forEach((doc) => {
+            eventsList.push({ docId: doc.id, ...doc.data() });
+          });
+          eventsList.sort((a, b) => new Date(b.date || '').getTime() - new Date(a.date || '').getTime());
+          setEvents(eventsList);
+        } catch (e) {
+          console.error("Error loading events:", e);
+        }
 
         // Fetch standings
         await fetchStandingsForSelection();
@@ -76,27 +83,34 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
   };
 
   const fetchStandingsForSelection = async () => {
+    let list: Promoter[] = [];
     try {
       // Fetch all active promoters (allow true or undefined, only exclude explicitly false)
       const promotersSnap = await getDocs(collection(db, 'promoters'));
-      const list: Promoter[] = [];
       promotersSnap.forEach((doc) => {
-        const data = doc.data() as Omit<Promoter, 'id'>;
+        const data = doc.data() as any;
         if (data.isActive !== false) {
           list.push({
             id: doc.id,
-            ...data,
+            name: data.name || '',
+            code: data.code || '',
             siteReferrals: data.siteReferrals || 0,
             gformReferrals: data.gformReferrals || 0,
-            totalReferrals: data.totalReferrals !== undefined ? data.totalReferrals : ((data.siteReferrals || 0) + (data.gformReferrals || 0))
+            totalReferrals: data.totalReferrals !== undefined ? data.totalReferrals : ((data.siteReferrals || 0) + (data.gformReferrals || 0)),
+            isActive: data.isActive !== false,
+            createdAt: data.createdAt
           });
         }
       });
+    } catch (err) {
+      console.error("Error fetching promoters collection:", err);
+    }
 
-      const statsMap: Record<string, { site: number; gform: number }> = {};
+    const statsMap: Record<string, { site: number; gform: number }> = {};
 
-      if (selectedEventId) {
-        // Event-specific mode: fetch event_referrals for selected event
+    if (selectedEventId) {
+      // Event-specific mode: fetch event_referrals for selected event
+      try {
         const referralsRef = collection(db, 'event_referrals');
         const q = query(referralsRef, where('eventId', '==', selectedEventId));
         const referralsSnap = await getDocs(q);
@@ -120,54 +134,54 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
         });
 
         setEventStats(statsMap);
-      } else {
-        // "All Events" mode: aggregate all event_referrals if global document total is 0
-        try {
-          const referralsSnap = await getDocs(collection(db, 'event_referrals'));
-          const allEventStatsMap: Record<string, { site: number; gform: number }> = {};
-          
-          referralsSnap.forEach((doc) => {
-            const data = doc.data();
-            if (data.promoterId) {
-              if (!allEventStatsMap[data.promoterId]) {
-                allEventStatsMap[data.promoterId] = { site: 0, gform: 0 };
-              }
-              allEventStatsMap[data.promoterId].site += (data.siteReferrals || 0);
-              allEventStatsMap[data.promoterId].gform += (data.gformReferrals || 0);
-            }
-          });
-
-          list.forEach((p) => {
-            const evStats = allEventStatsMap[p.id!];
-            if (evStats) {
-              const computedSite = evStats.site;
-              const computedGForm = evStats.gform;
-              const computedTotal = computedSite + computedGForm;
-
-              p.siteReferrals = Math.max(p.siteReferrals || 0, computedSite);
-              p.gformReferrals = Math.max(p.gformReferrals || 0, computedGForm);
-              p.totalReferrals = Math.max(p.totalReferrals || 0, computedTotal);
-            }
-          });
-        } catch (e) {
-          console.error("Error aggregating event referrals:", e);
-        }
+      } catch (err) {
+        console.error("Error fetching event referrals for selected event:", err);
       }
+    } else {
+      // "All Events" mode: aggregate all event_referrals if global total is 0
+      try {
+        const referralsSnap = await getDocs(collection(db, 'event_referrals'));
+        const allEventStatsMap: Record<string, { site: number; gform: number }> = {};
+        
+        referralsSnap.forEach((doc) => {
+          const data = doc.data();
+          if (data.promoterId) {
+            if (!allEventStatsMap[data.promoterId]) {
+              allEventStatsMap[data.promoterId] = { site: 0, gform: 0 };
+            }
+            allEventStatsMap[data.promoterId].site += (data.siteReferrals || 0);
+            allEventStatsMap[data.promoterId].gform += (data.gformReferrals || 0);
+          }
+        });
 
-      // Sort by totalReferrals desc, then by name
-      list.sort((a, b) => {
-        const bTotal = b.totalReferrals || 0;
-        const aTotal = a.totalReferrals || 0;
-        if (bTotal !== aTotal) {
-          return bTotal - aTotal;
-        }
-        return a.name.localeCompare(b.name);
-      });
+        list.forEach((p) => {
+          const evStats = allEventStatsMap[p.id!];
+          if (evStats) {
+            const computedSite = evStats.site;
+            const computedGForm = evStats.gform;
+            const computedTotal = computedSite + computedGForm;
 
-      setPromoters(list);
-    } catch (err) {
-      console.error("Error fetching standings:", err);
+            p.siteReferrals = Math.max(p.siteReferrals || 0, computedSite);
+            p.gformReferrals = Math.max(p.gformReferrals || 0, computedGForm);
+            p.totalReferrals = Math.max(p.totalReferrals || 0, computedTotal);
+          }
+        });
+      } catch (e) {
+        console.error("Error aggregating event referrals:", e);
+      }
     }
+
+    // Sort by totalReferrals desc, then by name
+    list.sort((a, b) => {
+      const bTotal = b.totalReferrals || 0;
+      const aTotal = a.totalReferrals || 0;
+      if (bTotal !== aTotal) {
+        return bTotal - aTotal;
+      }
+      return (a.name || '').localeCompare(b.name || '');
+    });
+
+    setPromoters(list);
   };
 
   if (loading) {
@@ -206,8 +220,8 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
   }
 
   const filteredPromoters = promoters.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase()) ||
-    p.code.toLowerCase().includes(search.toLowerCase())
+    (p.name || '').toLowerCase().includes((search || '').toLowerCase()) ||
+    (p.code || '').toLowerCase().includes((search || '').toLowerCase())
   );
 
   const podium = filteredPromoters.slice(0, 3);
