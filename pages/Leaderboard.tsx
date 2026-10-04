@@ -77,13 +77,19 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
 
   const fetchStandingsForSelection = async () => {
     try {
-      // Fetch all active promoters
+      // Fetch all active promoters (allow true or undefined, only exclude explicitly false)
       const promotersSnap = await getDocs(collection(db, 'promoters'));
       const list: Promoter[] = [];
       promotersSnap.forEach((doc) => {
         const data = doc.data() as Omit<Promoter, 'id'>;
-        if (data.isActive) {
-          list.push({ id: doc.id, ...data });
+        if (data.isActive !== false) {
+          list.push({
+            id: doc.id,
+            ...data,
+            siteReferrals: data.siteReferrals || 0,
+            gformReferrals: data.gformReferrals || 0,
+            totalReferrals: data.totalReferrals !== undefined ? data.totalReferrals : ((data.siteReferrals || 0) + (data.gformReferrals || 0))
+          });
         }
       });
 
@@ -97,10 +103,12 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
 
         referralsSnap.forEach((doc) => {
           const data = doc.data();
-          statsMap[data.promoterId] = {
-            site: data.siteReferrals || 0,
-            gform: data.gformReferrals || 0
-          };
+          if (data.promoterId) {
+            statsMap[data.promoterId] = {
+              site: data.siteReferrals || 0,
+              gform: data.gformReferrals || 0
+            };
+          }
         });
 
         // Compute total per promoter for selected event
@@ -112,12 +120,46 @@ const Leaderboard: React.FC<Props> = ({ onNavigate }) => {
         });
 
         setEventStats(statsMap);
+      } else {
+        // "All Events" mode: aggregate all event_referrals if global document total is 0
+        try {
+          const referralsSnap = await getDocs(collection(db, 'event_referrals'));
+          const allEventStatsMap: Record<string, { site: number; gform: number }> = {};
+          
+          referralsSnap.forEach((doc) => {
+            const data = doc.data();
+            if (data.promoterId) {
+              if (!allEventStatsMap[data.promoterId]) {
+                allEventStatsMap[data.promoterId] = { site: 0, gform: 0 };
+              }
+              allEventStatsMap[data.promoterId].site += (data.siteReferrals || 0);
+              allEventStatsMap[data.promoterId].gform += (data.gformReferrals || 0);
+            }
+          });
+
+          list.forEach((p) => {
+            const evStats = allEventStatsMap[p.id!];
+            if (evStats) {
+              const computedSite = evStats.site;
+              const computedGForm = evStats.gform;
+              const computedTotal = computedSite + computedGForm;
+
+              p.siteReferrals = Math.max(p.siteReferrals || 0, computedSite);
+              p.gformReferrals = Math.max(p.gformReferrals || 0, computedGForm);
+              p.totalReferrals = Math.max(p.totalReferrals || 0, computedTotal);
+            }
+          });
+        } catch (e) {
+          console.error("Error aggregating event referrals:", e);
+        }
       }
 
       // Sort by totalReferrals desc, then by name
       list.sort((a, b) => {
-        if (b.totalReferrals !== a.totalReferrals) {
-          return b.totalReferrals - a.totalReferrals;
+        const bTotal = b.totalReferrals || 0;
+        const aTotal = a.totalReferrals || 0;
+        if (bTotal !== aTotal) {
+          return bTotal - aTotal;
         }
         return a.name.localeCompare(b.name);
       });
