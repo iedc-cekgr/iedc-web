@@ -227,14 +227,6 @@ const App: React.FC = () => {
     );
   }
 
-  if (currentPath === '/leaderboard') {
-    return (
-      <main className="animate-in fade-in duration-500 bg-[#060112]">
-        {renderContent()}
-      </main>
-    );
-  }
-
   if (currentPath.startsWith('/exult')) {
     return (
       <main className="animate-in fade-in duration-500 bg-[#050B08]">
